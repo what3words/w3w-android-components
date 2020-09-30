@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="W3WAutoSuggestEditTextTheme" parent="@android:style/Theme">
+        <item name="customW3WAutoSuggestEditTextStyle">
+            @style/Widget.AppCompat.W3WAutoSuggestEditText
+        </item>
+    </style>
+</resources>

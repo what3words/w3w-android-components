@@ -1,0 +1,3 @@
+include ':lib'
+rootProject.name='what3words-autosuggest'
+include ':sample'

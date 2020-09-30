@@ -1,0 +1,26 @@
+<resources>
+
+    <style name="Widget.AppCompat.W3WAutoSuggestEditText" parent="Widget.AppCompat.EditText">
+        <item name="imageTintColor">@color/w3wRed</item>
+        <item name="android:textColor">@color/w3wBlue</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_white_border_gray</item>
+        <item name="android:textColorHint">@color/w3wLightGray</item>
+        <item name="android:hint">@string/input_hint</item>
+        <item name="android:minHeight">@dimen/input_height</item>
+        <item name="android:paddingRight">@dimen/xlarge_margin</item>
+        <item name="android:paddingLeft">@dimen/xlarge_margin</item>
+        <item name="android:paddingTop">@dimen/large_margin</item>
+        <item name="android:paddingBottom">@dimen/large_margin</item>
+        <item name="android:inputType">textNoSuggestions</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textAppearance">@style/W3WAutoSuggestEditTextTextAppearance</item>
+    </style>
+
+    <style name="W3WAutoSuggestEditTextTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+</resources>

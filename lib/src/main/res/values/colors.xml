@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#0A3049</color>
+
+    <color name="w3wRed">#FFE11F26</color>
+    <color name="w3wBlue">#0A3049</color>
+    <color name="w3wLightGray">#C2C2C2</color>
+    <color name="w3wGray">#525252</color>
+    <color name="white">#FFF</color>
+    <color name="w3wError">#ED694E</color>
+    <color name="w3wHover">#DBEFFA</color>
+</resources>
