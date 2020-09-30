@@ -5,7 +5,7 @@
 
 An Android library to use the [what3words v3 API autosuggest](https://developer.what3words.com/public-api/docs#autosuggest).
 
-![alt text](https://github.com/what3words/w3w-autosuggest-textfield-android/blob/ui-component/assets/screen_1.png?raw=true "Screenshot 1")![alt text](https://github.com/what3words/w3w-autosuggest-textfield-android/blob/ui-component/assets/screen_2.png?raw=true "Screenshot 2")![alt text](https://github.com/what3words/w3w-autosuggest-textfield-android/blob/ui-component/assets/screen_3.png?raw=true "Screenshot 3")
+![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_1.png?raw=true "Screenshot 1")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_2.png?raw=true "Screenshot 2")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_3.png?raw=true "Screenshot 3")
 
 To obtain an API key, please visit [https://what3words.com/select-plan](https://what3words.com/select-plan) and sign up for an account.
 
@@ -136,4 +136,4 @@ Use our base style as parent and you can set the custom properties available wit
 </style>
 ```
 
-![alt text](https://github.com/what3words/w3w-autosuggest-textfield-android/blob/ui-component/assets/screen_4.png?raw=true "Screenshot 4")![alt text](https://github.com/what3words/w3w-autosuggest-textfield-android/blob/ui-component/assets/screen_5.png?raw=true "Screenshot 5")![alt text](https://github.com/what3words/w3w-autosuggest-textfield-android/blob/ui-component/assets/screen_6.png?raw=true "Screenshot 6")
+![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_4.png?raw=true "Screenshot 4")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_5.png?raw=true "Screenshot 5")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_6.png?raw=true "Screenshot 6")
