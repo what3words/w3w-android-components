@@ -1,0 +1,111 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:id="@+id/voiceHolderFullscreen"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_voice"
+    android:clickable="true"
+    android:focusable="true"
+    android:importantForAccessibility="noHideDescendants">
+
+    <ImageView
+        android:id="@+id/icClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/medium_margin"
+        android:src="@drawable/ic_close"
+        app:layout_constraintBottom_toTopOf="@+id/voiceHolder"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/voiceHolder"
+        android:layout_width="0dp"
+        android:layout_height="309dp"
+        android:background="@color/w3wVoiceBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/voicePlaceholder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/voicePulseLayout"
+            android:layout_width="256dp"
+            android:layout_height="256dp"
+            android:importantForAccessibility="noHideDescendants"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/w3wLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:src="@drawable/ic_voice_active"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/innerCircleView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="3dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/bg_sound_level_01"
+                app:layout_constraintBottom_toBottomOf="@id/w3wLogo"
+                app:layout_constraintEnd_toEndOf="@id/w3wLogo"
+                app:layout_constraintStart_toStartOf="@id/w3wLogo"
+                app:layout_constraintTop_toTopOf="@id/w3wLogo" />
+
+            <ImageView
+                android:id="@+id/midCircleView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="2dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/bg_sound_level_02"
+                app:layout_constraintBottom_toBottomOf="@id/w3wLogo"
+                app:layout_constraintEnd_toEndOf="@id/w3wLogo"
+                app:layout_constraintStart_toStartOf="@id/w3wLogo"
+                app:layout_constraintTop_toTopOf="@id/w3wLogo" />
+
+            <ImageView
+                android:id="@+id/outerCircleView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="1dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/bg_sound_level_03"
+                app:layout_constraintBottom_toBottomOf="@id/w3wLogo"
+                app:layout_constraintEnd_toEndOf="@id/w3wLogo"
+                app:layout_constraintStart_toStartOf="@id/w3wLogo"
+                app:layout_constraintTop_toTopOf="@id/w3wLogo" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/icLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_w3w_voice_logo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

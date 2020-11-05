@@ -3,37 +3,26 @@ package com.what3words.autosuggest
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.KeyEvent
-import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.what3words.androidwrapper.What3WordsV3
-import com.what3words.autosuggest.util.MyDividerItemDecorator
+import com.what3words.androidwrapper.voice.VoiceBuilder
+import com.what3words.autosuggest.voiceutils.InlineVoicePulseLayout
+import com.what3words.autosuggest.voiceutils.VoicePulseLayout
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.Suggestion
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.util.regex.Pattern
 
 class W3WAutoSuggestEditText
 @JvmOverloads constructor(
@@ -47,34 +36,41 @@ class W3WAutoSuggestEditText
 ) {
 
     companion object {
-        private const val DEBOUNCE_MS = 150L
-        private const val regex =
+        internal const val DEBOUNCE_MS = 150L
+        internal const val regex =
             "^/*[^0-9`~!@#$%^&*()+\\-_=\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[・.。][^0-9`~!@#$%^&*()+\\-_=\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[・.。][^0-9`~!@#$%^&*()+\\-_=\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$"
     }
 
-    private var key: String? = null
-    private var queryMap: MutableMap<String, String> = mutableMapOf()
-    private var isEnterprise: Boolean = false
+    private var isRendered: Boolean = false
+    internal var isShowingTick: Boolean = false
+    internal var key: String? = null
+    internal var queryMap: MutableMap<String, String> = mutableMapOf()
+    internal var isEnterprise: Boolean = false
     private var pickedFromDropDown: Boolean = false
     private var fromPaste: Boolean = false
-    private var errorMessageText: String? = null
+    internal var errorMessageText: String? = null
     private var slashesColor: Int = ContextCompat.getColor(context, R.color.w3wRed)
-    private var lastSuggestions: MutableList<Suggestion> = mutableListOf()
-    private var callback: ((suggestion: Suggestion?, latitude: Double?, longitude: Double?) -> Unit)? =
+    internal var lastSuggestions: MutableList<Suggestion> = mutableListOf()
+    internal var callback: ((suggestion: Suggestion?, latitude: Double?, longitude: Double?) -> Unit)? =
         null
-    private var returnCoordinates: Boolean = false
-    private var language: String = "en"
-    private var clipToPolygon: Array<Coordinates>? = null
-    private var clipToBoundingBox: BoundingBox? = null
-    private var clipToCircle: Coordinates? = null
-    private var clipToCircleRadius: Double? = null
-    private var clipToCountry: Array<String>? = null
-    private var nFocusResults: Int? = null
-    private var focus: Coordinates? = null
-    private var nResults: Int = 3
-    private var wrapper: What3WordsV3? = null
+    internal var returnCoordinates: Boolean = false
+    internal var voiceEnabled: Boolean = false
+    internal var voiceFullscreen: Boolean = false
+    internal var language: String? = null
+    internal var voiceLanguage: String = "en"
+    private lateinit var voicePlaceholder: String
+    internal var clipToPolygon: Array<Coordinates>? = null
+    internal var clipToBoundingBox: BoundingBox? = null
+    internal var clipToCircle: Coordinates? = null
+    internal var clipToCircleRadius: Double? = null
+    internal var clipToCountry: Array<String>? = null
+    internal var nFocusResults: Int? = null
+    internal var focus: Coordinates? = null
+    internal var nResults: Int? = null
+    internal var wrapper: What3WordsV3? = null
+    internal var builder: VoiceBuilder? = null
 
-    private val slashes: Drawable? by lazy {
+    internal val slashes: Drawable? by lazy {
         val d = ContextCompat.getDrawable(context, R.drawable.ic_slashes)
         if (d != null) {
             val wd: Drawable = DrawableCompat.wrap(d)
@@ -91,7 +87,7 @@ class W3WAutoSuggestEditText
         }
     }
 
-    private val tick: Drawable? by lazy {
+    internal val tick: Drawable? by lazy {
         ContextCompat.getDrawable(context, R.drawable.ic_tick).apply {
             this?.setBounds(
                 0,
@@ -102,12 +98,20 @@ class W3WAutoSuggestEditText
         }
     }
 
-    private val recyclerView: RecyclerView by lazy {
+    internal val recyclerView: RecyclerView by lazy {
         RecyclerView(context)
     }
 
-    private val errorMessage: TextView by lazy {
+    internal val errorMessage: TextView by lazy {
         TextView(context)
+    }
+
+    internal val inlineVoicePulseLayout: InlineVoicePulseLayout by lazy {
+        InlineVoicePulseLayout(context)
+    }
+
+    internal val voicePulseLayout: VoicePulseLayout by lazy {
+        VoicePulseLayout(context, voicePlaceholder)
     }
 
     private val watcher by lazy {
@@ -146,7 +150,7 @@ class W3WAutoSuggestEditText
         }
     }
 
-    private val suggestionsAdapter: SuggestionsAdapter by lazy {
+    internal val suggestionsAdapter: SuggestionsAdapter by lazy {
         SuggestionsAdapter(this.typeface, this.currentTextColor) { suggestion ->
             pickedFromDropDown = true
             handleAddressPicked(suggestion)
@@ -164,13 +168,20 @@ class W3WAutoSuggestEditText
                     R.styleable.W3WAutoSuggestEditText_errorMessage
                 ) ?: resources.getString(R.string.error_message)
                 nResults = getInteger(R.styleable.W3WAutoSuggestEditText_nResults, 3)
-                language = getString(R.styleable.W3WAutoSuggestEditText_language) ?: "en"
+                language = getString(R.styleable.W3WAutoSuggestEditText_language)
+                voicePlaceholder = getString(R.styleable.W3WAutoSuggestEditText_voicePlaceholder)
+                    ?: resources.getString(R.string.voice_placeholder)
                 slashesColor = getColor(
                     R.styleable.W3WAutoSuggestEditText_imageTintColor,
                     ContextCompat.getColor(context, R.color.w3wRed)
                 )
                 returnCoordinates =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_returnCoordinates, false)
+                voiceEnabled =
+                    getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
+                voiceFullscreen =
+                    getBoolean(R.styleable.W3WAutoSuggestEditText_voiceFullscreen, false)
+                voiceLanguage = getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
             } finally {
                 showImages()
                 recycle()
@@ -186,12 +197,18 @@ class W3WAutoSuggestEditText
             }
         }
 
+        inlineVoicePulseLayout.onStartVoiceClick {
+            if (!isShowingTick && wrapper != null) {
+                handleVoice()
+            }
+        }
+
         setOnFocusChangeListener { _, isFocused ->
             when {
                 !pickedFromDropDown && !isFocused && isReal3wa(text.toString()) -> {
                     handleAddressPicked(lastSuggestions.firstOrNull { it.words == text.toString() })
                 }
-                !pickedFromDropDown && !isFocused && !isReal3wa(text.toString()) -> {
+                !pickedFromDropDown && !isFocused && !isReal3wa(text.toString()) && builder == null -> {
                     handleAddressPicked(null)
                 }
             }
@@ -204,187 +221,17 @@ class W3WAutoSuggestEditText
 
         addTextChangedListener(watcher)
 
-        viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                buildSuggestionList()
-                buildErrorMessage()
-                viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
-    }
-
-    private fun buildSuggestionList() {
-        val params = ViewGroup.MarginLayoutParams(
-            width,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        recyclerView.apply {
-            isFocusable = false
-            isFocusableInTouchMode = false
-            this.x = this@W3WAutoSuggestEditText.x
-            this.y =
-                this@W3WAutoSuggestEditText.y + this@W3WAutoSuggestEditText.height + resources.getDimensionPixelSize(
-                    R.dimen.input_margin
-                )
-            layoutParams = params
-            val linear = LinearLayoutManager(context)
-            background = getDrawable(context, R.drawable.bg_white_border_gray)
-            resources.getDimensionPixelSize(R.dimen.tiny_margin).let {
-                setPadding(it, it, it, it)
-            }
-            layoutManager = linear
-            setHasFixedSize(true)
-            ResourcesCompat.getDrawable(resources, R.drawable.divider, null)?.let {
-                addItemDecoration(
-                    MyDividerItemDecorator(
-                        it
-                    )
-                )
-            }
-            adapter = suggestionsAdapter
-            visibility = GONE
-        }
-        (parent as? ViewGroup)?.apply {
-            addView(recyclerView)
-        }
-    }
-
-    private fun buildErrorMessage() {
-        val params = ViewGroup.MarginLayoutParams(
-            width,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        errorMessage.apply {
-            isFocusable = false
-            isFocusableInTouchMode = false
-            text = errorMessageText
-            setBackgroundResource(R.drawable.bg_item)
-            setTextColor(ContextCompat.getColor(context, R.color.w3wError))
-            this.x = this@W3WAutoSuggestEditText.x
-            this.y =
-                this@W3WAutoSuggestEditText.y + this@W3WAutoSuggestEditText.height - resources.getDimensionPixelSize(
-                    R.dimen.tiny_margin
-                )
-            layoutParams = params
-            setPadding(
-                resources.getDimensionPixelSize(R.dimen.xlarge_margin),
-                resources.getDimensionPixelSize(R.dimen.medium_margin),
-                resources.getDimensionPixelSize(R.dimen.xlarge_margin),
-                resources.getDimensionPixelSize(R.dimen.medium_margin)
-            )
-            visibility = View.GONE
-        }
-        (parent as? ViewGroup)?.addView(errorMessage)
-    }
-
-    private fun showImages(showTick: Boolean = false) {
-        setCompoundDrawables(
-            slashes,
-            null,
-            if (showTick) tick else null,
-            null
-        )
-    }
-
-    private fun isPossible3wa(query: String): Boolean {
-        Pattern.compile(regex).also {
-            return it.matcher(query).find()
-        }
-    }
-
-    private fun isReal3wa(query: String): Boolean {
-        return lastSuggestions.any { it.words == query }
-    }
-
-    private fun handleAutoSuggest(searchText: String, searchFor: String) {
-        CoroutineScope(IO).launch {
-            delay(DEBOUNCE_MS)  //debounce timeOut
-            if (searchText != searchFor)
-                return@launch
-
-            if (wrapper == null) throw Exception("Please use apiKey")
-            queryMap.clear()
-            queryMap["n-results"] = nResults.toString()
-            val res =
-                wrapper!!.autosuggest(searchFor).language(language).nResults(nResults)
-                    .apply {
-                        focus?.let {
-                            this.focus(it)
-                            queryMap["focus"] = it.lat.toString() + "," + it.lng.toString()
-                        }
-                        nFocusResults?.let {
-                            this.nFocusResults(it)
-                            queryMap["n-focus-results"] = it.toString()
-                        }
-                        clipToCountry?.let {
-                            this.clipToCountry(*it)
-                            queryMap["clip-to-country"] = it.joinToString(",")
-                        }
-                        clipToCircle?.let {
-                            this.clipToCircle(it, clipToCircleRadius ?: 0.0)
-                            queryMap["clip-to-circle"] =
-                                it.lat.toString() + "," + it.lng.toString() + "," + (clipToCircleRadius?.toString()
-                                    ?: "0")
-                        }
-                        clipToBoundingBox?.let {
-                            this.clipToBoundingBox(it)
-                            queryMap["clip-to-bounding-box"] =
-                                it.sw.lat.toString() + "," + it.sw.lng.toString() + "," + it.ne.lat.toString() + "," + it.ne.lng.toString()
-                        }
-                        clipToPolygon?.let { coordinates ->
-                            this.clipToPolygon(*coordinates)
-                            queryMap["clip-to-polygon"] =
-                                coordinates.joinToString(",") { "${it.lat},${it.lng}" }
-                        }
-                    }.execute()
-
-            CoroutineScope(Main).launch {
-                if (res != null && res.suggestions != null && hasFocus()) {
-                    lastSuggestions.apply {
-                        clear()
-                        addAll(res.suggestions)
-                    }
-                    recyclerView.visibility = if (res.suggestions.isEmpty()) GONE else View.VISIBLE
-                    suggestionsAdapter.refreshSuggestions(res.suggestions, searchFor)
+        viewTreeObserver.addOnGlobalLayoutListener(
+            object :
+                ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    isRendered = true
+                    buildSuggestionList()
+                    buildErrorMessage()
+                    if (voiceEnabled) buildVoice()
+                    viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }
-            }
-        }
-    }
-
-    private fun handleAddressPicked(suggestion: Suggestion?) {
-        if (recyclerView.visibility == View.VISIBLE && suggestion == null) {
-            recyclerView.visibility = GONE
-            errorMessage.visibility = View.VISIBLE
-            Handler(Looper.getMainLooper()).postDelayed({
-                errorMessage.visibility = View.GONE
-            }, 5000)
-        } else {
-            recyclerView.visibility = GONE
-        }
-        showImages(suggestion != null)
-        suggestionsAdapter.refreshSuggestions(emptyList(), null)
-        clearFocus()
-        val originalQuery = text.toString()
-        setText(suggestion?.words)
-
-        if (suggestion == null) callback?.invoke(null, null, null)
-        else {
-            if (!isEnterprise) handleSelectionTrack(suggestion, originalQuery, queryMap, key!!)
-            if (!returnCoordinates) callback?.invoke(suggestion, null, null)
-            else {
-                CoroutineScope(IO).launch {
-                    val res = wrapper!!.convertToCoordinates(suggestion.words).execute()
-                    CoroutineScope(Main).launch {
-                        callback?.invoke(
-                            suggestion,
-                            res.coordinates.lat,
-                            res.coordinates.lng
-                        )
-                    }
-                }
-            }
-        }
+            })
     }
 
     override fun onTextContextMenuItem(id: Int): Boolean {
@@ -400,7 +247,7 @@ class W3WAutoSuggestEditText
         fromPaste = true
     }
 
-    //region Properties
+//region Properties
 
     /** Set your What3Words API Key which will be used to get suggestions and coordinates (if enabled)
      *
@@ -444,6 +291,11 @@ class W3WAutoSuggestEditText
 
     fun language(language: String): W3WAutoSuggestEditText {
         this.language = language
+        return this
+    }
+
+    fun voiceLanguage(language: String): W3WAutoSuggestEditText {
+        this.voiceLanguage = language
         return this
     }
 
@@ -557,6 +409,45 @@ class W3WAutoSuggestEditText
         return this
     }
 
+    /**
+     * Enable voice for autosuggest component
+     *
+     * @param enabled if voice should be enabled
+     * @return a {@link W3WAutoSuggestEditText} instance
+     */
+    fun voiceEnabled(
+        enabled: Boolean
+    ): W3WAutoSuggestEditText {
+        this.voiceEnabled = enabled
+        return this
+    }
+
+    /**
+     * Enable voice fullscreen popup for autosuggest component
+     *
+     * @param enabled if voice fullscreen should be enabled
+     * @return a {@link W3WAutoSuggestEditText} instance
+     */
+    fun voiceFullscreen(
+        enabled: Boolean
+    ): W3WAutoSuggestEditText {
+        this.voiceFullscreen = enabled
+        return this
+    }
+
+    /**
+     * Voice placeholder for fullscreen popup for autosuggest component
+     *
+     * @param placeholder text to show before user starts speaking.
+     * @return a {@link W3WAutoSuggestEditText} instance
+     */
+    fun voicePlaceholder(
+        placeholder: String
+    ): W3WAutoSuggestEditText {
+        this.voicePlaceholder = placeholder
+        return this
+    }
+
     fun errorMessage(
         error: String
     ): W3WAutoSuggestEditText {
@@ -568,5 +459,10 @@ class W3WAutoSuggestEditText
         this.callback = callback
         return this
     }
-    //endregion
+
+    override fun invalidate() {
+        super.invalidate()
+
+    }
+//endregion
 }

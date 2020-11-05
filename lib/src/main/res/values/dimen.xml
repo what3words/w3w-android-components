@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="input_height">48dp</dimen>
+    <dimen name="input_height_without_borders">46dp</dimen>
+    <dimen name="input_border_height">1dp</dimen>
     <dimen name="input_margin">4dp</dimen>
+    <dimen name="voice_button_height">56dp</dimen>
+    <dimen name="voice_button_width">128dp</dimen>
 
     <dimen name="flag_width">16dp</dimen>
     <dimen name="flag_height">12dp</dimen>

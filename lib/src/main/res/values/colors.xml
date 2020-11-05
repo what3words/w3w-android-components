@@ -9,6 +9,8 @@
     <color name="w3wLightGray">#C2C2C2</color>
     <color name="w3wGray">#525252</color>
     <color name="white">#FFF</color>
+    <color name="black">#000</color>
     <color name="w3wError">#ED694E</color>
     <color name="w3wHover">#DBEFFA</color>
+    <color name="w3wVoiceBackground">#F2F4F5</color>
 </resources>

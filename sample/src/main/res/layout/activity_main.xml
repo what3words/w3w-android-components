@@ -26,7 +26,8 @@
             android:layout_margin="@dimen/main_s"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textHeader" />
+            app:layout_constraintTop_toBottomOf="@+id/textHeader"
+            app:voiceEnabled="true" />
 
         <TextView
             android:id="@+id/selectedInfo"
@@ -63,6 +64,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textCustomHeader" />
 
+        <CheckBox
+            android:id="@+id/checkboxVoiceFullscreen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
+            android:checked="false"
+            android:text="@string/voice_fullscreen"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderPlaceholder"
             android:layout_width="match_parent"
@@ -72,7 +87,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/placeholder"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/checkboxCoordinates">
+            app:layout_constraintTop_toBottomOf="@id/checkboxVoiceFullscreen">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textPlaceholder"
@@ -119,6 +134,61 @@
             app:layout_constraintTop_toBottomOf="@id/holderLanguage" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/holderVoicePlaceholder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_m"
+            android:layout_marginEnd="@dimen/main_s"
+            android:hint="@string/voice_placeholder_header"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@id/textLanguageInfo">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textVoicePlaceholder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/holderVoiceLanguage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_m"
+            android:layout_marginEnd="@dimen/main_s"
+            android:hint="@string/voice_language"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@id/holderVoicePlaceholder">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textVoiceLanguage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/textVoiceLanguageInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:text="@string/voice_language_info"
+            android:textSize="12sp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/holderVoiceLanguage" />
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderFocus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -127,7 +197,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/focus_hint"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/textLanguageInfo">
+            app:layout_constraintTop_toBottomOf="@id/textVoiceLanguageInfo">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textFocus"
