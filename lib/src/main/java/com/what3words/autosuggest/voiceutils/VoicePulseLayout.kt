@@ -10,7 +10,6 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.autosuggest.R
-import com.what3words.autosuggest.transform
 import kotlinx.android.synthetic.main.voice_pulse_layout.view.*
 
 class VoicePulseLayout
@@ -25,6 +24,7 @@ class VoicePulseLayout
         private const val INNER_MAX_SIZE_DP = 104F
         private const val MID_MAX_SIZE_DP = 152F
         private const val OUTER_MAX_SIZE_DP = 216F
+        private const val ANIMATION_TIME = 250L
     }
 
     var isVoiceRunning: Boolean = false
@@ -155,19 +155,53 @@ class VoicePulseLayout
         invalidatePulse(view)
     }
 
-    fun setIsVoiceRunning(isVoiceRunning: Boolean) {
+    fun setIsVoiceRunning(isVoiceRunning: Boolean, shouldAnimate: Boolean) {
         this.isVoiceRunning = isVoiceRunning
         if (isVoiceRunning) {
-            w3wLogo.setImageResource(R.drawable.ic_voice_active)
-            View.VISIBLE
+            if (shouldAnimate) {
+                visibility = VISIBLE
+                voicePlaceholder.visibility = VISIBLE
+                voiceHolder.animate().translationY(
+                    0f
+                ).setDuration(
+                    ANIMATION_TIME
+                ).withEndAction {
+                    w3wLogo.setImageResource(R.drawable.ic_voice_active)
+                    innerCircleView.visibility = VISIBLE
+                    midCircleView.visibility = VISIBLE
+                    outerCircleView.visibility = VISIBLE
+                    icClose.visibility = VISIBLE
+                }.start()
+            } else {
+                voicePlaceholder.visibility = VISIBLE
+                w3wLogo.setImageResource(R.drawable.ic_voice_active)
+                innerCircleView.visibility = VISIBLE
+                midCircleView.visibility = VISIBLE
+                outerCircleView.visibility = VISIBLE
+            }
         } else {
             resetLayout()
-            w3wLogo.setImageResource(R.drawable.ic_voice)
-            View.INVISIBLE
-        }.let {
-            innerCircleView.visibility = it
-            midCircleView.visibility = it
-            outerCircleView.visibility = it
+            if (shouldAnimate) {
+                icClose.visibility = GONE
+                voicePlaceholder.visibility = GONE
+                voiceHolder.animate().translationY(
+                    resources.getDimensionPixelSize(R.dimen.voice_popup_height).toFloat()
+                ).setDuration(
+                    ANIMATION_TIME
+                ).withEndAction {
+                    w3wLogo.setImageResource(R.drawable.ic_voice)
+                    innerCircleView.visibility = GONE
+                    midCircleView.visibility = GONE
+                    outerCircleView.visibility = GONE
+                    visibility = GONE
+                }.start()
+            } else {
+                voicePlaceholder.visibility = GONE
+                w3wLogo.setImageResource(R.drawable.ic_voice)
+                innerCircleView.visibility = GONE
+                midCircleView.visibility = GONE
+                outerCircleView.visibility = GONE
+            }
         }
     }
 
@@ -193,22 +227,21 @@ class VoicePulseLayout
 
     fun setup(builder: VoiceBuilder, microphone: VoiceBuilder.Microphone) {
         microphone.onListening {
-            if (!isVoiceRunning) setIsVoiceRunning(true)
             if (it != null) {
                 onSignalUpdate(transform(it))
-                if (it > 0.6) voicePlaceholder.visibility = GONE
+                if (it > 0.7) voicePlaceholder.visibility = GONE
             }
         }
         onToggle = {
             if (isVoiceRunning) {
                 builder.stopListening()
-                setIsVoiceRunning(false)
+                setIsVoiceRunning(false, shouldAnimate = false)
             } else {
-                voicePlaceholder.visibility = VISIBLE
                 builder.startListening()
-                setIsVoiceRunning(true)
+                setIsVoiceRunning(true, shouldAnimate = false)
             }
         }
+        setIsVoiceRunning(true, shouldAnimate = true)
         voicePlaceholder.visibility = VISIBLE
         builder.startListening()
     }

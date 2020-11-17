@@ -10,6 +10,10 @@
         <attr name="voiceFullscreen" format="boolean" />
         <attr name="voiceLanguage" format="string" />
         <attr name="voicePlaceholder" format="string" />
+        <attr name="suggestionsListPosition" format="enum">
+            <enum name="below" value="0" />
+            <enum name="above" value="1" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="CustomTheme">

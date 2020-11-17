@@ -24,6 +24,7 @@ import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.Suggestion
 
+
 class W3WAutoSuggestEditText
 @JvmOverloads constructor(
     context: Context,
@@ -42,14 +43,16 @@ class W3WAutoSuggestEditText
     }
 
     private var isRendered: Boolean = false
+    private var pickedFromDropDown: Boolean = false
+    private var slashesColor: Int = ContextCompat.getColor(context, R.color.w3wRed)
+    private var fromPaste: Boolean = false
+
+    internal var suggestionsListPosition: SuggestionsListPosition = SuggestionsListPosition.BELOW
     internal var isShowingTick: Boolean = false
     internal var key: String? = null
     internal var queryMap: MutableMap<String, String> = mutableMapOf()
     internal var isEnterprise: Boolean = false
-    private var pickedFromDropDown: Boolean = false
-    private var fromPaste: Boolean = false
     internal var errorMessageText: String? = null
-    private var slashesColor: Int = ContextCompat.getColor(context, R.color.w3wRed)
     internal var lastSuggestions: MutableList<Suggestion> = mutableListOf()
     internal var callback: ((suggestion: Suggestion?, latitude: Double?, longitude: Double?) -> Unit)? =
         null
@@ -58,7 +61,7 @@ class W3WAutoSuggestEditText
     internal var voiceFullscreen: Boolean = false
     internal var language: String? = null
     internal var voiceLanguage: String = "en"
-    private lateinit var voicePlaceholder: String
+    internal var voicePlaceholder: String
     internal var clipToPolygon: Array<Coordinates>? = null
     internal var clipToBoundingBox: BoundingBox? = null
     internal var clipToCircle: Coordinates? = null
@@ -110,9 +113,7 @@ class W3WAutoSuggestEditText
         InlineVoicePulseLayout(context)
     }
 
-    internal val voicePulseLayout: VoicePulseLayout by lazy {
-        VoicePulseLayout(context, voicePlaceholder)
-    }
+    internal var voicePulseLayout: VoicePulseLayout? = null
 
     private val watcher by lazy {
         object : TextWatcher {
@@ -151,7 +152,10 @@ class W3WAutoSuggestEditText
     }
 
     internal val suggestionsAdapter: SuggestionsAdapter by lazy {
-        SuggestionsAdapter(this.typeface, this.currentTextColor) { suggestion ->
+        SuggestionsAdapter(
+            this.typeface,
+            this.currentTextColor
+        ) { suggestion ->
             pickedFromDropDown = true
             handleAddressPicked(suggestion)
         }
@@ -182,7 +186,12 @@ class W3WAutoSuggestEditText
                 voiceFullscreen =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceFullscreen, false)
                 voiceLanguage = getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
+                suggestionsListPosition = SuggestionsListPosition.values()[this.getInt(
+                    R.styleable.W3WAutoSuggestEditText_suggestionsListPosition,
+                    0
+                )]
             } finally {
+                this@W3WAutoSuggestEditText.textDirection = TEXT_DIRECTION_LOCALE
                 showImages()
                 recycle()
             }
@@ -208,7 +217,7 @@ class W3WAutoSuggestEditText
                 !pickedFromDropDown && !isFocused && isReal3wa(text.toString()) -> {
                     handleAddressPicked(lastSuggestions.firstOrNull { it.words == text.toString() })
                 }
-                !pickedFromDropDown && !isFocused && !isReal3wa(text.toString()) && builder == null -> {
+                !pickedFromDropDown && !isFocused && !isReal3wa(text.toString()) -> {
                     handleAddressPicked(null)
                 }
             }
@@ -216,6 +225,8 @@ class W3WAutoSuggestEditText
                 val keyboard: InputMethodManager =
                     (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                 keyboard.hideSoftInputFromWindow(windowToken, 0)
+            } else {
+                showImages(false)
             }
         }
 
@@ -228,7 +239,8 @@ class W3WAutoSuggestEditText
                     isRendered = true
                     buildSuggestionList()
                     buildErrorMessage()
-                    if (voiceEnabled) buildVoice()
+                    buildVoice()
+                    if (voiceFullscreen) buildBackgroundVoice()
                     viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }
             })
@@ -419,6 +431,7 @@ class W3WAutoSuggestEditText
         enabled: Boolean
     ): W3WAutoSuggestEditText {
         this.voiceEnabled = enabled
+        inlineVoicePulseLayout.visibility = if (enabled && !isShowingTick) VISIBLE else GONE
         return this
     }
 
@@ -432,6 +445,7 @@ class W3WAutoSuggestEditText
         enabled: Boolean
     ): W3WAutoSuggestEditText {
         this.voiceFullscreen = enabled
+        if (enabled && voicePulseLayout == null) buildBackgroundVoice()
         return this
     }
 
@@ -448,6 +462,19 @@ class W3WAutoSuggestEditText
         return this
     }
 
+    /**
+     * Set position of the suggestion list.
+     *
+     * @param position BELOW to be below EditText (default), ABOVE to be above.
+     * @return a {@link W3WAutoSuggestEditText} instance
+     */
+    fun suggestionsListPosition(
+        position: SuggestionsListPosition
+    ): W3WAutoSuggestEditText {
+        this.suggestionsListPosition = position
+        return this
+    }
+
     fun errorMessage(
         error: String
     ): W3WAutoSuggestEditText {
@@ -459,10 +486,9 @@ class W3WAutoSuggestEditText
         this.callback = callback
         return this
     }
-
-    override fun invalidate() {
-        super.invalidate()
-
-    }
 //endregion
+}
+
+enum class SuggestionsListPosition {
+    BELOW, ABOVE
 }

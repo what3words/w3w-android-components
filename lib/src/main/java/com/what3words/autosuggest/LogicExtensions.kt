@@ -168,7 +168,9 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                         queryMap["clip-to-polygon"] =
                             coordinates.joinToString(",") { "${it.lat},${it.lng}" }
                     }
+                    val textPlaceholder = this@handleVoice.hint
                     this.onSuggestions { suggestions ->
+                        this@handleVoice.hint = textPlaceholder
                         if (suggestions.isEmpty()) {
                             showErrorMessage()
                         } else {
@@ -178,13 +180,19 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                                 suggestions,
                                 suggestions.minByOrNull { it.rank }!!.words
                             )
+                            forceFocus()
                         }
-                        if (voiceFullscreen) removeBackgroundVoice()
-                        else inlineVoicePulseLayout.setIsVoiceRunning(false)
+                        if (voiceFullscreen) {
+                            voicePulseLayout?.setIsVoiceRunning(false, shouldAnimate = true)
+                        } else inlineVoicePulseLayout.setIsVoiceRunning(false)
                     }
                     this.onError {
+                        this@handleVoice.hint = textPlaceholder
                         showErrorMessage()
-                        if (voiceFullscreen) removeBackgroundVoice()
+                        if (voiceFullscreen) voicePulseLayout?.setIsVoiceRunning(
+                            false,
+                            shouldAnimate = true
+                        )
                         else inlineVoicePulseLayout.setIsVoiceRunning(false)
                     }
                 }
@@ -193,13 +201,13 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                 this@handleVoice.setText("")
 
                 if (voiceFullscreen) {
-                    buildBackgroundVoice()
-                    voicePulseLayout.setup(builder!!, microphone)
-                    voicePulseLayout.onCloseCallback {
+                    voicePulseLayout?.setup(builder!!, microphone)
+                    voicePulseLayout?.onCloseCallback {
                         builder?.stopListening()
-                        removeBackgroundVoice()
+                        voicePulseLayout?.setIsVoiceRunning(false, shouldAnimate = true)
                     }
                 } else {
+                    this@handleVoice.hint = voicePlaceholder
                     inlineVoicePulseLayout.setup(builder!!, microphone)
                 }
             }
@@ -209,24 +217,3 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
             }
         })
 }
-
-internal fun getScaledSignal(
-    valueIn: Float
-): Float {
-    return (MAX_SCALED_LEVEL - MIN_SCALED_LEVEL) * (valueIn - MIN_SIGNAL_LEVEL) / (MAX_SIGNAL_LEVEL - MIN_SIGNAL_LEVEL) + MIN_SCALED_LEVEL
-}
-
-fun transform(dBValue: Float) =
-    when {
-        dBValue < MIN_SIGNAL_LEVEL -> MIN_SCALED_LEVEL
-        dBValue > MAX_SIGNAL_LEVEL -> MAX_SCALED_LEVEL
-        getScaledSignal(dBValue) < MIN_SCALED_LEVEL -> MIN_SCALED_LEVEL
-        getScaledSignal(dBValue) > MAX_SCALED_LEVEL -> MAX_SCALED_LEVEL
-        else -> getScaledSignal(dBValue)
-    }
-
-private val MIN_SIGNAL_LEVEL = 0.0f
-private val MAX_SIGNAL_LEVEL = 1.0f
-
-private val MIN_SCALED_LEVEL = 1f
-private val MAX_SCALED_LEVEL = 2.25f

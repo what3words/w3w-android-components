@@ -113,7 +113,6 @@ class PulseAnimator(
 
 }
 
-
 object DisplayMetricsConverter {
 
     /**
@@ -138,3 +137,24 @@ object DisplayMetricsConverter {
         return px / Resources.getSystem().displayMetrics.density
     }
 }
+
+internal fun getScaledSignal(
+    valueIn: Float
+): Float {
+    return (MAX_SCALED_LEVEL - MIN_SCALED_LEVEL) * (valueIn - MIN_SIGNAL_LEVEL) / (MAX_SIGNAL_LEVEL - MIN_SIGNAL_LEVEL) + MIN_SCALED_LEVEL
+}
+
+fun transform(dBValue: Float) =
+    when {
+        dBValue < MIN_SIGNAL_LEVEL -> MIN_SCALED_LEVEL
+        dBValue > MAX_SIGNAL_LEVEL -> MAX_SCALED_LEVEL
+        getScaledSignal(dBValue) < MIN_SCALED_LEVEL -> MIN_SCALED_LEVEL
+        getScaledSignal(dBValue) > MAX_SCALED_LEVEL -> MAX_SCALED_LEVEL
+        else -> getScaledSignal(dBValue)
+    }
+
+private val MIN_SIGNAL_LEVEL = 0.0f
+private val MAX_SIGNAL_LEVEL = 1.0f
+
+private val MIN_SCALED_LEVEL = 1f
+private val MAX_SCALED_LEVEL = 2.25f

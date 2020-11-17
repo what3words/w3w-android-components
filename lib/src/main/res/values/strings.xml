@@ -4,4 +4,5 @@
     <string name="input_hint">e.g. index.home.raft</string>
     <string name="error_message">No valid what3words address found</string>
     <string name="voice_placeholder">Say a 3 word address…</string>
+    <string name="near">near %s</string>
 </resources>

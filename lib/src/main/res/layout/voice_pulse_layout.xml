@@ -13,14 +13,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/medium_margin"
+        android:visibility="gone"
         android:src="@drawable/ic_close"
         app:layout_constraintBottom_toTopOf="@+id/voiceHolder"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/voiceHolder"
+        android:translationY="309dp"
         android:layout_width="0dp"
-        android:layout_height="309dp"
+        android:layout_height="@dimen/voice_popup_height"
         android:background="@color/w3wVoiceBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

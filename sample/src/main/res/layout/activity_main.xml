@@ -15,7 +15,7 @@
             android:layout_marginStart="@dimen/main_s"
             android:layout_marginTop="@dimen/main_l"
             android:text="@string/welcome_to_autosuggest"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,11 +23,11 @@
             android:id="@+id/suggestionEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/main_s"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textHeader"
-            app:voiceEnabled="true" />
+            app:layout_constraintTop_toBottomOf="@+id/textHeader" />
 
         <TextView
             android:id="@+id/selectedInfo"
@@ -65,6 +65,20 @@
             app:layout_constraintTop_toBottomOf="@+id/textCustomHeader" />
 
         <CheckBox
+            android:id="@+id/checkboxVoiceEnabled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
+            android:checked="false"
+            android:text="@string/voice_enabled"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates" />
+
+        <CheckBox
             android:id="@+id/checkboxVoiceFullscreen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -76,7 +90,7 @@
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates" />
+            app:layout_constraintTop_toBottomOf="@+id/checkboxVoiceEnabled" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderPlaceholder"

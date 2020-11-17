@@ -10,7 +10,6 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.autosuggest.R
-import com.what3words.autosuggest.transform
 import kotlinx.android.synthetic.main.inline_voice_pulse_layout.view.*
 
 class InlineVoicePulseLayout
@@ -163,7 +162,7 @@ class InlineVoicePulseLayout
         view.postInvalidateOnAnimation()
     }
 
-    fun onSignalUpdate(signalStrength: Float) {
+    private fun onSignalUpdate(signalStrength: Float) {
         pulseAnimator.runAnim(signalStrength)
     }
 

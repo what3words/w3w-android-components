@@ -35,6 +35,10 @@ class MainActivity : AppCompatActivity() {
             suggestionEditText.voiceFullscreen(b)
         }
 
+        checkboxVoiceEnabled.setOnCheckedChangeListener { _, b ->
+            suggestionEditText.voiceEnabled(b)
+        }
+
         textPlaceholder.setText(R.string.input_hint)
         textPlaceholder.addOnTextChangedListener {
             suggestionEditText.hint = it

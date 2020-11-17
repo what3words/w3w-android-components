@@ -1,16 +1,23 @@
 package com.what3words.autosuggest
 
+import android.app.Activity
 import android.os.Handler
 import android.os.Looper
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.text.TextUtilsCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.what3words.autosuggest.util.MyDividerItemDecorator
+import com.what3words.autosuggest.voiceutils.VoicePulseLayout
+import java.util.*
 
 internal fun W3WAutoSuggestEditText.buildErrorMessage() {
     val params = ViewGroup.MarginLayoutParams(
@@ -46,48 +53,66 @@ internal fun W3WAutoSuggestEditText.buildVoice() {
         resources.getDimensionPixelSize(R.dimen.input_height)
     )
     inlineVoicePulseLayout.apply {
-        this.x =
-            this@buildVoice.x + this@buildVoice.width - (resources.getDimensionPixelSize(R.dimen.voice_button_width))
+        if (TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR) {
+            this.x =
+                this@buildVoice.x + this@buildVoice.width - (resources.getDimensionPixelSize(R.dimen.voice_button_width))
+        } else {
+            this.x =
+                this@buildVoice.x
+        }
         this.y =
             this@buildVoice.y + (resources.getDimensionPixelSize(R.dimen.input_border_height))
         layoutParams = params
-        visibility = VISIBLE
+        visibility = if (voiceEnabled) VISIBLE else GONE
         setIsVoiceRunning(false)
     }
     (parent as? ViewGroup)?.addView(inlineVoicePulseLayout)
 }
 
 internal fun W3WAutoSuggestEditText.buildBackgroundVoice() {
+    voicePulseLayout = VoicePulseLayout(context, voicePlaceholder)
     val params = ViewGroup.MarginLayoutParams(
         (parent as? ViewGroup)?.rootView?.width ?: 0,
         (parent as? ViewGroup)?.rootView?.height ?: 0
     )
-    voicePulseLayout.apply {
+    voicePulseLayout!!.apply {
+        visibility = GONE
         layoutParams = params
-        setIsVoiceRunning(false)
+        setIsVoiceRunning(false, shouldAnimate = false)
     }
     ((parent as? ViewGroup)?.rootView as? ViewGroup)?.addView(voicePulseLayout)
 }
 
-internal fun W3WAutoSuggestEditText.removeBackgroundVoice() {
-    ((parent as? ViewGroup)?.rootView as? ViewGroup)?.removeView(voicePulseLayout)
-}
-
 internal fun W3WAutoSuggestEditText.buildSuggestionList() {
+    val listHeight =
+        context.resources.getDimensionPixelSize(R.dimen.suggestion_height) * 3 + context.resources.getDimensionPixelSize(
+            R.dimen.tiny_margin
+        ) * 3
     val params = ViewGroup.MarginLayoutParams(
         width,
-        ViewGroup.LayoutParams.WRAP_CONTENT
+        WRAP_CONTENT
     )
     recyclerView.apply {
         isFocusable = false
         isFocusableInTouchMode = false
-        this.x = this@buildSuggestionList.x
-        this.y =
-            this@buildSuggestionList.y + this@buildSuggestionList.height + resources.getDimensionPixelSize(
-                R.dimen.input_margin
-            )
+        maxHeight = listHeight
+        if (suggestionsListPosition == SuggestionsListPosition.BELOW) {
+            this.x = this@buildSuggestionList.x
+            this.y =
+                this@buildSuggestionList.y + this@buildSuggestionList.height + resources.getDimensionPixelSize(
+                    R.dimen.input_margin
+                )
+        } else {
+            this.x = this@buildSuggestionList.x
+            this.y =
+                this@buildSuggestionList.y - listHeight - resources.getDimensionPixelSize(
+                    R.dimen.input_margin
+                )
+        }
         layoutParams = params
         val linear = LinearLayoutManager(context)
+        linear.reverseLayout =
+            suggestionsListPosition == SuggestionsListPosition.ABOVE
         background = AppCompatResources.getDrawable(context, R.drawable.bg_white_border_gray)
         resources.getDimensionPixelSize(R.dimen.tiny_margin).let {
             setPadding(it, it, it, it)
@@ -97,7 +122,8 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList() {
         ResourcesCompat.getDrawable(resources, R.drawable.divider, null)?.let {
             addItemDecoration(
                 MyDividerItemDecorator(
-                    it
+                    it,
+                    suggestionsListPosition
                 )
             )
         }
@@ -119,15 +145,33 @@ internal fun W3WAutoSuggestEditText.showErrorMessage() {
 
 internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
     isShowingTick = showTick
-    setCompoundDrawables(
-        slashes,
-        null,
-        if (showTick) tick else null,
-        null
-    )
+    if (TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR) {
+        setCompoundDrawables(
+            slashes,
+            null,
+            if (showTick) tick else null,
+            null
+        )
+    } else {
+        setCompoundDrawables(
+            if (showTick) tick else null,
+            null,
+            slashes,
+            null
+        )
+    }
+
     if (!showTick) {
         inlineVoicePulseLayout.visibility = VISIBLE
     } else {
         inlineVoicePulseLayout.visibility = GONE
     }
+}
+
+internal fun W3WAutoSuggestEditText.forceFocus() {
+    this.requestFocus()
+    this.setSelection(this.text!!.length)
+    val imm: InputMethodManager =
+        context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
 }
