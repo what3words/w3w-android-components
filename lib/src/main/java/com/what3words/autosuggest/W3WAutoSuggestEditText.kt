@@ -43,6 +43,7 @@ class W3WAutoSuggestEditText
     }
 
     private var isRendered: Boolean = false
+    internal var pickedFromVoice: Boolean = false
     private var pickedFromDropDown: Boolean = false
     private var slashesColor: Int = ContextCompat.getColor(context, R.color.w3wRed)
     private var fromPaste: Boolean = false
@@ -128,6 +129,10 @@ class W3WAutoSuggestEditText
                 }
                 if (pickedFromDropDown) {
                     pickedFromDropDown = false
+                    return
+                }
+                if (pickedFromVoice) {
+                    pickedFromVoice = false
                     return
                 }
                 if (searchText == searchFor)

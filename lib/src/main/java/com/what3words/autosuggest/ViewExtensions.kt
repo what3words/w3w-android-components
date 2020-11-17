@@ -168,10 +168,17 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
     }
 }
 
-internal fun W3WAutoSuggestEditText.forceFocus() {
+internal fun W3WAutoSuggestEditText.showKeyboard() {
     this.requestFocus()
     this.setSelection(this.text!!.length)
     val imm: InputMethodManager =
         context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+}
+
+internal fun W3WAutoSuggestEditText.hideKeyboard() {
+    this.requestFocus()
+    val imm: InputMethodManager =
+        context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(windowToken, 0)
 }

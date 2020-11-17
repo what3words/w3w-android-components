@@ -1,6 +1,7 @@
 package com.what3words.autosuggest
 
 import android.Manifest
+import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.widget.AppCompatEditText
 import com.intentfilter.androidpermissions.PermissionManager
@@ -133,7 +134,11 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
         Collections.singleton(Manifest.permission.RECORD_AUDIO),
         object : PermissionManager.PermissionRequestListener {
             override fun onPermissionGranted() {
-                recyclerView.visibility = AppCompatEditText.GONE
+                suggestionsAdapter.refreshSuggestions(
+                    emptyList(),
+                    ""
+                )
+                recyclerView.visibility = GONE
                 val microphone = VoiceBuilder.Microphone()
                 builder = wrapper!!.autosuggest(microphone, voiceLanguage).apply {
                     nResults?.let {
@@ -174,13 +179,14 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                         if (suggestions.isEmpty()) {
                             showErrorMessage()
                         } else {
+                            pickedFromVoice = true
                             this@handleVoice.setText(suggestions.minByOrNull { it.rank }!!.words)
                             recyclerView.visibility = AppCompatEditText.VISIBLE
                             suggestionsAdapter.refreshSuggestions(
                                 suggestions,
                                 suggestions.minByOrNull { it.rank }!!.words
                             )
-                            forceFocus()
+                            showKeyboard()
                         }
                         if (voiceFullscreen) {
                             voicePulseLayout?.setIsVoiceRunning(false, shouldAnimate = true)
@@ -197,8 +203,8 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                     }
                 }
 
-                this@handleVoice.clearFocus()
                 this@handleVoice.setText("")
+                hideKeyboard()
 
                 if (voiceFullscreen) {
                     voicePulseLayout?.setup(builder!!, microphone)
