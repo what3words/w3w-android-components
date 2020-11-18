@@ -161,7 +161,7 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
         )
     }
 
-    if (!showTick) {
+    if (!showTick && voiceEnabled) {
         inlineVoicePulseLayout.visibility = VISIBLE
     } else {
         inlineVoicePulseLayout.visibility = GONE
