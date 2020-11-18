@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 	        .returnCoordinates(false)
             .onSelected { suggestion, latitude, longitude ->
                 if (suggestion != null) {
-                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, near: ${suggestion.nearestPlace}, distance: ${suggestion.distanceToFocusKm}, latitude: $latitude, longitude: $longitude")
+                    Log.i("MainActivity","words: ${suggestion.words}\ncountry: ${suggestion.country}\nnear: ${suggestion.nearestPlace}\ndistance: ${if (suggestion.distanceToFocusKm == null) "N/A" else suggestion.distanceToFocusKm}km\nlatitude: $latitude\nlongitude: $longitude")
                 } else {
                     Log.i("MainActivity","invalid w3w address")
                 }
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 .returnCoordinates(false)
                 .onSelected((suggestion, latitude, longitude) -> {
                     if (suggestion != null) {
-                        Log.i("MainActivity", String.format("words: %s, country: %s, near: %s, distance: %d, latitude: %s, longitude: %s", suggestion.getWords(), suggestion.getCountry(), suggestion.getNearestPlace(), suggestion.getDistanceToFocusKm(), latitude, longitude));
+                        Log.i("MainActivity", String.format("words: %s, country: %s, near: %s, latitude: %s, longitude: %s", suggestion.getWords(), suggestion.getCountry(), suggestion.getNearestPlace(), latitude, longitude));
                     } else {
                         Log.i("MainActivity", "invalid w3w address");
                     }
