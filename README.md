@@ -131,7 +131,7 @@ If you run our Enterprise Suite API Server yourself, you may specify the URL to 
 
 ## Enable voice autosuggest:
 
-![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/add-voice/assets/screen_10.png?raw=true "Screenshot 10")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/add-voice/assets/screen_8.png?raw=true "Screenshot 8")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/add-voice/assets/screen_9.png?raw=true "Screenshot 9")
+![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/add-voice/assets/screen_7.png?raw=true "Screenshot 7")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/add-voice/assets/screen_8.png?raw=true "Screenshot 8")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/add-voice/assets/screen_9.png?raw=true "Screenshot 9")
 
 You can able voice autosuggest to allow user to say the 3 word address and then suggestions will be displayed using our speech recognition algorithm. By default the voice language is set to English but you can change it via **voiceLanguage** property (for list of available languages please check the proprieties table below).  To enable voice you can do with programmatically or directly on the XML.
 
