@@ -145,6 +145,7 @@ AndroidManifest.xml
     ...
 ```
 
+activity_main.xml
 ```XML
  <com.what3words.autosuggest.W3WAutoSuggestEditText
 		  android:id="@+id/suggestionEditText"
