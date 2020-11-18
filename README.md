@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 	        .returnCoordinates(false)
             .onSelected { suggestion, latitude, longitude ->
                 if (suggestion != null) {
-                    Log.i("MainActivity","words: ${suggestion.words}\ncountry: ${suggestion.country}\nnear: ${suggestion.nearestPlace}\ndistance: ${if (suggestion.distanceToFocusKm == null) "N/A" else suggestion.distanceToFocusKm}km\nlatitude: $latitude\nlongitude: $longitude")
+                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, near: ${suggestion.nearestPlace}, latitude: $latitude, longitude: $longitude")
                 } else {
                     Log.i("MainActivity","invalid w3w address")
                 }
@@ -163,7 +163,7 @@ or
 	        .voiceEnabled(true)
             .onSelected { suggestion, latitude, longitude ->
                 if (suggestion != null) {
-                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, near: ${suggestion.nearestPlace}, distance: ${suggestion.distanceToFocusKm}, latitude: $latitude, longitude: $longitude")
+                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, near: ${suggestion.nearestPlace}, latitude: $latitude, longitude: $longitude")
                 } else {
                     Log.i("MainActivity","invalid w3w address")
                 }
