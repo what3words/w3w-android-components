@@ -135,6 +135,16 @@ If you run our Enterprise Suite API Server yourself, you may specify the URL to 
 
 You can able voice autosuggest to allow user to say the 3 word address and then suggestions will be displayed using our speech recognition algorithm. By default the voice language is set to English but you can change it via **voiceLanguage** property (for list of available languages please check the proprieties table below).  To enable voice you can do with programmatically or directly on the XML.
 
+AndroidManifest.xml
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.yourpackage.yourapp">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    ...
+```
+
 ```XML
  <com.what3words.autosuggest.W3WAutoSuggestEditText
 		  android:id="@+id/suggestionEditText"
