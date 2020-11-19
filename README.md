@@ -13,7 +13,7 @@ To obtain an API key, please visit [https://what3words.com/select-plan](https://
 
 ## Installation
 
-The artifact is available through <a href="https://search.maven.org/search?q=g:com.what3words">Maven Central</a>.
+The artifact is available through [![Maven Central](https://img.shields.io/maven-central/v/com.what3words/w3w-autosuggest-edittext-android.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.what3words%22%20AND%20a:%22w3w-autosuggest-edittext-android%22)
 
 ### Gradle
 
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 	        .returnCoordinates(false)
             .onSelected { suggestion, latitude, longitude ->
                 if (suggestion != null) {
-                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, near: ${suggestion.nearestPlace}, latitude: $latitude, longitude: $longitude")
+                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, distance: ${suggestion.distanceToFocusKm}, near: ${suggestion.nearestPlace}, latitude: $latitude, longitude: $longitude")
                 } else {
                     Log.i("MainActivity","invalid w3w address")
                 }
