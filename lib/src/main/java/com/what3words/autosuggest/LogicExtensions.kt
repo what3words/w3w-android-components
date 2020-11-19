@@ -82,7 +82,7 @@ internal fun W3WAutoSuggestEditText.handleAutoSuggest(searchText: String, search
                     addAll(res.suggestions)
                 }
                 recyclerView.visibility =
-                    if (res.suggestions.isEmpty()) AppCompatEditText.GONE else VISIBLE
+                    if (res.suggestions.isEmpty()) GONE else VISIBLE
                 suggestionsAdapter.refreshSuggestions(res.suggestions, searchFor)
             }
         }
@@ -92,11 +92,10 @@ internal fun W3WAutoSuggestEditText.handleAutoSuggest(searchText: String, search
 internal fun W3WAutoSuggestEditText.handleAddressPicked(suggestion: Suggestion?) {
     if (recyclerView.visibility == VISIBLE && suggestion == null) {
         showErrorMessage()
-    } else {
-        recyclerView.visibility = AppCompatEditText.GONE
     }
     showImages(suggestion != null)
     suggestionsAdapter.refreshSuggestions(emptyList(), null)
+    recyclerView.visibility = GONE
     clearFocus()
     val originalQuery = text.toString()
     setText(suggestion?.words)

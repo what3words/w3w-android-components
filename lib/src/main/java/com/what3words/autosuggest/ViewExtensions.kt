@@ -140,7 +140,6 @@ internal fun W3WAutoSuggestEditText.showErrorMessage() {
     Handler(Looper.getMainLooper()).postDelayed({
         errorMessage.visibility = GONE
     }, 5000)
-    suggestionsAdapter.refreshSuggestions(emptyList(), "")
 }
 
 internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
