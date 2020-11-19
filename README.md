@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 	        .returnCoordinates(false)
             .onSelected { suggestion, latitude, longitude ->
                 if (suggestion != null) {
-                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, near: ${suggestion.nearestPlace}, latitude: $latitude, longitude: $longitude")
+                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, distance: ${suggestion.distanceToFocusKm}, near: ${suggestion.nearestPlace}, latitude: $latitude, longitude: $longitude")
                 } else {
                     Log.i("MainActivity","invalid w3w address")
                 }
