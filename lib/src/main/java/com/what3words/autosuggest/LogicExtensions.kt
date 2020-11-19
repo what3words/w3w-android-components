@@ -34,6 +34,7 @@ internal fun W3WAutoSuggestEditText.handleAutoSuggest(searchText: String, search
 
         if (wrapper == null) throw Exception("Please use apiKey")
         queryMap.clear()
+        queryMap["source-api"] = "text"
         val res =
             wrapper!!.autosuggest(searchFor).apply {
                 this@handleAutoSuggest.focus?.let {
@@ -128,6 +129,7 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
     }
     queryMap.clear()
     queryMap["n-results"] = nResults.toString()
+    queryMap["source-api"] = "voice"
     queryMap["voice-language"] = voiceLanguage
     val permissionManager: PermissionManager = PermissionManager.getInstance(context)
     permissionManager.checkPermissions(
