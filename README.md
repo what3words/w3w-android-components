@@ -1,6 +1,8 @@
 
 
 
+
+
 # <img src="https://what3words.com/assets/images/w3w_square_red.png" width="64" height="64" alt="what3words">&nbsp;w3w-autosuggest-edittext-android
 
 An Android library to use the [what3words v3 API autosuggest](https://developer.what3words.com/public-api/docs#autosuggest).
@@ -11,12 +13,12 @@ To obtain an API key, please visit [https://what3words.com/select-plan](https://
 
 ## Installation
 
-The artifact is available through <a href="https://search.maven.org/search?q=g:com.what3words">Maven Central</a>.
+The artifact is available through [![Maven Central](https://img.shields.io/maven-central/v/com.what3words/w3w-autosuggest-edittext-android.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.what3words%22%20AND%20a:%22w3w-autosuggest-edittext-android%22)
 
 ### Gradle
 
 ```
-implementation 'com.what3words:w3w-autosuggest-edittext-android:1.0.0'
+implementation 'com.what3words:w3w-autosuggest-edittext-android:1.1.0'
 ```
 
 ## Documentation
@@ -31,56 +33,53 @@ AndroidManifest.xml
     package="com.yourpackage.yourapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    ...
 ```
 
-build.gradle (app level)
-```gradle
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+if **minSdkVersion < 24** add this to build.gradle (app level)
+```
+compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+}
 ```
 
 activity_main.xml
 ```xml
-<androidx.constraintlayout.widget.ConstraintLayout 
-	  xmlns:android="http://schemas.android.com/apk/res/android"  
-	  xmlns:app="http://schemas.android.com/apk/res-auto"  
-	  android:layout_width="match_parent"  
-	  android:layout_height="match_parent">  
-  
+<androidx.constraintlayout.widget.ConstraintLayout
+	  xmlns:android="http://schemas.android.com/apk/res/android"
+	  xmlns:app="http://schemas.android.com/apk/res-auto"
+	  android:layout_width="match_parent"
+	  android:layout_height="match_parent">
+
 	 <com.what3words.autosuggest.W3WAutoSuggestEditText
-		  android:id="@+id/suggestionEditText"  
-		  android:layout_width="0dp"  
-		  android:layout_height="wrap_content"  
-		  app:layout_constraintEnd_toEndOf="parent"  
-		  app:layout_constraintStart_toStartOf="parent"  
-		  app:layout_constraintTop_toTopOf="parent" />  
-		  
+		  android:id="@+id/suggestionEditText"
+		  android:layout_width="0dp"
+		  android:layout_height="wrap_content"
+		  app:layout_constraintEnd_toEndOf="parent"
+		  app:layout_constraintStart_toStartOf="parent"
+		  app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
 Kotlin
 ```Kotlin
-class MainActivity : AppCompatActivity() {  
-  
-    override fun onCreate(savedInstanceState: Bundle?) {  
-        super.onCreate(savedInstanceState)  
-        setContentView(R.layout.activity_main)  
-  
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
         suggestionEditText.apiKey("YOUR_API_KEY_HERE")
 	        .returnCoordinates(false)
-            .onSelected { suggestion, latitude, longitude ->  
-                if (suggestion != null) {  
-                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, near: ${suggestion.nearestPlace}, distance: ${suggestion.distanceToFocusKm}, latitude: $latitude, longitude: $longitude")  
-                } else {  
-                    Log.i("MainActivity","invalid w3w address")  
-                }  
-            }  
-        }  
+            .onSelected { suggestion, latitude, longitude ->
+                if (suggestion != null) {
+                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, distance: ${suggestion.distanceToFocusKm}, near: ${suggestion.nearestPlace}, latitude: $latitude, longitude: $longitude")
+                } else {
+                    Log.i("MainActivity","invalid w3w address")
+                }
+            }
+        }
 }
 ```
 
@@ -97,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 .returnCoordinates(false)
                 .onSelected((suggestion, latitude, longitude) -> {
                     if (suggestion != null) {
-                        Log.i("MainActivity", String.format("words: %s, country: %s, near: %s, distance: %d, latitude: %s, longitude: %s", suggestion.getWords(), suggestion.getCountry(), suggestion.getNearestPlace(), suggestion.getDistanceToFocusKm(), latitude, longitude));
+                        Log.i("MainActivity", String.format("words: %s, country: %s, near: %s, latitude: %s, longitude: %s", suggestion.getWords(), suggestion.getCountry(), suggestion.getNearestPlace(), latitude, longitude));
                     } else {
                         Log.i("MainActivity", "invalid w3w address");
                     }
@@ -110,11 +109,10 @@ public class MainActivity extends AppCompatActivity {
 If you run our Enterprise Suite API Server yourself, you may specify the URL to your own server like so:
 
 ```Kotlin
- suggestionEditText.apiKey("YOUR_API_KEY_HERE", "https://api.yourserver.com")  
+ suggestionEditText.apiKey("YOUR_API_KEY_HERE", "https://api.yourserver.com")
 ```
 
-
-## Available properties:
+## General properties:
 
 | property | default value | type | description | XML | Programatically |
 |--|--|--|--|--|--|
@@ -128,6 +126,65 @@ If you run our Enterprise Suite API Server yourself, you may specify the URL to 
 | clipToPolygon | *N/A* | List of Coordinates | Clip results to a bounding box specified using co-ordinates. || :heavy_check_mark:
 | returnCoordinates | *false* | Boolean | Calls the what3words API to obtain the coordinates for the selected 3 word address (to then use on a map or pass through to a logistic company etc) |:heavy_check_mark:| :heavy_check_mark:
 | imageTintColor | *#E11F26* | Color | Changes /// image colour. |:heavy_check_mark:|
+| suggestionsListPosition | *BELOW* | Enum | Suggestion list position which can be `below`  (default) the EditText or `above` |:heavy_check_mark:|:heavy_check_mark:|
+
+
+## Enable voice autosuggest:
+
+![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/add-voice/assets/screen_7.png?raw=true "Screenshot 7")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/add-voice/assets/screen_8.png?raw=true "Screenshot 8")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/add-voice/assets/screen_9.png?raw=true "Screenshot 9")
+
+The component also allows for voice input using the what3words Voice API. This feature allows the user to say 3 words and using speech recognition technology displays 3 word address suggestions to the user.
+
+Before enabling Voice AutoSuggest you will need to add a Voice API plan in [your account](https://accounts.what3words.com/billing).
+
+By default the voice language is set to English but this can be changed using the voiceLanguage property (for list of available languages please check the properties table below).
+Voice input respects the clipping and focus options applied within the general properties. We recommend applying clipping and focus where possible to display as accurate suggestions as possible.
+To enable voice you can do with programmatically or directly in the XML.
+
+AndroidManifest.xml
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.yourpackage.yourapp">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    ...
+```
+
+activity_main.xml
+```XML
+ <com.what3words.autosuggest.W3WAutoSuggestEditText
+		  android:id="@+id/suggestionEditText"
+		  android:layout_width="0dp"
+		  android:layout_height="wrap_content"
+		  app:layout_constraintEnd_toEndOf="parent"
+		  app:layout_constraintStart_toStartOf="parent"
+		  app:layout_constraintTop_toTopOf="parent"
+		  app:voiceEnabled="true" />
+```
+or
+```Kotlin
+ suggestionEditText.apiKey("YOUR_API_KEY_HERE")
+	        .returnCoordinates(false)
+	        .voiceEnabled(true)
+            .onSelected { suggestion, latitude, longitude ->
+                if (suggestion != null) {
+                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, near: ${suggestion.nearestPlace}, latitude: $latitude, longitude: $longitude")
+                } else {
+                    Log.i("MainActivity","invalid w3w address")
+                }
+            }
+        }
+```
+
+## Voice properties:
+
+| property | default value | type | description | XML | Programatically |
+|--|--|--|--|--|--|
+| voiceEnabled | false | Boolean | Enables voice suggestion to allow the user to say the three word address instead of writing it. | :heavy_check_mark: | :heavy_check_mark:
+| voiceFullscreen | false | Boolean | Voice activation will be fullscreen instead of inline. | :heavy_check_mark: | :heavy_check_mark:
+| voiceLanguage | *en* | String | Available voice languages: `ar` for Arabic, `cmn` for Mandarin Chinese, `de` for German, `en` Global English (default), `es` for Spanish, `hi` for Hindi, `ja` for Japanese and `ko` for Korean| :heavy_check_mark: | :heavy_check_mark:
+
 
 ## Styles:
 

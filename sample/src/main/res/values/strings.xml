@@ -17,4 +17,11 @@
     <string name="clip_to_box_info">Confine results to a bounding box specified using co-ordinates. Example value: 51.521,-0.343,52.6,2.3324</string>
     <string name="clip_to_polygon_hint">clip to polygon</string>
     <string name="clip_to_polygon_info">Restrict AutoSuggest results to a polygon, specified by a comma-separated list of lat,lng pairs. The polygon should be closed, i.e. the first element should be repeated as the last element; also the list should contain at least 4 entries. The API is currently limited to accepting up to 25 pairs.</string>
+    <string name="voice_enabled">voice enabled</string>
+    <string name="voice_placeholder_header">voice placeholder</string>
+    <string name="voice_language">voice language</string>
+    <string name="voice_language_info">The voice language request parameter is defaulted to "en". The language code provided is used to configure both the Speechmatics ASR, and the what3words AutoSuggest algorithm.</string>
+    <string name="voice_fullscreen">voice fullscreen</string>
+    <string name="voice_fullscreen_info">The speech recognition start inline by default but use this property to change to a full screen.</string>
+    <string name="suggestion_list_below">Suggestion list below</string>
 </resources>

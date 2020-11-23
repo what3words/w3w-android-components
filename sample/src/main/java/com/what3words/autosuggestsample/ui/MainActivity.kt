@@ -16,12 +16,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        suggestionEditText.apiKey("YOUR API KEY HERE")
+        suggestionEditText.apiKey("YOUR_API_KEY_HERE")
             .returnCoordinates(false)
             .onSelected { suggestion, latitude, longitude ->
                 if (suggestion != null) {
                     selectedInfo.text =
-                        "words: ${suggestion.words}\ncountry: ${suggestion.country}\nnear: ${suggestion.nearestPlace}\ndistance: ${if (suggestion.distanceToFocusKm == 0) "N/A" else suggestion.distanceToFocusKm.toString() + "km"}\nlatitude: $latitude\nlongitude: $longitude"
+                        "words: ${suggestion.words}\ncountry: ${suggestion.country}\nnear: ${suggestion.nearestPlace}\ndistance: ${if (suggestion.distanceToFocusKm == null) "N/A" else suggestion.distanceToFocusKm.toString() + "km"}\nlatitude: $latitude\nlongitude: $longitude"
                 } else {
                     selectedInfo.text = ""
                 }
@@ -31,14 +31,31 @@ class MainActivity : AppCompatActivity() {
             suggestionEditText.returnCoordinates(b)
         }
 
+        checkboxVoiceFullscreen.setOnCheckedChangeListener { _, b ->
+            suggestionEditText.voiceFullscreen(b)
+        }
+
+        checkboxVoiceEnabled.setOnCheckedChangeListener { _, b ->
+            suggestionEditText.voiceEnabled(b)
+        }
+
         textPlaceholder.setText(R.string.input_hint)
         textPlaceholder.addOnTextChangedListener {
             suggestionEditText.hint = it
         }
 
-        textLanguage.setText("en")
+        textVoicePlaceholder.setText(R.string.voice_placeholder)
+        textVoicePlaceholder.addOnTextChangedListener {
+            suggestionEditText.voicePlaceholder(it)
+        }
+
         textLanguage.addOnTextChangedListener {
             suggestionEditText.language(it)
+        }
+
+        textVoiceLanguage.setText("en")
+        textVoiceLanguage.addOnTextChangedListener {
+            suggestionEditText.voiceLanguage(it)
         }
 
         textClipToCountry.addOnTextChangedListener { input ->

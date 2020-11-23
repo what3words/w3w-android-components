@@ -3,64 +3,72 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/suggestion_height"
     android:background="@drawable/bg_suggestion"
     android:paddingStart="@dimen/xlarge_margin"
-    android:paddingTop="@dimen/large_margin"
-    android:paddingEnd="@dimen/xlarge_margin"
-    android:paddingBottom="@dimen/large_margin">
+    android:paddingEnd="@dimen/xlarge_margin">
 
-    <TextView
-        android:id="@+id/w3wSlashesLabel"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/w3w_slashes"
-        android:textAlignment="textEnd"
-        android:textColor="@color/w3wRed"
-        android:textSize="@dimen/default_slashes"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/w3wAddressLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textColor="@color/w3wBlue"
-        android:textSize="@dimen/default_text"
-        app:layout_constraintBottom_toBottomOf="@id/w3wSlashesLabel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/w3wSlashesLabel"
-        app:layout_constraintTop_toTopOf="@id/w3wSlashesLabel"
-        tools:text="index.home.raft" />
+        <TextView
+            android:id="@+id/w3wSlashesLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/w3w_slashes"
+            android:textAlignment="textEnd"
+            android:textColor="@color/w3wRed"
+            android:textSize="@dimen/default_slashes"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/w3wAddressFlagIcon"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/medium_margin"
-        android:importantForAccessibility="no"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="@id/w3wSlashesLabel"
-        app:layout_constraintStart_toStartOf="@id/w3wSlashesLabel"
-        app:layout_constraintTop_toBottomOf="@id/w3wSlashesLabel"
-        tools:src="@color/colorAccent" />
+        <TextView
+            android:textDirection="locale"
+            android:id="@+id/w3wAddressLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/w3wBlue"
+            android:textSize="@dimen/default_text"
+            app:layout_constraintBottom_toBottomOf="@id/w3wSlashesLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/w3wSlashesLabel"
+            app:layout_constraintTop_toTopOf="@id/w3wSlashesLabel"
+            tools:text="index.home.raft" />
 
-    <TextView
-        android:id="@+id/w3wNearestPlaceLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:gravity="center_vertical|start"
-        android:maxLines="1"
-        android:textAlignment="viewStart"
-        android:textColor="@color/w3wGray"
-        android:textSize="@dimen/secondary_text"
-        app:layout_constraintBottom_toBottomOf="@id/w3wAddressFlagIcon"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/w3wAddressFlagIcon"
-        app:layout_constraintTop_toTopOf="@id/w3wAddressFlagIcon"
-        tools:text="Bayswater, London" />
+        <ImageView
+            android:id="@+id/w3wAddressFlagIcon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/medium_margin"
+            android:importantForAccessibility="no"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toEndOf="@id/w3wSlashesLabel"
+            app:layout_constraintStart_toStartOf="@id/w3wSlashesLabel"
+            app:layout_constraintTop_toBottomOf="@id/w3wSlashesLabel"
+            tools:src="@color/colorAccent" />
 
+        <TextView
+            android:id="@+id/w3wNearestPlaceLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:gravity="center_vertical|start"
+            android:maxLines="1"
+            android:textAlignment="viewStart"
+            android:textColor="@color/w3wGray"
+            android:textSize="@dimen/secondary_text"
+            app:layout_constraintBottom_toBottomOf="@id/w3wAddressFlagIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/w3wAddressFlagIcon"
+            app:layout_constraintTop_toTopOf="@id/w3wAddressFlagIcon"
+            tools:text="Bayswater, London" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

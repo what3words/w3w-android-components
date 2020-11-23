@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.what3words.javawrapper.response.Suggestion
 import com.what3words.autosuggest.util.FlagResourceTranslatorImpl
+import com.what3words.javawrapper.response.Suggestion
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 
 class SuggestionsAdapter(
@@ -61,7 +61,13 @@ class SuggestionsAdapter(
             }
             view.w3wAddressLabel.text = suggestion.words
             view.w3wAddressLabel.setTextColor(textColor)
-            view.w3wNearestPlaceLabel.text = suggestion.nearestPlace
+            if (!suggestion.nearestPlace.isNullOrEmpty()) {
+                view.w3wNearestPlaceLabel.text =
+                    if (suggestion.language != "en") suggestion.nearestPlace else view.w3wNearestPlaceLabel.context.getString(
+                        R.string.near,
+                        suggestion.nearestPlace
+                    )
+            }
             view.w3wNearestPlaceLabel.setTypeface(typeface, Typeface.NORMAL)
             if (suggestion.country.isNullOrEmpty() || suggestion.country != "-99") {
                 FlagResourceTranslatorImpl(view.w3wAddressFlagIcon.context).let {
