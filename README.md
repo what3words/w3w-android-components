@@ -133,7 +133,13 @@ If you run our Enterprise Suite API Server yourself, you may specify the URL to 
 
 ![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/add-voice/assets/screen_7.png?raw=true "Screenshot 7")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/add-voice/assets/screen_8.png?raw=true "Screenshot 8")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/add-voice/assets/screen_9.png?raw=true "Screenshot 9")
 
-You can able voice autosuggest to allow user to say the 3 word address and then suggestions will be displayed using our speech recognition algorithm. By default the voice language is set to English but you can change it via **voiceLanguage** property (for list of available languages please check the proprieties table below).  To enable voice you can do with programmatically or directly on the XML.
+The component also allows for voice input using the what3words Voice API. This feature allows the user to say 3 words and using speech recognition technology displays 3 word address suggestions to the user.
+
+Before enabling Voice AutoSuggest you will need to add a Voice API plan in [your account](https://accounts.what3words.com/billing).
+
+By default the voice language is set to English but this can be changed using the voiceLanguage property (for list of available languages please check the properties table below).
+Voice input respects the clipping and focus options applied within the general properties. We recommend applying clipping and focus where possible to display as accurate suggestions as possible.
+To enable voice you can do with programmatically or directly in the XML.
 
 AndroidManifest.xml
 ```xml
