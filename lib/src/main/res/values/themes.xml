@@ -6,4 +6,10 @@
             @style/Widget.AppCompat.W3WAutoSuggestEditText
         </item>
     </style>
+
+    <style name="W3WAutoSuggestVoiceTheme" parent="@android:style/Theme">
+        <item name="customW3WAutoSuggestVoiceStyle">
+            @style/W3WAutoSuggestVoice
+        </item>
+    </style>
 </resources>

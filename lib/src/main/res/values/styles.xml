@@ -23,4 +23,10 @@
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
+
+    <style name="W3WAutoSuggestVoice">
+        <item name="voicePlaceholder">Test</item>
+        <item name="voiceLanguage">en</item>
+        <item name="nResults">3</item>
+    </style>
 </resources>

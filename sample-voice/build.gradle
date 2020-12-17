@@ -12,11 +12,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.what3words.autosuggest"
+        applicationId "com.what3words.sample_voice"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 11
-        versionName "1.10"
+        versionCode 1
+        versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

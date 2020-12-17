@@ -19,27 +19,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.what3words.autosuggest.text.W3WAutoSuggestEditText
-            android:id="@+id/suggestionEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
+        <com.what3words.autosuggest.voice.W3WAutoSuggestVoice
+            android:id="@+id/w3wVoice"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textHeader" />
 
         <com.what3words.autosuggest.picker.W3WAutoSuggestPicker
-            android:id="@+id/suggestionPicker"
-            android:layout_width="0dp"
+            android:id="@+id/w3wPicker"
+            android:layout_width="match_parent"
+            android:layout_margin="@dimen/small_margin"
+            android:elevation="1dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:background="@color/w3wBlue"
-            android:elevation="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/suggestionEditText" />
+            app:layout_constraintTop_toBottomOf="@+id/w3wVoice" />
 
         <TextView
             android:id="@+id/selectedInfo"
@@ -49,7 +45,7 @@
             android:layout_marginTop="@dimen/large_margin"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/suggestionEditText" />
+            app:layout_constraintTop_toBottomOf="@id/w3wVoice" />
 
         <TextView
             android:id="@+id/textCustomHeader"
@@ -77,74 +73,18 @@
             app:layout_constraintTop_toBottomOf="@+id/textCustomHeader" />
 
         <CheckBox
-            android:id="@+id/checkboxVoiceEnabled"
+            android:id="@+id/checkboxPicker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
             android:layout_marginTop="@dimen/main_s"
             android:layout_marginEnd="@dimen/main_s"
             android:checked="false"
-            android:text="@string/voice_enabled"
+            android:text="@string/show_suggestions_picker"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates" />
-
-        <CheckBox
-            android:id="@+id/checkboxVoiceFullscreen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginTop="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:checked="false"
-            android:text="@string/voice_fullscreen"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxVoiceEnabled" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/holderPlaceholder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginTop="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:hint="@string/placeholder"
-            android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/checkboxVoiceFullscreen">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textPlaceholder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionDone"
-                android:inputType="text"
-                android:maxLines="1" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/holderLanguage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginTop="@dimen/main_m"
-            android:layout_marginEnd="@dimen/main_s"
-            android:hint="@string/language"
-            android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/holderPlaceholder">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textLanguage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionDone"
-                android:inputType="text"
-                android:maxLines="1" />
-
-        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/textLanguageInfo"
@@ -157,7 +97,7 @@
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/holderLanguage" />
+            app:layout_constraintTop_toBottomOf="@id/checkboxPicker" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderVoicePlaceholder"

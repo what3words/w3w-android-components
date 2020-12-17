@@ -19,4 +19,8 @@
     <declare-styleable name="CustomTheme">
         <attr name="customW3WAutoSuggestEditTextStyle" format="reference" />
     </declare-styleable>
+
+    <declare-styleable name="CustomVoiceTheme">
+        <attr name="customW3WAutoSuggestVoiceStyle" format="reference" />
+    </declare-styleable>
 </resources>

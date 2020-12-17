@@ -2,6 +2,7 @@
 
 buildscript {
     ext.kotlin_version = '1.4.10'
+    ext.play_services = '17.0.0'
     ext.kotlinx_coroutines_version = '1.3.0'
     repositories {
         google()
