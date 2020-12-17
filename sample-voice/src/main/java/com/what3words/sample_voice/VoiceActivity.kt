@@ -15,7 +15,7 @@ class VoiceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_voice)
 
-        w3wVoice.apiKey("TCRPZKEE")
+        w3wVoice.apiKey("YOUR_API_KEY_HERE")
             .onSuggestions { suggestions ->
                 val suggestion = suggestions.firstOrNull()
                 if (suggestion != null) {

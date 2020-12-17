@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        suggestionEditText.apiKey("TCRPZKEE")
+        suggestionEditText.apiKey("YOUR_API_KEY_HERE")
             .returnCoordinates(false)
             .picker(suggestionPicker.onSelected { suggestion ->
                 if (suggestion != null) {
