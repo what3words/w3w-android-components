@@ -3,6 +3,8 @@
     package="com.what3words.autosuggestsample">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- if using voice -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- -->
     <application
         android:allowBackup="true"

@@ -1,12 +1,14 @@
 package com.what3words.autosuggest.text
 
 import android.Manifest
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.widget.AppCompatEditText
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.voice.VoiceBuilder
+import com.what3words.autosuggest.error.showError
 import com.what3words.autosuggest.text.W3WAutoSuggestEditText.Companion.regex
 import com.what3words.autosuggest.voice.W3WSuggestion
 import com.what3words.javawrapper.response.Suggestion
@@ -33,7 +35,6 @@ internal fun W3WAutoSuggestEditText.handleAutoSuggest(searchText: String, search
         if (searchText != searchFor)
             return@launch
 
-        if (wrapper == null) throw Exception("Please use apiKey")
         queryMap.clear()
         queryMap["source-api"] = "text"
         val res =
@@ -75,21 +76,29 @@ internal fun W3WAutoSuggestEditText.handleAutoSuggest(searchText: String, search
                         coordinates.joinToString(",") { "${it.lat},${it.lng}" }
                 }
             }.execute()
-
-        CoroutineScope(Dispatchers.Main).launch {
-            if (res != null && res.suggestions != null && hasFocus()) {
-                lastSuggestions.apply {
-                    clear()
-                    addAll(res.suggestions)
+        if (!res.isSuccessful) {
+            CoroutineScope(Dispatchers.Main).launch {
+                getErrorView().showError(errorMessageText)
+            }
+            errorCallback?.accept(res.error) ?: run {
+                Log.e("W3WAutoSuggestEditText", res.error.message)
+            }
+        } else {
+            CoroutineScope(Dispatchers.Main).launch {
+                if (res != null && res.suggestions != null && hasFocus()) {
+                    lastSuggestions.apply {
+                        clear()
+                        addAll(res.suggestions)
+                    }
+                    getPicker().visibility =
+                        if (res.suggestions.isEmpty()) GONE else VISIBLE
+                    getPicker().refreshSuggestions(
+                        res.suggestions,
+                        searchFor,
+                        queryMap,
+                        returnCoordinates
+                    )
                 }
-                getPicker().visibility =
-                    if (res.suggestions.isEmpty()) GONE else VISIBLE
-                getPicker().refreshSuggestions(
-                    res.suggestions,
-                    searchFor,
-                    queryMap,
-                    returnCoordinates
-                )
             }
         }
     }
@@ -99,19 +108,19 @@ internal fun W3WAutoSuggestEditText.handleAddressPicked(
     suggestion: W3WSuggestion?
 ) {
     if (getPicker().visibility == VISIBLE && suggestion == null) {
-        showErrorMessage()
+        getInvalidAddressView().showError(invalidSelectionMessageText)
     }
     showImages(suggestion != null)
     getPicker().refreshSuggestions(emptyList(), null, emptyMap(), returnCoordinates)
     getPicker().visibility = GONE
     clearFocus()
-    setText(suggestion?.info?.words)
-    callback?.invoke(suggestion)
+    setText(suggestion?.suggestion?.words)
+    callback?.accept(suggestion)
 }
 
 internal fun W3WAutoSuggestEditText.handleAddressAutoPicked(suggestion: Suggestion?) {
     if (getPicker().visibility == VISIBLE && suggestion == null) {
-        showErrorMessage()
+        getInvalidAddressView().showError(invalidSelectionMessageText)
     }
     showImages(suggestion != null)
     getPicker().refreshSuggestions(emptyList(), null, emptyMap(), returnCoordinates)
@@ -120,15 +129,15 @@ internal fun W3WAutoSuggestEditText.handleAddressAutoPicked(suggestion: Suggesti
     val originalQuery = text.toString()
     setText(suggestion?.words)
 
-    if (suggestion == null) callback?.invoke(null)
+    if (suggestion == null) callback?.accept(null)
     else {
         if (!isEnterprise) handleSelectionTrack(suggestion, originalQuery, queryMap, key!!)
-        if (!returnCoordinates) callback?.invoke(W3WSuggestion(suggestion))
+        if (!returnCoordinates) callback?.accept(W3WSuggestion(suggestion))
         else {
             CoroutineScope(Dispatchers.IO).launch {
                 val res = wrapper!!.convertToCoordinates(suggestion.words).execute()
                 CoroutineScope(Dispatchers.Main).launch {
-                    callback?.invoke(W3WSuggestion(suggestion, res.coordinates))
+                    callback?.accept(W3WSuggestion(suggestion, res.coordinates))
                 }
             }
         }
@@ -137,7 +146,6 @@ internal fun W3WAutoSuggestEditText.handleAddressAutoPicked(suggestion: Suggesti
 
 
 internal fun W3WAutoSuggestEditText.handleVoice() {
-    if (wrapper == null) throw Exception("Please use apiKey")
     if (builder?.isListening() == true) {
         builder?.stopListening()
         inlineVoicePulseLayout.setIsVoiceRunning(false)
@@ -197,7 +205,7 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                     this.onSuggestions { suggestions ->
                         this@handleVoice.hint = textPlaceholder
                         if (suggestions.isEmpty()) {
-                            showErrorMessage()
+                            getErrorView().showError(errorMessageText)
                         } else {
                             pickedFromVoice = true
                             this@handleVoice.setText(suggestions.minByOrNull { it.rank }!!.words)
@@ -216,7 +224,10 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                     }
                     this.onError {
                         this@handleVoice.hint = textPlaceholder
-                        showErrorMessage()
+                        getErrorView().showError(errorMessageText)
+                        errorCallback?.accept(it) ?: run {
+                            Log.e("W3WAutoSuggestEditText", it.message)
+                        }
                         if (voiceFullscreen) voicePulseLayout?.setIsVoiceRunning(
                             false,
                             shouldAnimate = true

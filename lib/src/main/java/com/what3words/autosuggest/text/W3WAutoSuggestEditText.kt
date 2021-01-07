@@ -10,21 +10,24 @@ import android.view.KeyEvent
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.util.Consumer
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.autosuggest.BuildConfig
 import com.what3words.autosuggest.R
+import com.what3words.autosuggest.error.W3WAutoSuggestInvalidAddress
 import com.what3words.autosuggest.picker.W3WAutoSuggestPicker
 import com.what3words.autosuggest.utils.InlineVoicePulseLayout
 import com.what3words.autosuggest.utils.VoicePulseLayout
 import com.what3words.autosuggest.voice.W3WSuggestion
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
+import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 
 class W3WAutoSuggestEditText
@@ -50,14 +53,16 @@ class W3WAutoSuggestEditText
     private var slashesColor: Int = ContextCompat.getColor(context, R.color.w3wRed)
     private var fromPaste: Boolean = false
 
-    internal var suggestionsListPosition: SuggestionsListPosition = SuggestionsListPosition.BELOW
     internal var isShowingTick: Boolean = false
     internal var key: String? = null
     internal var queryMap: MutableMap<String, String> = mutableMapOf()
     internal var isEnterprise: Boolean = false
     internal var errorMessageText: String? = null
+    internal var invalidSelectionMessageText: String? = null
     internal var lastSuggestions: MutableList<Suggestion> = mutableListOf()
-    internal var callback: ((suggestion: W3WSuggestion?) -> Unit)? =
+    internal var callback: Consumer<W3WSuggestion?>? =
+        null
+    internal var errorCallback: Consumer<APIResponse.What3WordsError>? =
         null
     internal var returnCoordinates: Boolean = false
     internal var voiceEnabled: Boolean = false
@@ -76,6 +81,8 @@ class W3WAutoSuggestEditText
     internal var wrapper: What3WordsV3? = null
     internal var builder: VoiceBuilder? = null
     internal var customPicker: W3WAutoSuggestPicker? = null
+    internal var customErrorView: AppCompatTextView? = null
+    internal var customInvalidAddressMessageView: AppCompatTextView? = null
 
     internal val slashes: Drawable? by lazy {
         val d = ContextCompat.getDrawable(context, R.drawable.ic_slashes)
@@ -107,14 +114,15 @@ class W3WAutoSuggestEditText
 
     internal val defaultPicker: W3WAutoSuggestPicker by lazy {
         val p = W3WAutoSuggestPicker(context)
-        p.onSelected { selectedSuggestion ->
+        p.setup(wrapper!!, isEnterprise, key!!)
+        p.internalCallback { selectedSuggestion ->
             pickedFromDropDown = true
             handleAddressPicked(selectedSuggestion)
         }
     }
 
-    internal val errorMessage: TextView by lazy {
-        TextView(context)
+    internal val defaultInvalidAddressMessageView: W3WAutoSuggestInvalidAddress by lazy {
+        W3WAutoSuggestInvalidAddress(context)
     }
 
     internal val inlineVoicePulseLayout: InlineVoicePulseLayout by lazy {
@@ -172,6 +180,14 @@ class W3WAutoSuggestEditText
         return customPicker ?: defaultPicker
     }
 
+    internal fun getInvalidAddressView(): AppCompatTextView {
+        return customInvalidAddressMessageView ?: defaultInvalidAddressMessageView
+    }
+
+    internal fun getErrorView(): AppCompatTextView {
+        return customErrorView ?: defaultInvalidAddressMessageView
+    }
+
     init {
         context.theme.obtainStyledAttributes(
             attrs,
@@ -182,6 +198,9 @@ class W3WAutoSuggestEditText
                 errorMessageText = getString(
                     R.styleable.W3WAutoSuggestEditText_errorMessage
                 ) ?: resources.getString(R.string.error_message)
+                invalidSelectionMessageText = getString(
+                    R.styleable.W3WAutoSuggestEditText_invalidAddressMessage
+                ) ?: resources.getString(R.string.invalid_address_message)
                 nResults = getInteger(R.styleable.W3WAutoSuggestEditText_nResults, 3)
                 language = getString(R.styleable.W3WAutoSuggestEditText_language)
                 voicePlaceholder = getString(R.styleable.W3WAutoSuggestEditText_voicePlaceholder)
@@ -197,10 +216,6 @@ class W3WAutoSuggestEditText
                 voiceFullscreen =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceFullscreen, false)
                 voiceLanguage = getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
-                suggestionsListPosition = SuggestionsListPosition.values()[this.getInt(
-                    R.styleable.W3WAutoSuggestEditText_suggestionsListPosition,
-                    0
-                )]
             } finally {
                 this@W3WAutoSuggestEditText.textDirection = TEXT_DIRECTION_LOCALE
                 showImages()
@@ -249,7 +264,7 @@ class W3WAutoSuggestEditText
                 override fun onGlobalLayout() {
                     isRendered = true
                     if (customPicker == null) buildSuggestionList()
-                    buildErrorMessage()
+                    if (customErrorView == null) buildErrorMessage()
                     buildVoice()
                     if (voiceFullscreen) buildBackgroundVoice()
                     viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -473,44 +488,43 @@ class W3WAutoSuggestEditText
         return this
     }
 
-    /**
-     * Set position of the suggestion list.
-     *
-     * @param position BELOW to be below EditText (default), ABOVE to be above.
-     * @return a {@link W3WAutoSuggestEditText} instance
-     */
-    fun suggestionsListPosition(
-        position: SuggestionsListPosition
-    ): W3WAutoSuggestEditText {
-        this.suggestionsListPosition = position
-        return this
-    }
-
     fun errorMessage(
-        error: String
+        message: String
     ): W3WAutoSuggestEditText {
-        this.errorMessageText = error
+        this.errorMessageText = message
         return this
     }
 
-    fun picker(
-        picker: W3WAutoSuggestPicker
+    fun invalidSelectionMessage(
+        message: String
     ): W3WAutoSuggestEditText {
-        this.customPicker = picker
-        this.customPicker?.setup(wrapper!!, isEnterprise, key!!)
-        this.customPicker!!.internalCallback { selectedSuggestion ->
+        this.invalidSelectionMessageText = message
+        return this
+    }
+
+    fun onSelected(
+        picker: W3WAutoSuggestPicker? = null,
+        invalidAddressMessageView: AppCompatTextView? = null,
+        callback: Consumer<W3WSuggestion?>,
+    ): W3WAutoSuggestEditText {
+        this.callback = callback
+        picker?.setup(wrapper!!, isEnterprise, key!!)
+        picker?.internalCallback { selectedSuggestion ->
             handleAddressPicked(selectedSuggestion)
         }
+        this.customInvalidAddressMessageView = invalidAddressMessageView
+        this.customPicker = picker
         return this
     }
 
-    fun onSelected(callback: (selectedSuggestion: W3WSuggestion?) -> Unit): W3WAutoSuggestEditText {
-        this.callback = callback
+    fun onError(
+        errorView: AppCompatTextView? = null,
+        errorCallback: Consumer<APIResponse.What3WordsError>,
+    ): W3WAutoSuggestEditText {
+        this.errorCallback = errorCallback
+        this.customErrorView = errorView
         return this
     }
+
 //endregion
-}
-
-enum class SuggestionsListPosition {
-    BELOW, ABOVE
 }

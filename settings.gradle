@@ -1,4 +1,4 @@
-include ':sample-voice'
-include ':lib'
 rootProject.name='what3words-autosuggest'
+include ':lib'
 include ':sample'
+include ':sample-voice'

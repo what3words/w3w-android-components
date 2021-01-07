@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:id="@+id/main"
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -79,46 +80,13 @@
             android:layout_marginStart="@dimen/main_s"
             android:layout_marginTop="@dimen/main_s"
             android:layout_marginEnd="@dimen/main_s"
-            android:checked="false"
+            android:checked="true"
             android:text="@string/show_suggestions_picker"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates" />
 
-        <TextView
-            android:id="@+id/textLanguageInfo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:text="@string/language_info"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/checkboxPicker" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/holderVoicePlaceholder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginTop="@dimen/main_m"
-            android:layout_marginEnd="@dimen/main_s"
-            android:hint="@string/voice_placeholder_header"
-            android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/textLanguageInfo">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textVoicePlaceholder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionDone"
-                android:inputType="text"
-                android:maxLines="1" />
-
-        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderVoiceLanguage"
@@ -129,7 +97,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/voice_language"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/holderVoicePlaceholder">
+            app:layout_constraintTop_toBottomOf="@id/checkboxPicker">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textVoiceLanguage"

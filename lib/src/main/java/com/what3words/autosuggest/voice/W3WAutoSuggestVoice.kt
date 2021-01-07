@@ -5,24 +5,29 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.util.Consumer
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.autosuggest.BuildConfig
 import com.what3words.autosuggest.R
+import com.what3words.autosuggest.error.W3WAutoSuggestInvalidAddress
 import com.what3words.autosuggest.picker.W3WAutoSuggestPicker
 import com.what3words.autosuggest.utils.DisplayMetricsConverter.convertPixelsToDp
 import com.what3words.autosuggest.utils.PulseAnimator
 import com.what3words.autosuggest.utils.transform
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
+import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.android.synthetic.main.w3w_voice_only.view.*
 import kotlinx.coroutines.CoroutineScope
@@ -41,7 +46,6 @@ class W3WAutoSuggestVoice
     defStyleAttr
 ) {
 
-    private var suggestionsPicker: W3WAutoSuggestPicker? = null
     private var isVoiceRunning: Boolean = false
     private lateinit var pulseAnimator: PulseAnimator
 
@@ -57,7 +61,11 @@ class W3WAutoSuggestVoice
     private var queryMap: MutableMap<String, String> = mutableMapOf()
     private var isEnterprise: Boolean = false
     private var errorMessageText: String? = null
-    private var callback: ((suggestions: List<W3WSuggestion>) -> Unit)? =
+    private var callback: Consumer<List<W3WSuggestion>>? =
+        null
+    private var selectedCallback: Consumer<W3WSuggestion?>? =
+        null
+    private var errorCallback: Consumer<APIResponse.What3WordsError>? =
         null
     private var returnCoordinates: Boolean = false
     private var voiceLanguage: String = "en"
@@ -72,6 +80,8 @@ class W3WAutoSuggestVoice
     private var nResults: Int? = null
     private var wrapper: What3WordsV3? = null
     private var builder: VoiceBuilder? = null
+    private var suggestionsPicker: W3WAutoSuggestPicker? = null
+    private var customInvalidAddressMessage: W3WAutoSuggestInvalidAddress? = null
 
     init {
         context.theme.obtainStyledAttributes(
@@ -197,14 +207,20 @@ class W3WAutoSuggestVoice
         invalidatePulse(view)
     }
 
-    fun setIsVoiceRunning(isVoiceRunning: Boolean) {
+    fun setIsVoiceRunning(isVoiceRunning: Boolean, withError: Boolean = false) {
         this.isVoiceRunning = isVoiceRunning
         if (isVoiceRunning) {
             w3wLogo.setImageResource(R.drawable.ic_voice_only_active)
             View.VISIBLE
         } else {
             resetLayout()
-            w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive)
+            if (withError) {
+                w3wLogo.setImageResource(R.drawable.ic_voice_only_error)
+                Handler(Looper.getMainLooper()).postDelayed(
+                    { w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive) },
+                    5000
+                )
+            } else w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive)
             View.INVISIBLE
         }.let {
             innerCircleView.visibility = it
@@ -228,7 +244,7 @@ class W3WAutoSuggestVoice
         setLayout(outerCircleView, initialSizeList[PulseAnimator.OUTER_CIRCLE_INDEX])
     }
 
-    fun setup(builder: VoiceBuilder, microphone: VoiceBuilder.Microphone) {
+    internal fun setup(builder: VoiceBuilder, microphone: VoiceBuilder.Microphone) {
         if (!isVoiceRunning) {
             var oldTimestamp = System.currentTimeMillis()
             microphone.onListening {
@@ -248,7 +264,6 @@ class W3WAutoSuggestVoice
     }
 
     private fun handleVoice() {
-        if (wrapper == null) throw Exception("Please use apiKey")
         if (builder?.isListening() == true) {
             builder?.stopListening()
             setIsVoiceRunning(false)
@@ -305,16 +320,15 @@ class W3WAutoSuggestVoice
                                 coordinates.joinToString(",") { "${it.lat},${it.lng}" }
                         }
                         this.onSuggestions { suggestions ->
-                            if (suggestions.isEmpty()) {
-                                //TODO showErrorMessage()
-                            } else {
-                                handleSuggestions(suggestions)
-                            }
-                            setIsVoiceRunning(false)
+                            handleSuggestions(suggestions)
+                            setIsVoiceRunning(
+                                isVoiceRunning = false,
+                                withError = suggestions.isEmpty()
+                            )
                         }
                         this.onError {
-                            //TODO showErrorMessage()
-                            setIsVoiceRunning(false)
+                            errorCallback?.accept(it)
+                            setIsVoiceRunning(isVoiceRunning = false, withError = true)
                         }
                     }
 
@@ -322,14 +336,16 @@ class W3WAutoSuggestVoice
                 }
 
                 override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
-                    //TODO
+                    errorCallback?.accept(APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
+                        message = "Microphone permission required"
+                    })
                 }
             })
     }
 
     private fun handleSuggestions(suggestions: List<Suggestion>) {
         suggestionsPicker?.let {
-            it.visibility = VISIBLE
+            if (suggestions.isNotEmpty()) it.visibility = VISIBLE
             it.refreshSuggestions(suggestions, null, queryMap, returnCoordinates)
         } ?: run {
             if (returnCoordinates) {
@@ -340,13 +356,13 @@ class W3WAutoSuggestVoice
                         listWithCoordinates.add(W3WSuggestion(it, res.coordinates))
                     }
                     CoroutineScope(Dispatchers.Main).launch {
-                        callback?.invoke(
+                        callback?.accept(
                             listWithCoordinates
                         )
                     }
                 }
             } else {
-                callback?.invoke(suggestions.map { W3WSuggestion(it, null) })
+                callback?.accept(suggestions.map { W3WSuggestion(it, null) })
             }
         }
     }
@@ -521,20 +537,6 @@ class W3WAutoSuggestVoice
         return this
     }
 
-    /**
-     * Add W3WAutoSuggestPicker to allow user to pick one suggestion.
-     *
-     * @param picker W3WAutoSuggestPicker view
-     * @return a {@link W3WAutoSuggestEditText} instance
-     */
-    fun picker(
-        picker: W3WAutoSuggestPicker
-    ): W3WAutoSuggestVoice {
-        picker.setup(wrapper!!, isEnterprise, key!!)
-        this.suggestionsPicker = picker
-        return this
-    }
-
     fun errorMessage(
         error: String
     ): W3WAutoSuggestVoice {
@@ -542,13 +544,43 @@ class W3WAutoSuggestVoice
         return this
     }
 
-    fun onSuggestions(callback: (suggestions: List<W3WSuggestion>) -> Unit): W3WAutoSuggestVoice {
+    fun onResults(callback: Consumer<List<W3WSuggestion>>): W3WAutoSuggestVoice {
         this.callback = callback
+        this.suggestionsPicker = null
+        return this
+    }
+
+    fun onResults(
+        picker: W3WAutoSuggestPicker,
+        callback: Consumer<W3WSuggestion?>
+    ): W3WAutoSuggestVoice {
+        this.selectedCallback = callback
+        picker.setup(wrapper!!, isEnterprise, key!!)
+        picker.internalCallback {
+            selectedCallback?.accept(it)
+        }
+        this.suggestionsPicker = picker
+        return this
+    }
+
+    fun onError(
+        customInvalidAddress: W3WAutoSuggestInvalidAddress,
+        errorCallback: Consumer<APIResponse.What3WordsError>
+    ): W3WAutoSuggestVoice {
+        this.customInvalidAddressMessage = customInvalidAddress
+        this.errorCallback = errorCallback
+        return this
+    }
+
+    fun onError(
+        errorCallback: Consumer<APIResponse.What3WordsError>
+    ): W3WAutoSuggestVoice {
+        this.errorCallback = errorCallback
         return this
     }
 }
 
 data class W3WSuggestion(
-    val info: Suggestion,
+    val suggestion: Suggestion,
     val coordinates: com.what3words.javawrapper.response.Coordinates? = null
 )

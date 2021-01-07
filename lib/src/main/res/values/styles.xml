@@ -25,6 +25,8 @@
     </style>
 
     <style name="W3WAutoSuggestVoice">
+        <item name="android:layout_width">92dp</item>
+        <item name="android:layout_height">92dp</item>
         <item name="voicePlaceholder">Test</item>
         <item name="voiceLanguage">en</item>
         <item name="nResults">3</item>

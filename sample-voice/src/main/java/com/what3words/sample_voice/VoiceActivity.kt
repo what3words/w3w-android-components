@@ -2,7 +2,11 @@ package com.what3words.sample_voice
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
+import com.google.android.material.snackbar.Snackbar
+import com.what3words.autosuggest.voice.W3WSuggestion
 import com.what3words.autosuggestsample.util.addOnTextChangedListener
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
@@ -10,37 +14,46 @@ import kotlinx.android.synthetic.main.activity_voice.*
 
 class VoiceActivity : AppCompatActivity() {
 
+    private fun showSuggestion(selected: W3WSuggestion?) {
+        if (selected != null) {
+            selectedInfo.text =
+                "words: ${selected.suggestion.words}\ncountry: ${selected.suggestion.country}\nnear: ${selected.suggestion.nearestPlace}\ndistance: ${if (selected.suggestion.distanceToFocusKm == null) "N/A" else selected.suggestion.distanceToFocusKm.toString() + "km"}\nlatitude: ${selected.coordinates?.lat}\nlongitude: ${selected.coordinates?.lng}"
+        } else {
+            selectedInfo.text = ""
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_voice)
 
         w3wVoice.apiKey("YOUR_API_KEY_HERE")
-            .onSuggestions { suggestions ->
-                val suggestion = suggestions.firstOrNull()
-                if (suggestion != null) {
-                    selectedInfo.text =
-                        "words: ${suggestion.info.words}\ncountry: ${suggestion.info.country}\nnear: ${suggestion.info.nearestPlace}\ndistance: ${if (suggestion.info.distanceToFocusKm == null) "N/A" else suggestion.info.distanceToFocusKm.toString() + "km"}\nlatitude: ${suggestion.coordinates?.lat}\nlongitude: ${suggestion.coordinates?.lng}"
-                } else {
-                    selectedInfo.text = ""
+            .onResults(w3wPicker) { selected ->
+                showSuggestion(selected)
+            }.onError {
+                Log.e("MainActivity", "${it.key} - ${it.message}")
+                Snackbar.make(main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
+                    setAction("OK") { dismiss() }
+                    show()
                 }
             }
-
-        w3wPicker.onSelected { suggestion ->
-            if (suggestion != null) {
-                selectedInfo.text =
-                    "words: ${suggestion.info.words}\ncountry: ${suggestion.info.country}\nnear: ${suggestion.info.nearestPlace}\ndistance: ${if (suggestion.info.distanceToFocusKm == null) "N/A" else suggestion.info.distanceToFocusKm.toString() + "km"}\nlatitude: ${suggestion.coordinates?.lat}\nlongitude: ${suggestion.coordinates?.lng}"
-            } else {
-                selectedInfo.text = ""
-            }
-        }
 
         checkboxCoordinates.setOnCheckedChangeListener { _, b ->
             w3wVoice.returnCoordinates(b)
         }
 
         checkboxPicker.setOnCheckedChangeListener { _, b ->
-            w3wVoice.picker(w3wPicker)
+            if (b) {
+                w3wVoice.onResults(w3wPicker) {
+                    showSuggestion(it)
+                }
+            } else {
+                w3wVoice.onResults { suggestionsList ->
+                    //create your own recyclerview or pick the top ranked suggestion
+                    showSuggestion(suggestionsList.minByOrNull { it.suggestion.rank })
+                }
+            }
         }
 
         textVoiceLanguage.setText("en")

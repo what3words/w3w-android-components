@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.autosuggest.R
-import com.what3words.autosuggest.text.SuggestionsListPosition
 import com.what3words.autosuggest.text.handleSelectionTrack
 import com.what3words.autosuggest.utils.MyDividerItemDecorator
 import com.what3words.autosuggest.voice.W3WSuggestion
@@ -32,8 +31,6 @@ class W3WAutoSuggestPicker
     private var wrapper: What3WordsV3? = null
     private var callback: ((suggestion: W3WSuggestion?) -> Unit)? =
         null
-    private var internalCallback: ((suggestion: W3WSuggestion?) -> Unit)? =
-        null
 
     private val suggestionsAdapter: SuggestionsAdapter by lazy {
         SuggestionsAdapter(
@@ -51,9 +48,9 @@ class W3WAutoSuggestPicker
         visibility = GONE
         if (suggestion == null) {
             callback?.invoke(null)
-            internalCallback?.invoke(null)
+            callback?.invoke(null)
         } else {
-            internalCallback?.invoke(W3WSuggestion(suggestion))
+            callback?.invoke(W3WSuggestion(suggestion))
             if (!isEnterprise) handleSelectionTrack(suggestion, "", queryMap, key)
             if (!returnCoordinates) {
                 callback?.invoke(W3WSuggestion(suggestion))
@@ -69,7 +66,7 @@ class W3WAutoSuggestPicker
     }
 
     init {
-        val linear = LinearLayoutManager(context)
+        val linear = LinearLayoutManager(context, attrs, defStyleAttr, 0)
         layoutManager = linear
         setHasFixedSize(true)
         background = AppCompatResources.getDrawable(context, R.drawable.bg_white_border_gray)
@@ -80,7 +77,7 @@ class W3WAutoSuggestPicker
             addItemDecoration(
                 MyDividerItemDecorator(
                     it,
-                    SuggestionsListPosition.BELOW
+                    (layoutManager as LinearLayoutManager).reverseLayout
                 )
             )
         }
@@ -88,13 +85,8 @@ class W3WAutoSuggestPicker
         visibility = GONE
     }
 
-    fun onSelected(callback: (selectedSuggestion: W3WSuggestion?) -> Unit): W3WAutoSuggestPicker {
-        this.callback = callback
-        return this
-    }
-
     internal fun internalCallback(callback: (selectedSuggestion: W3WSuggestion?) -> Unit): W3WAutoSuggestPicker {
-        this.internalCallback = callback
+        this.callback = callback
         return this
     }
 

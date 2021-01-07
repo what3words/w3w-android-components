@@ -6,6 +6,7 @@
         <attr name="returnCoordinates" format="boolean" />
         <attr name="imageTintColor" format="color" />
         <attr name="errorMessage" format="string" />
+        <attr name="invalidAddressMessage" format="string" />
         <attr name="voiceEnabled" format="boolean" />
         <attr name="voiceFullscreen" format="boolean" />
         <attr name="voiceLanguage" format="string" />

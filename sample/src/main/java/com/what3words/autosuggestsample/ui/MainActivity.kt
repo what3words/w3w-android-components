@@ -2,7 +2,10 @@ package com.what3words.autosuggestsample.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
+import com.google.android.material.snackbar.Snackbar
 import com.what3words.autosuggestsample.R
 import com.what3words.autosuggestsample.util.addOnTextChangedListener
 import com.what3words.javawrapper.request.BoundingBox
@@ -17,23 +20,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         suggestionEditText.apiKey("YOUR_API_KEY_HERE")
-            .returnCoordinates(false)
-            .picker(suggestionPicker.onSelected { suggestion ->
-                if (suggestion != null) {
+            .onSelected {
+                if (it != null) {
                     selectedInfo.text =
-                        "words: ${suggestion.info.words}\ncountry: ${suggestion.info.country}\nnear: ${suggestion.info.nearestPlace}\ndistance: ${if (suggestion.info.distanceToFocusKm == null) "N/A" else suggestion.info.distanceToFocusKm.toString() + "km"}\nlatitude: ${suggestion.coordinates?.lat}\nlongitude: ${suggestion.coordinates?.lng}"
+                        "words: ${it.suggestion.words}\ncountry: ${it.suggestion.country}\nnear: ${it.suggestion.nearestPlace}\ndistance: ${if (it.suggestion.distanceToFocusKm == null) "N/A" else it.suggestion.distanceToFocusKm.toString() + "km"}\nlatitude: ${it.coordinates?.lat}\nlongitude: ${it.coordinates?.lng}"
                 } else {
                     selectedInfo.text = ""
                 }
-            })
-//            .onSelected { suggestion, latitude, longitude ->
-//                if (suggestion != null) {
-//                    selectedInfo.text =
-//                        "words: ${suggestion.words}\ncountry: ${suggestion.country}\nnear: ${suggestion.nearestPlace}\ndistance: ${if (suggestion.distanceToFocusKm == null) "N/A" else suggestion.distanceToFocusKm.toString() + "km"}\nlatitude: $latitude\nlongitude: $longitude"
-//                } else {
-//                    selectedInfo.text = ""
-//                }
-//            }
+            }.onError {
+                Log.e("MainActivity", "${it.key} - ${it.message}")
+                Snackbar.make(main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
+                    setAction("OK") { dismiss() }
+                    show()
+                }
+            }
 
         checkboxCoordinates.setOnCheckedChangeListener { _, b ->
             suggestionEditText.returnCoordinates(b)

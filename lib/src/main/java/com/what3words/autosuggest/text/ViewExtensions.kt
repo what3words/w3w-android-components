@@ -1,15 +1,12 @@
 package com.what3words.autosuggest.text
 
 import android.app.Activity
-import android.os.Handler
-import android.os.Looper
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.TextUtilsCompat
 import androidx.core.view.ViewCompat
@@ -24,27 +21,15 @@ internal fun W3WAutoSuggestEditText.buildErrorMessage() {
         width,
         WRAP_CONTENT
     )
-    errorMessage.apply {
-        isFocusable = false
-        isFocusableInTouchMode = false
-        text = errorMessageText
-        setBackgroundResource(R.drawable.bg_item)
-        setTextColor(ContextCompat.getColor(context, R.color.w3wError))
+    defaultInvalidAddressMessageView.apply {
         this.x = this@buildErrorMessage.x
         this.y =
             this@buildErrorMessage.y + this@buildErrorMessage.height - resources.getDimensionPixelSize(
                 R.dimen.tiny_margin
             )
         layoutParams = params
-        setPadding(
-            resources.getDimensionPixelSize(R.dimen.xlarge_margin),
-            resources.getDimensionPixelSize(R.dimen.medium_margin),
-            resources.getDimensionPixelSize(R.dimen.xlarge_margin),
-            resources.getDimensionPixelSize(R.dimen.medium_margin)
-        )
-        visibility = GONE
     }
-    (parent as? ViewGroup)?.addView(errorMessage)
+    (parent as? ViewGroup)?.addView(defaultInvalidAddressMessageView)
 }
 
 internal fun W3WAutoSuggestEditText.buildVoice() {
@@ -84,35 +69,20 @@ internal fun W3WAutoSuggestEditText.buildBackgroundVoice() {
 }
 
 internal fun W3WAutoSuggestEditText.buildSuggestionList() {
-    val listHeight =
-        context.resources.getDimensionPixelSize(R.dimen.suggestion_height) * 3 + context.resources.getDimensionPixelSize(
-            R.dimen.tiny_margin
-        ) * 3
-    val params = ViewGroup.MarginLayoutParams(
+     val params = ViewGroup.MarginLayoutParams(
         width,
         WRAP_CONTENT
     )
     defaultPicker.apply {
         isFocusable = false
         isFocusableInTouchMode = false
-        //maxHeight = listHeight
-        if (suggestionsListPosition == SuggestionsListPosition.BELOW) {
-            this.x = this@buildSuggestionList.x
-            this.y =
-                this@buildSuggestionList.y + this@buildSuggestionList.height + resources.getDimensionPixelSize(
-                    R.dimen.input_margin
-                )
-        } else {
-            this.x = this@buildSuggestionList.x
-            this.y =
-                this@buildSuggestionList.y - listHeight - resources.getDimensionPixelSize(
-                    R.dimen.input_margin
-                )
-        }
+        this.x = this@buildSuggestionList.x
+        this.y =
+            this@buildSuggestionList.y + this@buildSuggestionList.height + resources.getDimensionPixelSize(
+                R.dimen.input_margin
+            )
         layoutParams = params
         val linear = LinearLayoutManager(context)
-        linear.reverseLayout =
-            suggestionsListPosition == SuggestionsListPosition.ABOVE
         background = AppCompatResources.getDrawable(context, R.drawable.bg_white_border_gray)
         resources.getDimensionPixelSize(R.dimen.tiny_margin).let {
             setPadding(it, it, it, it)
@@ -124,7 +94,6 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList() {
             addItemDecoration(
                 MyDividerItemDecorator(
                     it,
-                    suggestionsListPosition
                 )
             )
         }
@@ -132,13 +101,6 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList() {
     (parent as? ViewGroup)?.apply {
         addView(defaultPicker)
     }
-}
-
-internal fun W3WAutoSuggestEditText.showErrorMessage() {
-    errorMessage.visibility = VISIBLE
-    Handler(Looper.getMainLooper()).postDelayed({
-        errorMessage.visibility = GONE
-    }, 5000)
 }
 
 internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
