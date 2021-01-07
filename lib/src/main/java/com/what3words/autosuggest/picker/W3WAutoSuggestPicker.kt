@@ -48,7 +48,6 @@ class W3WAutoSuggestPicker
         visibility = GONE
         if (suggestion == null) {
             callback?.invoke(null)
-            callback?.invoke(null)
         } else {
             callback?.invoke(W3WSuggestion(suggestion))
             if (!isEnterprise) handleSelectionTrack(suggestion, "", queryMap, key)
