@@ -137,6 +137,8 @@ The component also allows for voice input using the what3words Voice API. This f
 
 Before enabling Voice AutoSuggest you will need to add a Voice API plan in [your account](https://accounts.what3words.com/billing).
 
+If you want to use voice-only (no text input) please look at our **voice-sample** app in this repo for examples of how to use our **W3WAutoSuggestVoice component**.
+
 By default the voice language is set to English but this can be changed using the voiceLanguage property (for list of available languages please check the properties table below).
 Voice input respects the clipping and focus options applied within the general properties. We recommend applying clipping and focus where possible to display as accurate suggestions as possible.
 To enable voice you can do with programmatically or directly in the XML.
