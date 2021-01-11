@@ -11,6 +11,7 @@ import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.autosuggest.error.showError
 import com.what3words.autosuggest.text.W3WAutoSuggestEditText.Companion.regex
 import com.what3words.autosuggest.voice.W3WSuggestion
+import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -205,7 +206,7 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                     this.onSuggestions { suggestions ->
                         this@handleVoice.hint = textPlaceholder
                         if (suggestions.isEmpty()) {
-                            getErrorView().showError(errorMessageText)
+                            getInvalidAddressView().showError(invalidSelectionMessageText)
                         } else {
                             pickedFromVoice = true
                             this@handleVoice.setText(suggestions.minByOrNull { it.rank }!!.words)
@@ -252,7 +253,10 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
             }
 
             override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
-                //TODO
+                getErrorView().showError(errorMessageText)
+                errorCallback?.accept(APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
+                    message = "Microphone permission required"
+                })
             }
         })
 }

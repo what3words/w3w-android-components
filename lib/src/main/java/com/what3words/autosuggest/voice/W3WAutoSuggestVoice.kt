@@ -5,8 +5,6 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -20,8 +18,8 @@ import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.autosuggest.BuildConfig
 import com.what3words.autosuggest.R
-import com.what3words.autosuggest.error.W3WAutoSuggestInvalidAddress
 import com.what3words.autosuggest.picker.W3WAutoSuggestPicker
+import com.what3words.autosuggest.text.W3WAutoSuggestEditText
 import com.what3words.autosuggest.utils.DisplayMetricsConverter.convertPixelsToDp
 import com.what3words.autosuggest.utils.PulseAnimator
 import com.what3words.autosuggest.utils.transform
@@ -35,6 +33,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 
+/**
+ * A [View] to simplify the integration of what3words voice auto-suggest API in your app.
+ */
 class W3WAutoSuggestVoice
 @JvmOverloads constructor(
     context: Context,
@@ -81,7 +82,6 @@ class W3WAutoSuggestVoice
     private var wrapper: What3WordsV3? = null
     private var builder: VoiceBuilder? = null
     private var suggestionsPicker: W3WAutoSuggestPicker? = null
-    private var customInvalidAddressMessage: W3WAutoSuggestInvalidAddress? = null
 
     init {
         context.theme.obtainStyledAttributes(
@@ -207,17 +207,21 @@ class W3WAutoSuggestVoice
         invalidatePulse(view)
     }
 
+    private val changeBackIcon: Runnable =
+        Runnable { w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive) }
+
     fun setIsVoiceRunning(isVoiceRunning: Boolean, withError: Boolean = false) {
         this.isVoiceRunning = isVoiceRunning
         if (isVoiceRunning) {
+            handler.removeCallbacks(changeBackIcon)
             w3wLogo.setImageResource(R.drawable.ic_voice_only_active)
             View.VISIBLE
         } else {
             resetLayout()
             if (withError) {
                 w3wLogo.setImageResource(R.drawable.ic_voice_only_error)
-                Handler(Looper.getMainLooper()).postDelayed(
-                    { w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive) },
+                handler.postDelayed(
+                    changeBackIcon,
                     5000
                 )
             } else w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive)
@@ -368,12 +372,10 @@ class W3WAutoSuggestVoice
     }
 
     //region Properties
-
     /** Set your What3Words API Key which will be used to get suggestions and coordinates (if enabled)
      *
      * @param key your API key from what3words developer dashboard
-     * @ return a
-    { @link W3WAutoSuggestEditText } instance
+     * @return same [W3WAutoSuggestVoice] instance
      */
     fun apiKey(key: String): W3WAutoSuggestVoice {
         this.key = key
@@ -390,8 +392,7 @@ class W3WAutoSuggestVoice
      * @param key your API key from what3words developer dashboard
      * @param endpoint your Enterprise API endpoint
      * @param headers any custom headers needed for your Enterprise API
-     * @ return a
-    { @link W3WAutoSuggestEditText } instance
+     * @return same [W3WAutoSuggestVoice] instance
      */
     fun apiKey(
         key: String,
@@ -409,17 +410,32 @@ class W3WAutoSuggestVoice
         return this
     }
 
+    /**
+     * For voice input, specifies the language our API will be listening for, default is English.
+     * Available voice languages:
+     * - ar for Arabic
+     * - cmn for Mandarin Chinese
+     * - de for German
+     * - en Global English (default)
+     * - es for Spanish
+     * - hi for Hindi
+     * - ja for Japanese
+     * - ko for Korean
+     *
+     * @param language the voice language (from list above)
+     * @return same [W3WAutoSuggestVoice] instance
+     */
     fun voiceLanguage(language: String): W3WAutoSuggestVoice {
         this.voiceLanguage = language
         return this
     }
 
     /**
-     * This is a location, specified as a latitude (often where the user making the query is). If specified, the results will be weighted to
+     * This is a location [Coordinates], specified as a latitude (often where the user making the query is). If specified, the results will be weighted to
      * give preference to those near the <code>focus</code>. For convenience, longitude is allowed to wrap around the 180 line, so 361 is equivalent to 1.
      *
      * @param coordinates the focus to use
-     * @return a {@link W3WAutoSuggestEditText} instance
+     * @return same [W3WAutoSuggestVoice] instance
      */
     fun focus(coordinates: Coordinates?): W3WAutoSuggestVoice {
         focus = coordinates
@@ -431,7 +447,7 @@ class W3WAutoSuggestVoice
      * this will be truncated to the maximum. The default is 3
      *
      * @param n the number of AutoSuggest results to return
-     * @return a {@link W3WAutoSuggestEditText} instance
+     * @return same [W3WAutoSuggestVoice] instance
      */
     fun nResults(n: Int?): W3WAutoSuggestVoice {
         nResults = n ?: 3
@@ -441,11 +457,11 @@ class W3WAutoSuggestVoice
     /**
      * Specifies the number of results (must be &lt;= nResults) within the results set which will have a focus. Defaults to <code>nResults</code>.
      * This allows you to run autosuggest with a mix of focussed and unfocussed results, to give you a "blend" of the two. This is exactly what the old V2
-     * <code>standardblend</code> did, and <code>standardblend</code> behaviour can easily be replicated by passing <code>nFocusResults=1</code>,
+     * <code>standardblend</code> did, and <code>standardblend</code> behaviour can easily be replicated by passing nFocusResults(1)
      * which will return just one focussed result and the rest unfocussed.
      *
      * @param n number of results within the results set which will have a focus
-     * @return a {@link W3WAutoSuggestEditText} instance
+     * @return same [W3WAutoSuggestVoice] instance
      */
     fun nFocusResults(n: Int?): W3WAutoSuggestVoice {
         nFocusResults = n
@@ -453,12 +469,12 @@ class W3WAutoSuggestVoice
     }
 
     /**
-     * Restrict autosuggest results to a circle, specified by <code>Coordinates</code> representing the centre of the circle, plus the
+     * Restrict autosuggest results to a circle, specified by [Coordinates] representing the centre of the circle, plus the
      * <code>radius</code> in kilometres. For convenience, longitude is allowed to wrap around 180 degrees. For example 181 is equivalent to -179.
      *
      * @param centre the centre of the circle
      * @param radius the radius of the circle in kilometres
-     * @return a {@link W3WAutoSuggestEditText} instance
+     * @return same [W3WAutoSuggestVoice] instance
      */
     fun clipToCircle(
         centre: Coordinates?,
@@ -471,12 +487,12 @@ class W3WAutoSuggestVoice
 
     /**
      * Restricts autosuggest to only return results inside the countries specified by comma-separated list of uppercase ISO 3166-1 alpha-2 country codes
-     * (for example, to restrict to Belgium and the UK, use <code>clipToCountry("GB", "BE")</code>. <code>clipToCountry</code> will also accept lowercase
+     * (for example, to restrict to Belgium and the UK, use <code>[clipToCountry](listOf("GB", "BE"))</code>. [clipToCountry] will also accept lowercase
      * country codes. Entries must be two a-z letters. WARNING: If the two-letter code does not correspond to a country, there is no error: API simply
      * returns no results.
      *
      * @param countryCodes countries to clip results too
-     * @return a {@link W3WAutoSuggestEditText} instance
+     * @return same [W3WAutoSuggestVoice] instance
      */
     fun clipToCountry(countryCodes: List<String>): W3WAutoSuggestVoice {
         clipToCountry = if (countryCodes.isNotEmpty()) countryCodes.toTypedArray() else null
@@ -484,10 +500,10 @@ class W3WAutoSuggestVoice
     }
 
     /**
-     * Restrict autosuggest results to a <code>BoundingBox</code>.
+     * Restrict autosuggest results to a [BoundingBox].
      *
-     * @param boundingBox <code>BoundingBox</code> to clip results too
-     * @return a {@link W3WAutoSuggestEditText} instance
+     * @param boundingBox [BoundingBox] to clip results too
+     * @return same [W3WAutoSuggestVoice] instance
      */
     fun clipToBoundingBox(
         boundingBox: BoundingBox?
@@ -497,12 +513,12 @@ class W3WAutoSuggestVoice
     }
 
     /**
-     * Restrict autosuggest results to a polygon, specified by a collection of <code>Coordinates</code>. The polygon should be closed,
+     * Restrict autosuggest results to a polygon, specified by a collection of [Coordinates]. The polygon should be closed,
      * i.e. the first element should be repeated as the last element; also the list should contain at least 4 entries. The API is currently limited to
      * accepting up to 25 pairs.
      *
      * @param polygon the polygon to clip results too
-     * @return a {@link W3WAutoSuggestEditText} instance
+     * @return same [W3WAutoSuggestVoice] instance
      */
     fun clipToPolygon(
         polygon: List<Coordinates>
@@ -515,7 +531,7 @@ class W3WAutoSuggestVoice
      * Enable autosuggest results to return coordinates
      *
      * @param enabled if callback should return coordinates
-     * @return a {@link W3WAutoSuggestEditText} instance
+     * @return same [W3WAutoSuggestVoice] instance
      */
     fun returnCoordinates(
         enabled: Boolean
@@ -525,10 +541,10 @@ class W3WAutoSuggestVoice
     }
 
     /**
-     * Enable autosuggest results to return coordinates
+     * Allows to set animation refresh time, lower spec devices (i.e wearOS) might require a lower animation refresh rate for performance reasons.
      *
-     * @param returnCoordinates if callback should return coordinates
-     * @return a {@link W3WAutoSuggestEditText} instance
+     * @param millis animation refresh time in milliseconds
+     * @return same [W3WAutoSuggestVoice] instance
      */
     fun animationRefreshTime(
         millis: Int
@@ -544,12 +560,25 @@ class W3WAutoSuggestVoice
         return this
     }
 
+    /**
+     * onResults without [W3WAutoSuggestPicker] will provide a list of 3 word addresses found using our voice API.
+     *
+     * @param callback will return a list of [W3WSuggestion].
+     * @return same [W3WAutoSuggestVoice] instance
+     */
     fun onResults(callback: Consumer<List<W3WSuggestion>>): W3WAutoSuggestVoice {
         this.callback = callback
         this.suggestionsPicker = null
         return this
     }
 
+    /**
+     * onResults with will provide the 3 word address selected by the end-user using the [W3WAutoSuggestPicker] provided.
+     *
+     * @param picker [W3WAutoSuggestPicker] to show on screen the list of 3 word addresses found using our voice API.
+     * @param callback will return the [W3WSuggestion] picked by the end-user.
+     * @return same [W3WAutoSuggestVoice] instance
+     */
     fun onResults(
         picker: W3WAutoSuggestPicker,
         callback: Consumer<W3WSuggestion?>
@@ -563,15 +592,12 @@ class W3WAutoSuggestVoice
         return this
     }
 
-    fun onError(
-        customInvalidAddress: W3WAutoSuggestInvalidAddress,
-        errorCallback: Consumer<APIResponse.What3WordsError>
-    ): W3WAutoSuggestVoice {
-        this.customInvalidAddressMessage = customInvalidAddress
-        this.errorCallback = errorCallback
-        return this
-    }
-
+    /**
+     * onError will provide any errors [APIResponse.What3WordsError] that might happen during the API call
+     *
+     * @param errorCallback will return [APIResponse.What3WordsError] with information about the error occurred.
+     * @return same [W3WAutoSuggestEditText] instance
+     */
     fun onError(
         errorCallback: Consumer<APIResponse.What3WordsError>
     ): W3WAutoSuggestVoice {

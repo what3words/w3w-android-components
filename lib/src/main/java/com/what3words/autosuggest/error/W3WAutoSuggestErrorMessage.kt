@@ -8,7 +8,10 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import com.what3words.autosuggest.R
 
-class W3WAutoSuggestInvalidAddress
+/**
+ * A [AppCompatTextView] styled and ready to show error messages.
+ */
+class W3WAutoSuggestErrorMessage
 @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -30,7 +33,7 @@ class W3WAutoSuggestInvalidAddress
     }
 }
 
-fun AppCompatTextView.showError(errorMessage: String?) {
+internal fun AppCompatTextView.showError(errorMessage: String?) {
     text = errorMessage
     visibility = AppCompatTextView.VISIBLE
     Handler(Looper.getMainLooper()).postDelayed({
