@@ -70,16 +70,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        suggestionEditText.apiKey("YOUR_API_KEY_HERE")
-	        .returnCoordinates(false)
-            .onSelected { suggestion, latitude, longitude ->
-                if (suggestion != null) {
-                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, distance: ${suggestion.distanceToFocusKm}, near: ${suggestion.nearestPlace}, latitude: $latitude, longitude: $longitude")
+	suggestionEditText.apiKey("YOUR_API_KEY_HERE")
+            .returnCoordinates(false)
+            .onSelected { w3wSuggestion ->
+                if (w3wSuggestion != null) {
+                    Log.i( "MainActivity","words: ${w3wSuggestion.suggestion.words}, country: ${w3wSuggestion.suggestion.country}, distance: ${w3wSuggestion.suggestion.distanceToFocusKm}, near: ${w3wSuggestion.suggestion.nearestPlace}, latitude: ${w3wSuggestion.coordinates?.lat}, longitude: ${w3wSuggestion.coordinates?.lng}"
+                    )
                 } else {
-                    Log.i("MainActivity","invalid w3w address")
+                    Log.i("MainActivity", "invalid w3w address")
                 }
             }
-        }
+            .onError {
+                Log.e("MainActivity", "${it.key} - ${it.message}")
+            }
 }
 ```
 
@@ -94,14 +97,14 @@ public class MainActivity extends AppCompatActivity {
         W3WAutoSuggestEditText autoSuggestEditText = findViewById(R.id.suggestionEditText);
         autoSuggestEditText.apiKey("YOUR_API_KEY_HERE")
                 .returnCoordinates(false)
-                .onSelected((suggestion, latitude, longitude) -> {
-                    if (suggestion != null) {
-                        Log.i("MainActivity", String.format("words: %s, country: %s, near: %s, latitude: %s, longitude: %s", suggestion.getWords(), suggestion.getCountry(), suggestion.getNearestPlace(), latitude, longitude));
+                .onSelected(null, null, (W3WSuggestion w3wSuggestion) -> {
+                    if (w3wSuggestion != null) {
+                        Log.i("MainActivity", String.format("words: %s, country: %s, near: %s", w3wSuggestion.getSuggestion().getWords(), w3wSuggestion.getSuggestion().getCountry(), w3wSuggestion.getSuggestion().getNearestPlace()));
                     } else {
                         Log.i("MainActivity", "invalid w3w address");
                     }
-                    return Unit.INSTANCE;
-                });
+                })
+                .onError(null, (APIResponse.What3WordsError what3WordsError) -> Log.e("MainActivity", String.format("%s - %s", what3WordsError.getKey(), what3WordsError.getMessage())));
     }
 
 ```
@@ -167,14 +170,7 @@ or
  suggestionEditText.apiKey("YOUR_API_KEY_HERE")
 	        .returnCoordinates(false)
 	        .voiceEnabled(true)
-            .onSelected { suggestion, latitude, longitude ->
-                if (suggestion != null) {
-                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, near: ${suggestion.nearestPlace}, latitude: $latitude, longitude: $longitude")
-                } else {
-                    Log.i("MainActivity","invalid w3w address")
-                }
-            }
-        }
+		...
 ```
 
 ## Voice properties:
