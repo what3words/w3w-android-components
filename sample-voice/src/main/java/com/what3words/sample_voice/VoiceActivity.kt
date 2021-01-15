@@ -11,6 +11,7 @@ import com.what3words.autosuggestsample.util.addOnTextChangedListener
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import kotlinx.android.synthetic.main.activity_voice.*
+import java.lang.Exception
 
 class VoiceActivity : AppCompatActivity() {
 
@@ -28,7 +29,7 @@ class VoiceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_voice)
 
-        w3wVoice.apiKey("YOUR_API_KEY_HERE")
+        w3wVoice.apiKey("YOUR_WHAT3WORDS_API_KEY_HERE")
             .onResults(w3wPicker) { selected ->
                 showSuggestion(selected)
             }.onError {
@@ -50,7 +51,7 @@ class VoiceActivity : AppCompatActivity() {
                 }
             } else {
                 w3wVoice.onResults { suggestionsList ->
-                    //create your own recyclerview or pick the top ranked suggestion
+                    //create/populate your own recyclerview or pick the top ranked suggestion
                     showSuggestion(suggestionsList.minByOrNull { it.suggestion.rank })
                 }
             }

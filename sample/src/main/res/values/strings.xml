@@ -25,4 +25,6 @@
     <string name="voice_fullscreen">voice fullscreen</string>
     <string name="voice_fullscreen_info">The speech recognition start inline by default but use this property to change to a full screen.</string>
     <string name="suggestion_list_below">Suggestion list below</string>
+    <string name="custom_picker">use custom picker</string>
+    <string name="custom_error">use custom error message view</string>
 </resources>

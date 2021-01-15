@@ -140,11 +140,13 @@ class W3WAutoSuggestEditText
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val searchText = s.toString().trim()
+
                 if (fromPaste) {
                     fromPaste = false
                     setText(searchText.removePrefix("///"))
                     return
                 }
+
                 if (pickedFromDropDown) {
                     pickedFromDropDown = false
                     return
@@ -153,13 +155,15 @@ class W3WAutoSuggestEditText
                     pickedFromVoice = false
                     return
                 }
-                if (searchText == searchFor)
+
+                showImages()
+                if (searchText == searchFor) {
                     return
+                }
 
                 searchFor = searchText
                 if (isPossible3wa(searchText)) {
                     if (hasFocus()) {
-                        showImages()
                         handleAutoSuggest(searchText, searchFor)
                     }
                 } else {
@@ -552,10 +556,14 @@ class W3WAutoSuggestEditText
         callback: Consumer<W3WSuggestion?>,
     ): W3WAutoSuggestEditText {
         this.callback = callback
-        picker?.setup(wrapper!!, isEnterprise, key!!)
-        picker?.internalCallback { selectedSuggestion ->
-            handleAddressPicked(selectedSuggestion)
-        }
+        if (picker != null) {
+            picker.setup(wrapper!!, isEnterprise, key!!)
+            picker.internalCallback { selectedSuggestion ->
+                pickedFromDropDown = true
+                handleAddressPicked(selectedSuggestion)
+            }
+            defaultPicker.forceClear()
+        } else customPicker?.forceClear()
         this.customInvalidAddressMessageView = invalidAddressMessageView
         this.customPicker = picker
         return this

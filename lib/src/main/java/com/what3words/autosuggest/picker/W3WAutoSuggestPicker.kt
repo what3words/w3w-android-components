@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Typeface
 import android.util.AttributeSet
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -54,7 +53,6 @@ class W3WAutoSuggestPicker
         if (suggestion == null) {
             callback?.invoke(null)
         } else {
-            callback?.invoke(W3WSuggestion(suggestion))
             if (!isEnterprise) handleSelectionTrack(suggestion, "", queryMap, key)
             if (!returnCoordinates) {
                 callback?.invoke(W3WSuggestion(suggestion))
@@ -113,5 +111,10 @@ class W3WAutoSuggestPicker
         suggestionsAdapter.refreshSuggestions(suggestions, query)
         this.returnCoordinates = returnCoordinates
         this.queryMap = queryMap
+    }
+
+    internal fun forceClear() {
+        suggestionsAdapter.refreshSuggestions(emptyList(), "")
+        visibility = GONE
     }
 }

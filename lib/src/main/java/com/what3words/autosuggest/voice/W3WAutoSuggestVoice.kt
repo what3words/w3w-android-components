@@ -20,6 +20,7 @@ import com.what3words.autosuggest.BuildConfig
 import com.what3words.autosuggest.R
 import com.what3words.autosuggest.picker.W3WAutoSuggestPicker
 import com.what3words.autosuggest.text.W3WAutoSuggestEditText
+import com.what3words.autosuggest.text.populateQueryOptions
 import com.what3words.autosuggest.utils.DisplayMetricsConverter.convertPixelsToDp
 import com.what3words.autosuggest.utils.PulseAnimator
 import com.what3words.autosuggest.utils.transform
@@ -213,17 +214,19 @@ class W3WAutoSuggestVoice
     fun setIsVoiceRunning(isVoiceRunning: Boolean, withError: Boolean = false) {
         this.isVoiceRunning = isVoiceRunning
         if (isVoiceRunning) {
-            handler.removeCallbacks(changeBackIcon)
+            handler?.removeCallbacks(changeBackIcon)
             w3wLogo.setImageResource(R.drawable.ic_voice_only_active)
             View.VISIBLE
         } else {
             resetLayout()
             if (withError) {
                 w3wLogo.setImageResource(R.drawable.ic_voice_only_error)
-                handler.postDelayed(
+                handler?.postDelayed(
                     changeBackIcon,
                     5000
-                )
+                ) ?: run {
+                    changeBackIcon.run()
+                }
             } else w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive)
             View.INVISIBLE
         }.let {
@@ -273,10 +276,22 @@ class W3WAutoSuggestVoice
             setIsVoiceRunning(false)
             return
         }
-        queryMap.clear()
-        queryMap["n-results"] = nResults.toString()
-        queryMap["source-api"] = "voice"
-        queryMap["voice-language"] = voiceLanguage
+
+        populateQueryOptions(
+            queryMap,
+            "voice",
+            voiceLanguage,
+            focus,
+            null,
+            nResults,
+            nFocusResults,
+            clipToCountry,
+            clipToCircle,
+            clipToCircleRadius,
+            clipToBoundingBox,
+            clipToPolygon
+        )
+
         val permissionManager: PermissionManager = PermissionManager.getInstance(context)
         permissionManager.checkPermissions(
             Collections.singleton(Manifest.permission.RECORD_AUDIO),
@@ -293,35 +308,24 @@ class W3WAutoSuggestVoice
                     builder = wrapper!!.autosuggest(microphone, voiceLanguage).apply {
                         nResults?.let {
                             this.nResults(it)
-                            queryMap["n-results"] = it.toString()
                         }
                         focus?.let {
                             this.focus(it)
-                            queryMap["focus"] = it.lat.toString() + "," + it.lng.toString()
                         }
                         nFocusResults?.let {
                             this.nFocusResults(it)
-                            queryMap["n-focus-results"] = it.toString()
                         }
                         clipToCountry?.let {
                             this.clipToCountry(it.toList())
-                            queryMap["clip-to-country"] = it.joinToString(",")
                         }
                         clipToCircle?.let {
                             this.clipToCircle(it, clipToCircleRadius ?: 0.0)
-                            queryMap["clip-to-circle"] =
-                                it.lat.toString() + "," + it.lng.toString() + "," + (clipToCircleRadius?.toString()
-                                    ?: "0")
                         }
                         clipToBoundingBox?.let {
                             this.clipToBoundingBox(it)
-                            queryMap["clip-to-bounding-box"] =
-                                it.sw.lat.toString() + "," + it.sw.lng.toString() + "," + it.ne.lat.toString() + "," + it.ne.lng.toString()
                         }
                         clipToPolygon?.let { coordinates ->
                             this.clipToPolygon(coordinates.toList())
-                            queryMap["clip-to-polygon"] =
-                                coordinates.joinToString(",") { "${it.lat},${it.lng}" }
                         }
                         this.onSuggestions { suggestions ->
                             handleSuggestions(suggestions)

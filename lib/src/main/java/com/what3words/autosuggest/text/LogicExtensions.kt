@@ -36,45 +36,46 @@ internal fun W3WAutoSuggestEditText.handleAutoSuggest(searchText: String, search
         if (searchText != searchFor)
             return@launch
 
-        queryMap.clear()
-        queryMap["source-api"] = "text"
+        populateQueryOptions(
+            queryMap,
+            "text",
+            null,
+            focus,
+            language,
+            nResults,
+            nFocusResults,
+            clipToCountry,
+            clipToCircle,
+            clipToCircleRadius,
+            clipToBoundingBox,
+            clipToPolygon
+        )
+
         val res =
             wrapper!!.autosuggest(searchFor).apply {
                 this@handleAutoSuggest.focus?.let {
                     this.focus(it)
-                    queryMap["focus"] = it.lat.toString() + "," + it.lng.toString()
                 }
                 this@handleAutoSuggest.language?.let {
                     this.language(it)
-                    queryMap["language"] = it
                 }
                 this@handleAutoSuggest.nResults?.let {
                     this.nResults(it)
-                    queryMap["n-results"] = it.toString()
                 }
                 this@handleAutoSuggest.nFocusResults?.let {
                     this.nFocusResults(it)
-                    queryMap["n-focus-results"] = it.toString()
                 }
                 this@handleAutoSuggest.clipToCountry?.let {
                     this.clipToCountry(*it)
-                    queryMap["clip-to-country"] = it.joinToString(",")
                 }
                 this@handleAutoSuggest.clipToCircle?.let {
                     this.clipToCircle(it, clipToCircleRadius ?: 0.0)
-                    queryMap["clip-to-circle"] =
-                        it.lat.toString() + "," + it.lng.toString() + "," + (clipToCircleRadius?.toString()
-                            ?: "0")
                 }
                 this@handleAutoSuggest.clipToBoundingBox?.let {
                     this.clipToBoundingBox(it)
-                    queryMap["clip-to-bounding-box"] =
-                        it.sw.lat.toString() + "," + it.sw.lng.toString() + "," + it.ne.lat.toString() + "," + it.ne.lng.toString()
                 }
                 this@handleAutoSuggest.clipToPolygon?.let { coordinates ->
                     this.clipToPolygon(*coordinates)
-                    queryMap["clip-to-polygon"] =
-                        coordinates.joinToString(",") { "${it.lat},${it.lng}" }
                 }
             }.execute()
         if (!res.isSuccessful) {
@@ -152,10 +153,22 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
         inlineVoicePulseLayout.setIsVoiceRunning(false)
         return
     }
-    queryMap.clear()
-    queryMap["n-results"] = nResults.toString()
-    queryMap["source-api"] = "voice"
-    queryMap["voice-language"] = voiceLanguage
+
+    populateQueryOptions(
+        queryMap,
+        "voice",
+        voiceLanguage,
+        focus,
+        language,
+        nResults,
+        nFocusResults,
+        clipToCountry,
+        clipToCircle,
+        clipToCircleRadius,
+        clipToBoundingBox,
+        clipToPolygon
+    )
+
     val permissionManager: PermissionManager = PermissionManager.getInstance(context)
     permissionManager.checkPermissions(
         Collections.singleton(Manifest.permission.RECORD_AUDIO),
@@ -172,35 +185,24 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                 builder = wrapper!!.autosuggest(microphone, voiceLanguage).apply {
                     nResults?.let {
                         this.nResults(it)
-                        queryMap["n-results"] = it.toString()
                     }
                     focus?.let {
                         this.focus(it)
-                        queryMap["focus"] = it.lat.toString() + "," + it.lng.toString()
                     }
                     nFocusResults?.let {
                         this.nFocusResults(it)
-                        queryMap["n-focus-results"] = it.toString()
                     }
                     clipToCountry?.let {
                         this.clipToCountry(it.toList())
-                        queryMap["clip-to-country"] = it.joinToString(",")
                     }
                     clipToCircle?.let {
                         this.clipToCircle(it, clipToCircleRadius ?: 0.0)
-                        queryMap["clip-to-circle"] =
-                            it.lat.toString() + "," + it.lng.toString() + "," + (clipToCircleRadius?.toString()
-                                ?: "0")
                     }
                     clipToBoundingBox?.let {
                         this.clipToBoundingBox(it)
-                        queryMap["clip-to-bounding-box"] =
-                            it.sw.lat.toString() + "," + it.sw.lng.toString() + "," + it.ne.lat.toString() + "," + it.ne.lng.toString()
                     }
                     clipToPolygon?.let { coordinates ->
                         this.clipToPolygon(coordinates.toList())
-                        queryMap["clip-to-polygon"] =
-                            coordinates.joinToString(",") { "${it.lat},${it.lng}" }
                     }
                     val textPlaceholder = this@handleVoice.hint
                     this.onSuggestions { suggestions ->

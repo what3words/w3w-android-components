@@ -15,8 +15,8 @@ android {
         applicationId "com.what3words.autosuggest"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 12
-        versionName "1.11"
+        versionCode 13
+        versionName "1.12"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,7 +36,5 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
 
     //w3w auto suggest
-    //implementation "com.what3words:w3w-autosuggest-edittext-android:1.1.0"
-    implementation project(":lib")
-    implementation "com.what3words:w3w-android-wrapper:3.1.7"
+    implementation "com.what3words:w3w-autosuggest-edittext-android:1.2.0"
 }
