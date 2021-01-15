@@ -185,6 +185,9 @@ or
 | voiceFullscreen | false | Boolean | Voice activation will be fullscreen instead of inline. | :heavy_check_mark: | :heavy_check_mark:
 | voiceLanguage | *en* | String | Available voice languages: `ar` for Arabic, `cmn` for Mandarin Chinese, `de` for German, `en` Global English (default), `es` for Spanish, `hi` for Hindi, `ja` for Japanese and `ko` for Korean| :heavy_check_mark: | :heavy_check_mark:
 
+## Voice only:
+
+If you want to use voice-only (no text input) please look at our **voice-sample** app in this repo for examples of how to use our **W3WAutoSuggestVoice component**.
 
 ## Styles:
 
