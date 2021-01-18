@@ -209,13 +209,16 @@ Use our base style as parent and you can set the custom properties available wit
 ## Full documentation:
 
 [lib](documentation/index.md)
+
 ### Packages
+
 | Name | Summary |
 |---|---|
 | [com.what3words.autosuggest.error](documentation/com.what3words.autosuggest.error/index.md) |  |
 | [com.what3words.autosuggest.picker](documentation/com.what3words.autosuggest.picker/index.md) |  |
 | [com.what3words.autosuggest.text](documentation/com.what3words.autosuggest.text/index.md) |  |
-| [com.what3words.autosuggest.utils](documentation/com.what3words.autosuggest.utils/index.md) |  |
 | [com.what3words.autosuggest.voice](documentation/com.what3words.autosuggest.voice/index.md) |  |
+
 ### Index
+
 [All Types](documentation/alltypes/index.md)
