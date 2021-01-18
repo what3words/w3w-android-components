@@ -185,6 +185,13 @@ or
 
 If you want to use voice-only (no text input) please look at our **voice-sample** app in this repo for examples of how to use our **W3WAutoSuggestVoice component**.
 
+
+## Advanced usage
+
+Check our advanced-sample app in this repo to help you implement our component in a different use case.
+
+![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_10.png?raw=true "Screenshot 10")
+
 ## Styles:
 
 Use our base style as parent and you can set the custom properties available with XML on the table above and the normal EditText styling, i.e:
@@ -205,12 +212,6 @@ Use our base style as parent and you can set the custom properties available wit
 ```
 
 ![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_4.png?raw=true "Screenshot 4")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_5.png?raw=true "Screenshot 5")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_6.png?raw=true "Screenshot 6")
-
-## Advanced usage
-
-Check our advanced-sample app in this repo to help you implement our component in a different use case.
-
-![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_10.png?raw=true "Screenshot 10")
 
 ## Full documentation:
 
