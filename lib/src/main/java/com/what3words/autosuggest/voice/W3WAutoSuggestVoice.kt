@@ -23,6 +23,7 @@ import com.what3words.autosuggest.text.W3WAutoSuggestEditText
 import com.what3words.autosuggest.text.populateQueryOptions
 import com.what3words.autosuggest.utils.DisplayMetricsConverter.convertPixelsToDp
 import com.what3words.autosuggest.utils.PulseAnimator
+import com.what3words.autosuggest.utils.W3WSuggestion
 import com.what3words.autosuggest.utils.transform
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
@@ -609,8 +610,3 @@ class W3WAutoSuggestVoice
         return this
     }
 }
-
-data class W3WSuggestion(
-    val suggestion: Suggestion,
-    val coordinates: com.what3words.javawrapper.response.Coordinates? = null
-)

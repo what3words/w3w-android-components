@@ -11,7 +11,7 @@ import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.autosuggest.R
 import com.what3words.autosuggest.text.handleSelectionTrack
 import com.what3words.autosuggest.utils.MyDividerItemDecorator
-import com.what3words.autosuggest.voice.W3WSuggestion
+import com.what3words.autosuggest.utils.W3WSuggestion
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

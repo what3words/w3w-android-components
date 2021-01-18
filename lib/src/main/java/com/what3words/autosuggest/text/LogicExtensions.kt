@@ -10,7 +10,7 @@ import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.autosuggest.error.showError
 import com.what3words.autosuggest.text.W3WAutoSuggestEditText.Companion.regex
-import com.what3words.autosuggest.voice.W3WSuggestion
+import com.what3words.autosuggest.utils.W3WSuggestion
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.coroutines.CoroutineScope

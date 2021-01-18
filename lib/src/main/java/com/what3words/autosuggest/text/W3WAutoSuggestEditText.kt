@@ -24,7 +24,7 @@ import com.what3words.autosuggest.error.W3WAutoSuggestErrorMessage
 import com.what3words.autosuggest.picker.W3WAutoSuggestPicker
 import com.what3words.autosuggest.utils.InlineVoicePulseLayout
 import com.what3words.autosuggest.utils.VoicePulseLayout
-import com.what3words.autosuggest.voice.W3WSuggestion
+import com.what3words.autosuggest.utils.W3WSuggestion
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
