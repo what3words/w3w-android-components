@@ -18,7 +18,7 @@ The artifact is available through [![Maven Central](https://img.shields.io/maven
 ### Gradle
 
 ```
-implementation 'com.what3words:w3w-autosuggest-edittext-android:1.1.0'
+implementation 'com.what3words:w3w-autosuggest-edittext-android:1.2.0'
 ```
 
 ## Documentation
@@ -70,16 +70,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        suggestionEditText.apiKey("YOUR_API_KEY_HERE")
-	        .returnCoordinates(false)
-            .onSelected { suggestion, latitude, longitude ->
-                if (suggestion != null) {
-                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, distance: ${suggestion.distanceToFocusKm}, near: ${suggestion.nearestPlace}, latitude: $latitude, longitude: $longitude")
+	suggestionEditText.apiKey("YOUR_API_KEY_HERE")
+            .returnCoordinates(false)
+            .onSelected { w3wSuggestion ->
+                if (w3wSuggestion != null) {
+                    Log.i( "MainActivity","words: ${w3wSuggestion.suggestion.words}, country: ${w3wSuggestion.suggestion.country}, distance: ${w3wSuggestion.suggestion.distanceToFocusKm}, near: ${w3wSuggestion.suggestion.nearestPlace}, latitude: ${w3wSuggestion.coordinates?.lat}, longitude: ${w3wSuggestion.coordinates?.lng}"
+                    )
                 } else {
-                    Log.i("MainActivity","invalid w3w address")
+                    Log.i("MainActivity", "invalid w3w address")
                 }
             }
-        }
+            .onError {
+                Log.e("MainActivity", "${it.key} - ${it.message}")
+            }
 }
 ```
 
@@ -94,14 +97,14 @@ public class MainActivity extends AppCompatActivity {
         W3WAutoSuggestEditText autoSuggestEditText = findViewById(R.id.suggestionEditText);
         autoSuggestEditText.apiKey("YOUR_API_KEY_HERE")
                 .returnCoordinates(false)
-                .onSelected((suggestion, latitude, longitude) -> {
-                    if (suggestion != null) {
-                        Log.i("MainActivity", String.format("words: %s, country: %s, near: %s, latitude: %s, longitude: %s", suggestion.getWords(), suggestion.getCountry(), suggestion.getNearestPlace(), latitude, longitude));
+                .onSelected(null, null, (W3WSuggestion w3wSuggestion) -> {
+                    if (w3wSuggestion != null) {
+                        Log.i("MainActivity", String.format("words: %s, country: %s, near: %s", w3wSuggestion.getSuggestion().getWords(), w3wSuggestion.getSuggestion().getCountry(), w3wSuggestion.getSuggestion().getNearestPlace()));
                     } else {
                         Log.i("MainActivity", "invalid w3w address");
                     }
-                    return Unit.INSTANCE;
-                });
+                })
+                .onError(null, (APIResponse.What3WordsError what3WordsError) -> Log.e("MainActivity", String.format("%s - %s", what3WordsError.getKey(), what3WordsError.getMessage())));
     }
 
 ```
@@ -167,14 +170,7 @@ or
  suggestionEditText.apiKey("YOUR_API_KEY_HERE")
 	        .returnCoordinates(false)
 	        .voiceEnabled(true)
-            .onSelected { suggestion, latitude, longitude ->
-                if (suggestion != null) {
-                    Log.i("MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, near: ${suggestion.nearestPlace}, latitude: $latitude, longitude: $longitude")
-                } else {
-                    Log.i("MainActivity","invalid w3w address")
-                }
-            }
-        }
+		...
 ```
 
 ## Voice properties:
@@ -185,6 +181,16 @@ or
 | voiceFullscreen | false | Boolean | Voice activation will be fullscreen instead of inline. | :heavy_check_mark: | :heavy_check_mark:
 | voiceLanguage | *en* | String | Available voice languages: `ar` for Arabic, `cmn` for Mandarin Chinese, `de` for German, `en` Global English (default), `es` for Spanish, `hi` for Hindi, `ja` for Japanese and `ko` for Korean| :heavy_check_mark: | :heavy_check_mark:
 
+## Voice only:
+
+If you want to use voice-only (no text input) please look at our **voice-sample** app in this repo for examples of how to use our **W3WAutoSuggestVoice component**.
+
+
+## Advanced usage:
+
+If you want to check different ways to use our component please look at our **advanced-sample** app in this repo for examples of how to use and customize our **W3WAutoSuggestText component**.
+
+![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_10.png?raw=true "Screenshot 10")
 
 ## Styles:
 
@@ -206,3 +212,14 @@ Use our base style as parent and you can set the custom properties available wit
 ```
 
 ![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_4.png?raw=true "Screenshot 4")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_5.png?raw=true "Screenshot 5")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_6.png?raw=true "Screenshot 6")
+
+## Full documentation:
+
+### Existing components:
+
+| Name | Summary |
+|---|---|
+| [W3WAutoSuggestEditText](documentation/com.what3words.autosuggest.text/-w3-w-auto-suggest-edit-text/index.md) | `class W3WAutoSuggestEditText : AppCompatEditText`<br>A [AppCompatEditText](https://developer.android.com/reference/androidx/appcompat/widget/AppCompatEditText) to simplify the integration of what3words text and voice auto-suggest API in your app. |
+| [W3WAutoSuggestVoice](documentation/com.what3words.autosuggest.voice/-w3-w-auto-suggest-voice/index.md) | `class W3WAutoSuggestVoice : ConstraintLayout`<br>A [View](https://developer.android.com/reference/android/view/View.html) to simplify the integration of what3words voice auto-suggest API in your app. |
+| [W3WAutoSuggestErrorMessage](documentation/com.what3words.autosuggest.error/-w3-w-auto-suggest-error-message/index.md) | `class W3WAutoSuggestErrorMessage : AppCompatTextView`<br>A [AppCompatTextView](https://developer.android.com/reference/androidx/appcompat/widget/AppCompatTextView) styled and ready to show error messages. |
+| [W3WAutoSuggestPicker](documentation/com.what3words.autosuggest.picker/-w3-w-auto-suggest-picker/index.md) | `class W3WAutoSuggestPicker : RecyclerView`<br>A [RecyclerView](https://developer.android.com/reference/androidx/recyclerview/widget/RecyclerView) to show [W3WSuggestion](documentation/com.what3words.autosuggest.utils/-w3-w-suggestion/index.md) returned by w3w auto suggest component modularized to allow developers to choose picker location on the screen. |

@@ -6,17 +6,18 @@
         <attr name="returnCoordinates" format="boolean" />
         <attr name="imageTintColor" format="color" />
         <attr name="errorMessage" format="string" />
+        <attr name="invalidAddressMessage" format="string" />
         <attr name="voiceEnabled" format="boolean" />
         <attr name="voiceFullscreen" format="boolean" />
         <attr name="voiceLanguage" format="string" />
         <attr name="voicePlaceholder" format="string" />
-        <attr name="suggestionsListPosition" format="enum">
-            <enum name="below" value="0" />
-            <enum name="above" value="1" />
-        </attr>
     </declare-styleable>
 
     <declare-styleable name="CustomTheme">
         <attr name="customW3WAutoSuggestEditTextStyle" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomVoiceTheme">
+        <attr name="customW3WAutoSuggestVoiceStyle" format="reference" />
     </declare-styleable>
 </resources>

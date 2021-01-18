@@ -2,7 +2,10 @@ package com.what3words.autosuggestsample.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
+import com.google.android.material.snackbar.Snackbar
 import com.what3words.autosuggestsample.R
 import com.what3words.autosuggestsample.util.addOnTextChangedListener
 import com.what3words.javawrapper.request.BoundingBox
@@ -16,14 +19,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        suggestionEditText.apiKey("YOUR_API_KEY_HERE")
-            .returnCoordinates(false)
-            .onSelected { suggestion, latitude, longitude ->
-                if (suggestion != null) {
+        suggestionEditText.apiKey("YOUR_WHAT3WORDS_API_KEY_HERE")
+            .onSelected {
+                if (it != null) {
                     selectedInfo.text =
-                        "words: ${suggestion.words}\ncountry: ${suggestion.country}\nnear: ${suggestion.nearestPlace}\ndistance: ${if (suggestion.distanceToFocusKm == null) "N/A" else suggestion.distanceToFocusKm.toString() + "km"}\nlatitude: $latitude\nlongitude: $longitude"
+                        "words: ${it.suggestion.words}\ncountry: ${it.suggestion.country}\nnear: ${it.suggestion.nearestPlace}\ndistance: ${if (it.suggestion.distanceToFocusKm == null) "N/A" else it.suggestion.distanceToFocusKm.toString() + "km"}\nlatitude: ${it.coordinates?.lat}\nlongitude: ${it.coordinates?.lng}"
                 } else {
                     selectedInfo.text = ""
+                }
+            }.onError {
+                Log.e("MainActivity", "${it.key} - ${it.message}")
+                Snackbar.make(main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
+                    setAction("OK") { dismiss() }
+                    show()
                 }
             }
 
@@ -39,6 +47,14 @@ class MainActivity : AppCompatActivity() {
             suggestionEditText.voiceEnabled(b)
         }
 
+        checkboxCustomPicker.setOnCheckedChangeListener { _, b ->
+            updateOnSelectedAndOnError()
+        }
+
+        checkboxCustomError.setOnCheckedChangeListener { _, b ->
+            updateOnSelectedAndOnError()
+        }
+
         textPlaceholder.setText(R.string.input_hint)
         textPlaceholder.addOnTextChangedListener {
             suggestionEditText.hint = it
@@ -49,20 +65,24 @@ class MainActivity : AppCompatActivity() {
             suggestionEditText.voicePlaceholder(it)
         }
 
+        //how to change fallback text language
         textLanguage.addOnTextChangedListener {
             suggestionEditText.language(it)
         }
 
+        //how to change voicelanguage
         textVoiceLanguage.setText("en")
         textVoiceLanguage.addOnTextChangedListener {
             suggestionEditText.voiceLanguage(it)
         }
 
+        //how to clipToCountry
         textClipToCountry.addOnTextChangedListener { input ->
             val test = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             suggestionEditText.clipToCountry(test)
         }
 
+        //how to apply focus
         textFocus.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val lat = latLong.getOrNull(0)?.toDoubleOrNull()
@@ -74,6 +94,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        //how to clipToCircle
         textClipToCircle.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val lat = latLong.getOrNull(0)?.toDoubleOrNull()
@@ -86,6 +107,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        //how to clipToBoundingBox
         textClipToBoundingBox.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val swLat = latLong.getOrNull(0)?.toDoubleOrNull()
@@ -104,6 +126,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        //how to clipToPolygon
         textClipToPolygon.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val listCoordinates = mutableListOf<Coordinates>()
@@ -124,6 +147,27 @@ class MainActivity : AppCompatActivity() {
             suggestionEditText.clipToPolygon(
                 listCoordinates
             )
+        }
+    }
+
+    //example of how to use a custom suggestion picker and custom error message on your view instead of using the default provided below the W3WAutoSuggestEditText
+    private fun updateOnSelectedAndOnError() {
+        suggestionEditText.onSelected(
+            if (checkboxCustomPicker.isChecked) suggestionPicker else null,
+            if (checkboxCustomError.isChecked) suggestionError else null
+        ) {
+            if (it != null) {
+                selectedInfo.text =
+                    "words: ${it.suggestion.words}\ncountry: ${it.suggestion.country}\nnear: ${it.suggestion.nearestPlace}\ndistance: ${if (it.suggestion.distanceToFocusKm == null) "N/A" else it.suggestion.distanceToFocusKm.toString() + "km"}\nlatitude: ${it.coordinates?.lat}\nlongitude: ${it.coordinates?.lng}"
+            } else {
+                selectedInfo.text = ""
+            }
+        }.onError(if (checkboxCustomError.isChecked) suggestionError else null) {
+            Log.e("MainActivity", "${it.key} - ${it.message}")
+            Snackbar.make(main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
+                setAction("OK") { dismiss() }
+                show()
+            }
         }
     }
 }

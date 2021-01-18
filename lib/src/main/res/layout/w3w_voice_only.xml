@@ -1,0 +1,61 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/voicePulseLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:importantForAccessibility="noHideDescendants"
+    android:minWidth="98dp"
+    android:minHeight="98dp">
+
+    <ImageView
+        android:id="@+id/w3wLogo"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:elevation="4dp"
+        android:src="@drawable/ic_voice_only_inactive"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.4" />
+
+    <ImageView
+        android:id="@+id/innerCircleView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:elevation="3dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_voice_only_inner"
+        app:layout_constraintBottom_toBottomOf="@id/w3wLogo"
+        app:layout_constraintEnd_toEndOf="@id/w3wLogo"
+        app:layout_constraintStart_toStartOf="@id/w3wLogo"
+        app:layout_constraintTop_toTopOf="@id/w3wLogo"
+        app:layout_constraintWidth_percent="0.44" />
+
+    <ImageView
+        android:id="@+id/midCircleView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:elevation="2dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_voice_only_mid"
+        app:layout_constraintBottom_toBottomOf="@id/w3wLogo"
+        app:layout_constraintEnd_toEndOf="@id/w3wLogo"
+        app:layout_constraintStart_toStartOf="@id/w3wLogo"
+        app:layout_constraintTop_toTopOf="@id/w3wLogo"
+        app:layout_constraintWidth_percent="0.48" />
+
+    <ImageView
+        android:id="@+id/outerCircleView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:elevation="1dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_voice_only_outer"
+        app:layout_constraintBottom_toBottomOf="@id/w3wLogo"
+        app:layout_constraintEnd_toEndOf="@id/w3wLogo"
+        app:layout_constraintStart_toStartOf="@id/w3wLogo"
+        app:layout_constraintTop_toTopOf="@id/w3wLogo"
+        app:layout_constraintWidth_percent="0.52" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

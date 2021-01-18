@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -19,7 +20,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.what3words.autosuggest.W3WAutoSuggestEditText
+        <com.what3words.autosuggest.text.W3WAutoSuggestEditText
             android:id="@+id/suggestionEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -28,6 +29,29 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textHeader" />
+
+        <com.what3words.autosuggest.picker.W3WAutoSuggestPicker
+            android:id="@+id/suggestionPicker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:elevation="4dp"
+            android:layout_marginTop="@dimen/xlarge_margin"
+            android:layout_marginEnd="@dimen/main_s"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/suggestionEditText" />
+
+        <com.what3words.autosuggest.error.W3WAutoSuggestErrorMessage
+            android:id="@+id/suggestionError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:elevation="1dp"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/suggestionEditText" />
 
         <TextView
             android:id="@+id/selectedInfo"
@@ -92,6 +116,34 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/checkboxVoiceEnabled" />
 
+        <CheckBox
+            android:id="@+id/checkboxCustomPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
+            android:checked="false"
+            android:text="@string/custom_picker"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkboxVoiceFullscreen" />
+
+        <CheckBox
+            android:id="@+id/checkboxCustomError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
+            android:checked="false"
+            android:text="@string/custom_error"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkboxCustomPicker" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderPlaceholder"
             android:layout_width="match_parent"
@@ -101,7 +153,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/placeholder"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/checkboxVoiceFullscreen">
+            app:layout_constraintTop_toBottomOf="@+id/checkboxCustomError">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textPlaceholder"

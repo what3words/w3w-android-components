@@ -1,3 +1,5 @@
-include ':lib'
+include ':advanced-sample'
 rootProject.name='what3words-autosuggest'
+include ':lib'
 include ':sample'
+include ':sample-voice'
