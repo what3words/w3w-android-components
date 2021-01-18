@@ -1,0 +1,8 @@
+$dokka.format:gfm
+$dokka.linkExtension:md
+
+com.what3words.autosuggest.error
+com.what3words.autosuggest.picker
+com.what3words.autosuggest.text
+com.what3words.autosuggest.utils
+com.what3words.autosuggest.voice
