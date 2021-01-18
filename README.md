@@ -208,17 +208,11 @@ Use our base style as parent and you can set the custom properties available wit
 
 ## Full documentation:
 
-[lib](documentation/index.md)
-
-### Packages
+### Existing components:
 
 | Name | Summary |
 |---|---|
-| [com.what3words.autosuggest.error](documentation/com.what3words.autosuggest.error/index.md) |  |
-| [com.what3words.autosuggest.picker](documentation/com.what3words.autosuggest.picker/index.md) |  |
-| [com.what3words.autosuggest.text](documentation/com.what3words.autosuggest.text/index.md) |  |
-| [com.what3words.autosuggest.voice](documentation/com.what3words.autosuggest.voice/index.md) |  |
-
-### Index
-
-[All Types](documentation/alltypes/index.md)
+| [W3WAutoSuggestEditText](documentation/com.what3words.autosuggest.text/-w3-w-auto-suggest-edit-text/index.md) | `class W3WAutoSuggestEditText : AppCompatEditText`<br>A [AppCompatEditText](https://developer.android.com/reference/androidx/appcompat/widget/AppCompatEditText) to simplify the integration of what3words text and voice auto-suggest API in your app. |
+| [W3WAutoSuggestVoice](documentation/com.what3words.autosuggest.voice/-w3-w-auto-suggest-voice/index.md) | `class W3WAutoSuggestVoice : ConstraintLayout`<br>A [View](https://developer.android.com/reference/android/view/View.html) to simplify the integration of what3words voice auto-suggest API in your app. |
+| [W3WAutoSuggestErrorMessage](documentation/com.what3words.autosuggest.error/-w3-w-auto-suggest-error-message/index.md) | `class W3WAutoSuggestErrorMessage : AppCompatTextView`<br>A [AppCompatTextView](https://developer.android.com/reference/androidx/appcompat/widget/AppCompatTextView) styled and ready to show error messages. |
+| [W3WAutoSuggestPicker](documentation/com.what3words.autosuggest.picker/-w3-w-auto-suggest-picker/index.md) | `class W3WAutoSuggestPicker : RecyclerView`<br>A [RecyclerView](https://developer.android.com/reference/androidx/recyclerview/widget/RecyclerView) to show [W3WSuggestion](documentation/com.what3words.autosuggest.text/-w3-w-suggestion/index.md) returned by w3w auto suggest component modularized to allow developers to choose picker location on the screen. |
