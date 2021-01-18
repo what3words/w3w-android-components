@@ -186,9 +186,9 @@ or
 If you want to use voice-only (no text input) please look at our **voice-sample** app in this repo for examples of how to use our **W3WAutoSuggestVoice component**.
 
 
-## Advanced usage
+## Advanced usage:
 
-Check our advanced-sample app in this repo to help you implement our component in a different use case.
+If you want to check different ways to use our component please look at our **advanced-sample** app in this repo for examples of how to use and customize our **W3WAutoSuggestText component**.
 
 ![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_10.png?raw=true "Screenshot 10")
 
