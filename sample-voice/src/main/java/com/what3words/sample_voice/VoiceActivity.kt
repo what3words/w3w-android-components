@@ -6,12 +6,11 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
-import com.what3words.autosuggest.voice.W3WSuggestion
+import com.what3words.autosuggest.utils.W3WSuggestion
 import com.what3words.autosuggestsample.util.addOnTextChangedListener
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import kotlinx.android.synthetic.main.activity_voice.*
-import java.lang.Exception
 
 class VoiceActivity : AppCompatActivity() {
 

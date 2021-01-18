@@ -21,7 +21,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.what3words.autosuggest.voice.W3WSuggestion
+import com.what3words.autosuggest.utils.W3WSuggestion
 import com.what3words.javawrapper.request.Coordinates
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlin.math.abs
