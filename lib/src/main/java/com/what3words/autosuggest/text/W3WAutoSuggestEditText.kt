@@ -347,15 +347,7 @@ class W3WAutoSuggestEditText
 
     /**
      * For voice input, specifies the language our API will be listening for, default is English.
-     * Available voice languages:
-     * - ar for Arabic
-     * - cmn for Mandarin Chinese
-     * - de for German
-     * - en Global English (default)
-     * - es for Spanish
-     * - hi for Hindi
-     * - ja for Japanese
-     * - ko for Korean
+     * Available voice languages: ar for Arabic, cmn for Mandarin Chinese, de for German, en for Global English (default), es for Spanish, hi for Hindi, ja for Japanese, ko for Korean
      *
      * @param language the voice language (from list above)
      * @return same [W3WAutoSuggestEditText] instance
@@ -543,7 +535,7 @@ class W3WAutoSuggestEditText
     }
 
     /**
-     * onSelected will provide the user selected 3 word address, if user selects an invalid 3 word address [W3WSuggestion] will be null.
+     * Will provide the user selected 3 word address, if user selects an invalid 3 word address [W3WSuggestion] will be null.
      *
      * @param picker set custom 3 word address picker view [W3WAutoSuggestPicker], default picker will show below [W3WAutoSuggestEditText]
      * @param invalidAddressMessageView set custom invalid address view can be any [AppCompatTextView] or [W3WAutoSuggestErrorMessage], default view will show below [W3WAutoSuggestEditText]
@@ -570,7 +562,7 @@ class W3WAutoSuggestEditText
     }
 
     /**
-     * onError will provide any errors [APIResponse.What3WordsError] that might happen during the API call
+     * Will provide any errors [APIResponse.What3WordsError] that might happen during the API call
      *
      * @param errorView set custom error view can be any [AppCompatTextView] or [W3WAutoSuggestErrorMessage], default view will show below [W3WAutoSuggestEditText] (this will only show end-user error friendly message or message provided on [errorMessage])
      * @param errorCallback will return [APIResponse.What3WordsError] with information about the error occurred.
