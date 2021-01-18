@@ -18,7 +18,7 @@ The artifact is available through [![Maven Central](https://img.shields.io/maven
 ### Gradle
 
 ```
-implementation 'com.what3words:w3w-autosuggest-edittext-android:1.1.0'
+implementation 'com.what3words:w3w-autosuggest-edittext-android:1.2.0'
 ```
 
 ## Documentation
