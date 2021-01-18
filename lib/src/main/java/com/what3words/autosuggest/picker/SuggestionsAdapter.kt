@@ -10,7 +10,7 @@ import com.what3words.autosuggest.utils.FlagResourceTranslatorImpl
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 
-class SuggestionsAdapter(
+internal class SuggestionsAdapter(
     private val typeface: Typeface,
     private val textColor: Int,
     private val callback: ((Suggestion) -> Unit)?

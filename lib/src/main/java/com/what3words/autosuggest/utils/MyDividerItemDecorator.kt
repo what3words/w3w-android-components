@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-class MyDividerItemDecorator(
+internal class MyDividerItemDecorator(
     private val mDivider: Drawable,
     private val isReverse: Boolean = false
 ) : RecyclerView.ItemDecoration() {

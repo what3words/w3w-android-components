@@ -19,7 +19,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.http.QueryMap
 
-interface What3WordsV3ServiceSelection {
+internal interface What3WordsV3ServiceSelection {
     companion object {
         const val DEFAULT_ENDPOINT = "https://api.what3words.com/v3/"
     }

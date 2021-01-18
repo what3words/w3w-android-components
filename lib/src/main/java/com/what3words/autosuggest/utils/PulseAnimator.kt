@@ -113,7 +113,7 @@ internal class PulseAnimator(
 
 }
 
-object DisplayMetricsConverter {
+internal object DisplayMetricsConverter {
 
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.
@@ -146,7 +146,7 @@ internal fun getScaledSignal(
     return (maxScaled - minScaled) * (valueIn - MIN_SIGNAL_LEVEL) / (MAX_SIGNAL_LEVEL - MIN_SIGNAL_LEVEL) + minScaled
 }
 
-fun transform(
+internal fun transform(
     dBValue: Float,
     minScaled: Float = MIN_SCALED_LEVEL,
     maxScaled: Float = MAX_SCALED_LEVEL
