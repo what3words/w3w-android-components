@@ -32,6 +32,22 @@ internal fun W3WAutoSuggestEditText.buildErrorMessage() {
     (parent as? ViewGroup)?.addView(defaultInvalidAddressMessageView)
 }
 
+internal fun W3WAutoSuggestEditText.buildCorrection() {
+    val params = ViewGroup.MarginLayoutParams(
+        width,
+        WRAP_CONTENT
+    )
+    defaultCorrectionPicker.apply {
+        this.x = this@buildCorrection.x
+        this.y =
+            this@buildCorrection.y + this@buildCorrection.height - resources.getDimensionPixelSize(
+                R.dimen.tiny_margin
+            )
+        layoutParams = params
+    }
+    (parent as? ViewGroup)?.addView(defaultCorrectionPicker)
+}
+
 internal fun W3WAutoSuggestEditText.buildVoice() {
     val params = ViewGroup.MarginLayoutParams(
         resources.getDimensionPixelSize(R.dimen.voice_button_width),

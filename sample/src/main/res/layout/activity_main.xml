@@ -35,9 +35,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
-            android:elevation="4dp"
             android:layout_marginTop="@dimen/xlarge_margin"
             android:layout_marginEnd="@dimen/main_s"
+            android:elevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/suggestionEditText" />
@@ -46,12 +46,23 @@
             android:id="@+id/suggestionError"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:elevation="1dp"
             android:layout_marginStart="@dimen/main_s"
             android:layout_marginEnd="@dimen/main_s"
+            android:elevation="1dp"
+            app:layout_constraintBottom_toTopOf="@+id/suggestionEditText"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/suggestionEditText" />
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.what3words.autosuggest.picker.W3WAutoSuggestCorrectionPicker
+            android:id="@+id/correctionPicker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
+            android:elevation="1dp"
+            app:layout_constraintBottom_toTopOf="@+id/suggestionEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/selectedInfo"
@@ -144,6 +155,34 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/checkboxCustomPicker" />
 
+        <CheckBox
+            android:id="@+id/checkboxCustomCorrectionPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
+            android:checked="false"
+            android:text="@string/custom_correction_picker"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkboxCustomError" />
+
+        <CheckBox
+            android:id="@+id/checkboxAllowInvalidAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
+            android:checked="false"
+            android:text="@string/allow_invalid_address"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkboxCustomCorrectionPicker" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderPlaceholder"
             android:layout_width="match_parent"
@@ -153,7 +192,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/placeholder"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxCustomError">
+            app:layout_constraintTop_toBottomOf="@+id/checkboxAllowInvalidAddress">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textPlaceholder"

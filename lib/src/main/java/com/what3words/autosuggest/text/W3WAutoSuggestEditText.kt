@@ -2,6 +2,7 @@ package com.what3words.autosuggest.text
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
@@ -21,6 +22,7 @@ import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.autosuggest.BuildConfig
 import com.what3words.autosuggest.R
 import com.what3words.autosuggest.error.W3WAutoSuggestErrorMessage
+import com.what3words.autosuggest.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.autosuggest.picker.W3WAutoSuggestPicker
 import com.what3words.autosuggest.utils.InlineVoicePulseLayout
 import com.what3words.autosuggest.utils.VoicePulseLayout
@@ -46,8 +48,11 @@ class W3WAutoSuggestEditText
 
     companion object {
         internal const val DEBOUNCE_MS = 150L
+        internal val split_regex = Regex("[.｡。･・︒។։။۔።।,-_/ ]+")
         internal const val regex =
-            "^/*[^0-9`~!@#$%^&*()+\\-_=\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[・.。][^0-9`~!@#$%^&*()+\\-_=\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[・.。][^0-9`~!@#$%^&*()+\\-_=\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$"
+            "^/*[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$";
+        internal const val dym_regex =
+            "^/*[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}([.｡。･・︒។։။۔።।,-_/ ]+)[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}([.｡。･・︒។։။۔።।,-_/ ]+)[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$";
     }
 
     private var isRendered: Boolean = false
@@ -61,6 +66,7 @@ class W3WAutoSuggestEditText
     internal var queryMap: MutableMap<String, String> = mutableMapOf()
     internal var isEnterprise: Boolean = false
     internal var errorMessageText: String? = null
+    internal var correctionMessage: String = context.getString(R.string.correction_message)
     internal var invalidSelectionMessageText: String? = null
     internal var lastSuggestions: MutableList<Suggestion> = mutableListOf()
     internal var callback: Consumer<W3WSuggestion?>? =
@@ -70,6 +76,7 @@ class W3WAutoSuggestEditText
     internal var returnCoordinates: Boolean = false
     internal var voiceEnabled: Boolean = false
     internal var voiceFullscreen: Boolean = false
+    internal var allowInvalid3wa: Boolean = false
     internal var language: String? = null
     internal var voiceLanguage: String = "en"
     internal var voicePlaceholder: String
@@ -85,6 +92,7 @@ class W3WAutoSuggestEditText
     internal var builder: VoiceBuilder? = null
     internal var customPicker: W3WAutoSuggestPicker? = null
     internal var customErrorView: AppCompatTextView? = null
+    internal var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? = null
     private var customInvalidAddressMessageView: AppCompatTextView? = null
 
     internal val slashes: Drawable? by lazy {
@@ -124,6 +132,15 @@ class W3WAutoSuggestEditText
         }
     }
 
+
+    internal val defaultCorrectionPicker: W3WAutoSuggestCorrectionPicker by lazy {
+        val p = W3WAutoSuggestCorrectionPicker(context)
+        p.setCorrectionMessage(correctionMessage).internalCallback { selectedSuggestion ->
+            setText(selectedSuggestion.words)
+            p.visibility = GONE
+        }
+    }
+
     internal val defaultInvalidAddressMessageView: W3WAutoSuggestErrorMessage by lazy {
         W3WAutoSuggestErrorMessage(context)
     }
@@ -142,8 +159,24 @@ class W3WAutoSuggestEditText
                 val searchText = s.toString().trim()
 
                 if (fromPaste) {
-                    fromPaste = false
-                    setText(searchText.removePrefix("///"))
+                    if (isValid3wa(searchText.removePrefix("///"))) {
+                        fromPaste = false
+                        setText(searchText.removePrefix("///"))
+                    }
+
+                    if (fromPaste) {
+                        Uri.parse(searchText).lastPathSegment?.let {
+                            if (isValid3wa(it)) {
+                                fromPaste = false
+                                setText(it)
+                            }
+                        }
+                    }
+
+                    if (fromPaste) {
+                        fromPaste = false
+                        setText("")
+                    }
                     return
                 }
 
@@ -162,10 +195,13 @@ class W3WAutoSuggestEditText
                 }
 
                 searchFor = searchText
-                if (isPossible3wa(searchText)) {
+                if (isValid3wa(searchText)) {
                     if (hasFocus()) {
                         handleAutoSuggest(searchText, searchFor)
                     }
+                } else if (isPossible3wa(searchText)) {
+                    val words = searchText.split(split_regex, 3).joinToString(".")
+                    handleAutoSuggest(words, words, true)
                 } else {
                     getPicker().visibility = GONE
                     getPicker().refreshSuggestions(
@@ -185,6 +221,10 @@ class W3WAutoSuggestEditText
 
     internal fun getPicker(): W3WAutoSuggestPicker {
         return customPicker ?: defaultPicker
+    }
+
+    internal fun getCorrectionPicker(): W3WAutoSuggestCorrectionPicker {
+        return customCorrectionPicker ?: defaultCorrectionPicker
     }
 
     internal fun getInvalidAddressView(): AppCompatTextView {
@@ -208,6 +248,9 @@ class W3WAutoSuggestEditText
                 invalidSelectionMessageText = getString(
                     R.styleable.W3WAutoSuggestEditText_invalidAddressMessage
                 ) ?: resources.getString(R.string.invalid_address_message)
+                correctionMessage = getString(
+                    R.styleable.W3WAutoSuggestEditText_correctionMessage
+                ) ?: resources.getString(R.string.correction_message)
                 nResults = getInteger(R.styleable.W3WAutoSuggestEditText_nResults, 3)
                 language = getString(R.styleable.W3WAutoSuggestEditText_language)
                 voicePlaceholder = getString(R.styleable.W3WAutoSuggestEditText_voicePlaceholder)
@@ -258,6 +301,7 @@ class W3WAutoSuggestEditText
                 val keyboard: InputMethodManager =
                     (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                 keyboard.hideSoftInputFromWindow(windowToken, 0)
+                showImages(isReal3wa(text.toString()))
             } else {
                 showImages(false)
             }
@@ -272,6 +316,7 @@ class W3WAutoSuggestEditText
                     isRendered = true
                     if (customPicker == null) buildSuggestionList()
                     if (customErrorView == null) buildErrorMessage()
+                    if (customCorrectionPicker == null) buildCorrection()
                     buildVoice()
                     if (voiceFullscreen) buildBackgroundVoice()
                     viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -577,5 +622,46 @@ class W3WAutoSuggestEditText
         return this
     }
 
+    /**
+     * Add custom correction view to [W3WAutoSuggestEditText].
+     *
+     * @param customCorrectionPicker custom correct picker view.
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun customCorrectionPicker(
+        customCorrectionPicker: W3WAutoSuggestCorrectionPicker? = null,
+    ): W3WAutoSuggestEditText {
+        this.customCorrectionPicker = customCorrectionPicker
+        this.customCorrectionPicker?.setCorrectionMessage(correctionMessage)
+            ?.internalCallback { selectedSuggestion ->
+                setText(selectedSuggestion.words)
+                this.customCorrectionPicker?.visibility = GONE
+            }
+        return this
+    }
+
+    /**
+     * Set end-user correction picker title, default: "Did you mean?"
+     *
+     * @param message correction picker title
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun correctionMessage(
+        message: String
+    ): W3WAutoSuggestEditText {
+        this.correctionMessage = message
+        return this
+    }
+
+    /**
+     * Allow EditText to keep any text user types, default is false, by default EditText will be cleared if not a valid 3 word address, set to true to ignore this default behaviour.
+     *
+     * @param isAllowed are invalid 3 word addresses allowed
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun allowInvalid3wa(isAllowed: Boolean): W3WAutoSuggestEditText {
+        this.allowInvalid3wa = isAllowed
+        return this
+    }
 //endregion
 }
