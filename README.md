@@ -52,7 +52,7 @@ activity_main.xml
 	  android:layout_width="match_parent"
 	  android:layout_height="match_parent">
 
-	 <com.what3words.autosuggest.W3WAutoSuggestEditText
+	 <com.what3words.components.W3WAutoSuggestEditText
 		  android:id="@+id/suggestionEditText"
 		  android:layout_width="0dp"
 		  android:layout_height="wrap_content"
@@ -157,7 +157,7 @@ AndroidManifest.xml
 
 activity_main.xml
 ```XML
- <com.what3words.autosuggest.W3WAutoSuggestEditText
+ <com.what3words.components.W3WAutoSuggestEditText
 		  android:id="@+id/suggestionEditText"
 		  android:layout_width="0dp"
 		  android:layout_height="wrap_content"
