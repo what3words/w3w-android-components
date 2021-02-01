@@ -13,12 +13,12 @@ To obtain an API key, please visit [https://what3words.com/select-plan](https://
 
 ## Installation
 
-The artifact is available through [![Maven Central](https://img.shields.io/maven-central/v/com.what3words/w3w-autosuggest-edittext-android.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.what3words%22%20AND%20a:%22w3w-autosuggest-edittext-android%22)
+The artifact is available through [![Maven Central](https://img.shields.io/maven-central/v/com.what3words/w3w-android-components.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.what3words%22%20AND%20a:%22w3w-android-components%22)
 
 ### Gradle
 
 ```
-implementation 'com.what3words:w3w-autosuggest-edittext-android:1.2.0'
+implementation 'com.what3words:com.what3words:w3w-android-components:2.0.0'
 ```
 
 ## Documentation
@@ -127,7 +127,8 @@ If you run our Enterprise Suite API Server yourself, you may specify the URL to 
 | clipToCircle | *N/A* | Coordinates, Int | Clip results to a circle, specified by Coordinate(lat,lng) and kilometres, where kilometres in the radius of the circle. || :heavy_check_mark:
 | clipToBoundingBox | *N/A* | BoundingBox | Clip results to a bounding box specified using co-ordinates. || :heavy_check_mark:
 | clipToPolygon | *N/A* | List of Coordinates | Clip results to a bounding box specified using co-ordinates. || :heavy_check_mark:
-| returnCoordinates | *false* | Boolean | Calls the what3words API to obtain the coordinates for the selected 3 word address (to then use on a map or pass through to a logistic company etc) |:heavy_check_mark:| :heavy_check_mark:
+| returnCoordinates | *false* | Boolean | Calls the what3words API to obtain the coordinates for the selected 3 word address (to then use on a map or pass through to a logistic company etc) |:heavy_check_mark:| :heavy_check_mark:|
+| allowInvalid3wa | false | Boolean | Allow invalid 3 word address ||:heavy_check_mark:|
 | imageTintColor | *#E11F26* | Color | Changes /// image colour. |:heavy_check_mark:|
 | suggestionsListPosition | *BELOW* | Enum | Suggestion list position which can be `below`  (default) the EditText or `above` |:heavy_check_mark:|:heavy_check_mark:|
 
