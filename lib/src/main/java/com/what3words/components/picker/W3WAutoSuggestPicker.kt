@@ -1,4 +1,4 @@
-package com.what3words.autosuggest.picker
+package com.what3words.components.picker
 
 import android.content.Context
 import android.graphics.Typeface
@@ -8,10 +8,10 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.what3words.androidwrapper.What3WordsV3
-import com.what3words.autosuggest.R
-import com.what3words.autosuggest.text.handleSelectionTrack
-import com.what3words.autosuggest.utils.MyDividerItemDecorator
-import com.what3words.autosuggest.utils.W3WSuggestion
+import com.what3words.components.R
+import com.what3words.components.text.handleSelectionTrack
+import com.what3words.components.utils.MyDividerItemDecorator
+import com.what3words.components.utils.W3WSuggestion
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

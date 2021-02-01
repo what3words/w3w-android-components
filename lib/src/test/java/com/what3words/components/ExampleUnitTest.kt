@@ -1,4 +1,4 @@
-package com.what3words.autosuggest
+package com.what3words.components
 
 import org.junit.Test
 

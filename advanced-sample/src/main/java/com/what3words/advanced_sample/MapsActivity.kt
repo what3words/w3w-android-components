@@ -21,7 +21,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.what3words.autosuggest.utils.W3WSuggestion
+import com.what3words.components.utils.W3WSuggestion
 import com.what3words.javawrapper.request.Coordinates
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlin.math.abs
@@ -48,6 +48,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         autosuggest.apiKey("YOUR_WHAT3WORDS_API_KEY_HERE")
             .voiceEnabled(true)
             .returnCoordinates(true)
+            .customCorrectionPicker(correctionPicker)
             .onSelected(picker, message) { suggestion ->
                 if (suggestion != null) populateMarker(suggestion)
             }.onError(message) {

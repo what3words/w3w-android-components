@@ -1,4 +1,4 @@
-package com.what3words.autosuggest.text
+package com.what3words.components.text
 
 import android.Manifest
 import android.util.Log
@@ -8,9 +8,10 @@ import androidx.appcompat.widget.AppCompatEditText
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.voice.VoiceBuilder
-import com.what3words.autosuggest.error.showError
-import com.what3words.autosuggest.text.W3WAutoSuggestEditText.Companion.regex
-import com.what3words.autosuggest.utils.W3WSuggestion
+import com.what3words.components.error.showError
+import com.what3words.components.text.W3WAutoSuggestEditText.Companion.dym_regex
+import com.what3words.components.text.W3WAutoSuggestEditText.Companion.regex
+import com.what3words.components.utils.W3WSuggestion
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.coroutines.CoroutineScope
@@ -20,8 +21,14 @@ import kotlinx.coroutines.launch
 import java.util.*
 import java.util.regex.Pattern
 
-internal fun isPossible3wa(query: String): Boolean {
+internal fun isValid3wa(query: String): Boolean {
     Pattern.compile(regex).also {
+        return it.matcher(query).find()
+    }
+}
+
+internal fun isPossible3wa(query: String): Boolean {
+    Pattern.compile(dym_regex).also {
         return it.matcher(query).find()
     }
 }
@@ -30,7 +37,11 @@ internal fun W3WAutoSuggestEditText.isReal3wa(query: String): Boolean {
     return lastSuggestions.any { it.words == query }
 }
 
-internal fun W3WAutoSuggestEditText.handleAutoSuggest(searchText: String, searchFor: String) {
+internal fun W3WAutoSuggestEditText.handleAutoSuggest(
+    searchText: String,
+    searchFor: String,
+    isDYM: Boolean = false
+) {
     CoroutineScope(Dispatchers.IO).launch {
         delay(W3WAutoSuggestEditText.DEBOUNCE_MS)  //debounce timeOut
         if (searchText != searchFor)
@@ -92,14 +103,23 @@ internal fun W3WAutoSuggestEditText.handleAutoSuggest(searchText: String, search
                         clear()
                         addAll(res.suggestions)
                     }
-                    getPicker().visibility =
-                        if (res.suggestions.isEmpty()) GONE else VISIBLE
-                    getPicker().refreshSuggestions(
-                        res.suggestions,
-                        searchFor,
-                        queryMap,
-                        returnCoordinates
-                    )
+                    if (isDYM) {
+                        res.suggestions.firstOrNull { it.words == searchText }?.let {
+                            getCorrectionPicker().setSuggestion(it)
+                            getCorrectionPicker().visibility = VISIBLE
+                        } ?: run {
+                            getCorrectionPicker().visibility = GONE
+                        }
+                    } else {
+                        getPicker().visibility =
+                            if (res.suggestions.isEmpty()) GONE else VISIBLE
+                        getPicker().refreshSuggestions(
+                            res.suggestions,
+                            searchFor,
+                            queryMap,
+                            returnCoordinates
+                        )
+                    }
                 }
             }
         }
@@ -121,16 +141,23 @@ internal fun W3WAutoSuggestEditText.handleAddressPicked(
 }
 
 internal fun W3WAutoSuggestEditText.handleAddressAutoPicked(suggestion: Suggestion?) {
-    if (getPicker().visibility == VISIBLE && suggestion == null) {
+    if (suggestion == null && !allowInvalid3wa) {
         getInvalidAddressView().showError(invalidSelectionMessageText)
     }
     showImages(suggestion != null)
     getPicker().refreshSuggestions(emptyList(), null, emptyMap(), returnCoordinates)
     getPicker().visibility = GONE
+    getCorrectionPicker().setSuggestion(null)
+    getCorrectionPicker().visibility = GONE
     clearFocus()
     val originalQuery = text.toString()
-    setText(suggestion?.words)
-
+    if (suggestion != null) {
+        setText(suggestion.words)
+    } else {
+        if (!allowInvalid3wa) {
+            text = null
+        }
+    }
     if (suggestion == null) callback?.accept(null)
     else {
         if (!isEnterprise) handleSelectionTrack(suggestion, originalQuery, queryMap, key!!)

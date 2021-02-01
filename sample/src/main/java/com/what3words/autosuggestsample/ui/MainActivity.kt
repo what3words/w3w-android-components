@@ -39,6 +39,10 @@ class MainActivity : AppCompatActivity() {
             suggestionEditText.returnCoordinates(b)
         }
 
+        checkboxAllowInvalidAddress.setOnCheckedChangeListener { _, b ->
+            suggestionEditText.allowInvalid3wa(b)
+        }
+
         checkboxVoiceFullscreen.setOnCheckedChangeListener { _, b ->
             suggestionEditText.voiceFullscreen(b)
         }
@@ -47,12 +51,16 @@ class MainActivity : AppCompatActivity() {
             suggestionEditText.voiceEnabled(b)
         }
 
-        checkboxCustomPicker.setOnCheckedChangeListener { _, b ->
+        checkboxCustomPicker.setOnCheckedChangeListener { _, _ ->
             updateOnSelectedAndOnError()
         }
 
-        checkboxCustomError.setOnCheckedChangeListener { _, b ->
+        checkboxCustomError.setOnCheckedChangeListener { _, _ ->
             updateOnSelectedAndOnError()
+        }
+
+        checkboxCustomCorrectionPicker.setOnCheckedChangeListener { _, b ->
+            suggestionEditText.customCorrectionPicker(if (b) correctionPicker else null)
         }
 
         textPlaceholder.setText(R.string.input_hint)

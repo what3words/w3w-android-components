@@ -1,4 +1,4 @@
-package com.what3words.autosuggest.utils
+package com.what3words.components.utils
 
 import com.what3words.javawrapper.response.Suggestion
 

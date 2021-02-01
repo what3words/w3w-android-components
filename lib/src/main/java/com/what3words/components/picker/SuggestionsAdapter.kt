@@ -1,12 +1,12 @@
-package com.what3words.autosuggest.picker
+package com.what3words.components.picker
 
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.what3words.autosuggest.R
-import com.what3words.autosuggest.utils.FlagResourceTranslatorImpl
+import com.what3words.components.R
+import com.what3words.components.utils.FlagResourceTranslatorImpl
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 

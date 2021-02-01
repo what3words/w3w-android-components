@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.what3words.autosuggest">
+    package="com.what3words.components">
 
     /
 </manifest>

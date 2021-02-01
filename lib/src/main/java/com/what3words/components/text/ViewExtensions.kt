@@ -1,4 +1,4 @@
-package com.what3words.autosuggest.text
+package com.what3words.components.text
 
 import android.app.Activity
 import android.view.View.GONE
@@ -11,9 +11,9 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.TextUtilsCompat
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.what3words.autosuggest.R
-import com.what3words.autosuggest.utils.MyDividerItemDecorator
-import com.what3words.autosuggest.utils.VoicePulseLayout
+import com.what3words.components.R
+import com.what3words.components.utils.MyDividerItemDecorator
+import com.what3words.components.utils.VoicePulseLayout
 import java.util.*
 
 internal fun W3WAutoSuggestEditText.buildErrorMessage() {
@@ -30,6 +30,22 @@ internal fun W3WAutoSuggestEditText.buildErrorMessage() {
         layoutParams = params
     }
     (parent as? ViewGroup)?.addView(defaultInvalidAddressMessageView)
+}
+
+internal fun W3WAutoSuggestEditText.buildCorrection() {
+    val params = ViewGroup.MarginLayoutParams(
+        width,
+        WRAP_CONTENT
+    )
+    defaultCorrectionPicker.apply {
+        this.x = this@buildCorrection.x
+        this.y =
+            this@buildCorrection.y + this@buildCorrection.height - resources.getDimensionPixelSize(
+                R.dimen.tiny_margin
+            )
+        layoutParams = params
+    }
+    (parent as? ViewGroup)?.addView(defaultCorrectionPicker)
 }
 
 internal fun W3WAutoSuggestEditText.buildVoice() {
