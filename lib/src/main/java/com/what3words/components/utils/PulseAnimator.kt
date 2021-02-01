@@ -1,4 +1,4 @@
-package com.what3words.autosuggest.utils
+package com.what3words.components.utils
 
 import android.animation.Animator
 import android.animation.AnimatorSet

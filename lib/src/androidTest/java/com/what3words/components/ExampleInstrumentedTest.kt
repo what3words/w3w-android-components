@@ -1,4 +1,4 @@
-package com.what3words.autosuggest
+package com.what3words.components
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

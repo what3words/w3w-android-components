@@ -1,11 +1,10 @@
-package com.what3words.autosuggest.picker
+package com.what3words.components.picker
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.what3words.autosuggest.R
+import com.what3words.components.R
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.android.synthetic.main.correction_layout.view.*
 

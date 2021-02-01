@@ -1,4 +1,4 @@
-package com.what3words.autosuggest.text
+package com.what3words.components.text
 
 import android.Manifest
 import android.util.Log
@@ -8,10 +8,10 @@ import androidx.appcompat.widget.AppCompatEditText
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.voice.VoiceBuilder
-import com.what3words.autosuggest.error.showError
-import com.what3words.autosuggest.text.W3WAutoSuggestEditText.Companion.dym_regex
-import com.what3words.autosuggest.text.W3WAutoSuggestEditText.Companion.regex
-import com.what3words.autosuggest.utils.W3WSuggestion
+import com.what3words.components.error.showError
+import com.what3words.components.text.W3WAutoSuggestEditText.Companion.dym_regex
+import com.what3words.components.text.W3WAutoSuggestEditText.Companion.regex
+import com.what3words.components.utils.W3WSuggestion
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.coroutines.CoroutineScope

@@ -8,14 +8,6 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.0"
 
-    compileOptions {
-        kotlin {
-            kotlinOptions {
-                freeCompilerArgs += ["-module-name", "com.what3words.autosuggest"]
-            }
-        }
-    }
-
     dokka {
         outputFormat = 'gfm'
         outputDirectory = "$buildDir/javadoc"

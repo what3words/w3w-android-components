@@ -1,4 +1,4 @@
-package com.what3words.autosuggest.voice
+package com.what3words.components.voice
 
 import android.Manifest
 import android.animation.Animator
@@ -16,15 +16,15 @@ import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.voice.VoiceBuilder
-import com.what3words.autosuggest.BuildConfig
-import com.what3words.autosuggest.R
-import com.what3words.autosuggest.picker.W3WAutoSuggestPicker
-import com.what3words.autosuggest.text.W3WAutoSuggestEditText
-import com.what3words.autosuggest.text.populateQueryOptions
-import com.what3words.autosuggest.utils.DisplayMetricsConverter.convertPixelsToDp
-import com.what3words.autosuggest.utils.PulseAnimator
-import com.what3words.autosuggest.utils.W3WSuggestion
-import com.what3words.autosuggest.utils.transform
+import com.what3words.components.BuildConfig
+import com.what3words.components.R
+import com.what3words.components.picker.W3WAutoSuggestPicker
+import com.what3words.components.text.W3WAutoSuggestEditText
+import com.what3words.components.text.populateQueryOptions
+import com.what3words.components.utils.DisplayMetricsConverter.convertPixelsToDp
+import com.what3words.components.utils.PulseAnimator
+import com.what3words.components.utils.W3WSuggestion
+import com.what3words.components.utils.transform
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse

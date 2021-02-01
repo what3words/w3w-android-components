@@ -1,4 +1,4 @@
-package com.what3words.autosuggest.text
+package com.what3words.components.text
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -19,14 +19,14 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.util.Consumer
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.voice.VoiceBuilder
-import com.what3words.autosuggest.BuildConfig
-import com.what3words.autosuggest.R
-import com.what3words.autosuggest.error.W3WAutoSuggestErrorMessage
-import com.what3words.autosuggest.picker.W3WAutoSuggestCorrectionPicker
-import com.what3words.autosuggest.picker.W3WAutoSuggestPicker
-import com.what3words.autosuggest.utils.InlineVoicePulseLayout
-import com.what3words.autosuggest.utils.VoicePulseLayout
-import com.what3words.autosuggest.utils.W3WSuggestion
+import com.what3words.components.BuildConfig
+import com.what3words.components.R
+import com.what3words.components.error.W3WAutoSuggestErrorMessage
+import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
+import com.what3words.components.picker.W3WAutoSuggestPicker
+import com.what3words.components.utils.InlineVoicePulseLayout
+import com.what3words.components.utils.VoicePulseLayout
+import com.what3words.components.utils.W3WSuggestion
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse

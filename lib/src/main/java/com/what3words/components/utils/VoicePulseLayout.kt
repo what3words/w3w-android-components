@@ -1,4 +1,4 @@
-package com.what3words.autosuggest.utils
+package com.what3words.components.utils
 
 import android.animation.Animator
 import android.animation.ValueAnimator
@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.what3words.androidwrapper.voice.VoiceBuilder
-import com.what3words.autosuggest.R
+import com.what3words.components.R
 import kotlinx.android.synthetic.main.voice_pulse_layout.view.*
 
 internal class VoicePulseLayout

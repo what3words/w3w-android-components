@@ -1,7 +1,7 @@
-package com.what3words.autosuggest.text
+package com.what3words.components.text
 
 import android.os.Build
-import com.what3words.autosuggest.text.What3WordsV3ServiceSelection.Companion.DEFAULT_ENDPOINT
+import com.what3words.components.text.What3WordsV3ServiceSelection.Companion.DEFAULT_ENDPOINT
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.Suggestion
@@ -95,7 +95,7 @@ internal fun handleSelectionTrack(
             val request: Request =
                 chain.request().newBuilder().addHeader(
                     "X-W3W-AS-Component",
-                    "what3words-Android/${com.what3words.autosuggest.BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})"
+                    "what3words-Android/${com.what3words.components.BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})"
                 ).build()
             chain.proceed(request)
         }

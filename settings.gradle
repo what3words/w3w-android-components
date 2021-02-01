@@ -1,5 +1,5 @@
 include ':advanced-sample'
-rootProject.name='what3words-autosuggest'
+rootProject.name='what3words-components'
 include ':lib'
 include ':sample'
 include ':sample-voice'

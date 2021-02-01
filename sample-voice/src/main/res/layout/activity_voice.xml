@@ -20,7 +20,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.what3words.autosuggest.voice.W3WAutoSuggestVoice
+        <com.what3words.components.voice.W3WAutoSuggestVoice
             android:id="@+id/w3wVoice"
             android:layout_width="180dp"
             android:layout_height="180dp"
@@ -28,7 +28,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textHeader" />
 
-        <com.what3words.autosuggest.picker.W3WAutoSuggestPicker
+        <com.what3words.components.picker.W3WAutoSuggestPicker
             android:id="@+id/w3wPicker"
             android:layout_width="match_parent"
             android:layout_margin="@dimen/small_margin"

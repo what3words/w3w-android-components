@@ -51,11 +51,11 @@ class MainActivity : AppCompatActivity() {
             suggestionEditText.voiceEnabled(b)
         }
 
-        checkboxCustomPicker.setOnCheckedChangeListener { _, b ->
+        checkboxCustomPicker.setOnCheckedChangeListener { _, _ ->
             updateOnSelectedAndOnError()
         }
 
-        checkboxCustomError.setOnCheckedChangeListener { _, b ->
+        checkboxCustomError.setOnCheckedChangeListener { _, _ ->
             updateOnSelectedAndOnError()
         }
 
