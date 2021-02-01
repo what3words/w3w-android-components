@@ -3,7 +3,7 @@
 
 
 
-# <img src="https://what3words.com/assets/images/w3w_square_red.png" width="64" height="64" alt="what3words">&nbsp;w3w-autosuggest-edittext-android
+# <img src="https://what3words.com/assets/images/w3w_square_red.png" width="64" height="64" alt="what3words">&nbsp;w3w-android-components
 
 An Android library to use the [what3words v3 API autosuggest](https://developer.what3words.com/public-api/docs#autosuggest).
 
