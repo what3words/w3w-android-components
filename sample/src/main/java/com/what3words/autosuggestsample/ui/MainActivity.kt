@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         checkboxCustomCorrectionPicker.setOnCheckedChangeListener { _, b ->
-            suggestionEditText.customCorrectionPicker(correctionPicker)
+            suggestionEditText.customCorrectionPicker(if (b) correctionPicker else null)
         }
 
         textPlaceholder.setText(R.string.input_hint)

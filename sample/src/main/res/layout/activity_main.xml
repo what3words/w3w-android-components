@@ -59,8 +59,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
             android:layout_marginEnd="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_l"
             android:elevation="1dp"
-            app:layout_constraintBottom_toTopOf="@+id/suggestionEditText"
+            app:layout_constraintTop_toBottomOf="@+id/suggestionEditText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
