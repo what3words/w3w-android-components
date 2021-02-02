@@ -18,7 +18,7 @@ The artifact is available through [![Maven Central](https://img.shields.io/maven
 ### Gradle
 
 ```
-implementation 'com.what3words:com.what3words:w3w-android-components:2.0.0'
+implementation 'com.what3words:w3w-android-components:2.0.0'
 ```
 
 ## Documentation
