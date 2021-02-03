@@ -66,6 +66,8 @@ class W3WAutoSuggestVoice
     private var errorMessageText: String? = null
     private var callback: Consumer<List<W3WSuggestion>>? =
         null
+    private var onListeningCallback: Consumer<Boolean>? =
+        null
     private var selectedCallback: Consumer<W3WSuggestion?>? =
         null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? =
@@ -213,6 +215,7 @@ class W3WAutoSuggestVoice
         Runnable { w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive) }
 
     fun setIsVoiceRunning(isVoiceRunning: Boolean, withError: Boolean = false) {
+        onListeningCallback?.accept(isVoiceRunning)
         this.isVoiceRunning = isVoiceRunning
         if (isVoiceRunning) {
             handler?.removeCallbacks(changeBackIcon)
@@ -607,6 +610,17 @@ class W3WAutoSuggestVoice
         errorCallback: Consumer<APIResponse.What3WordsError>
     ): W3WAutoSuggestVoice {
         this.errorCallback = errorCallback
+        return this
+    }
+
+    /**
+     * onListening will return true if listening and false when stopped.
+     *
+     * @param callback will return a [Boolean].
+     * @return same [W3WAutoSuggestVoice] instance
+     */
+    fun onListening(callback: Consumer<Boolean>): W3WAutoSuggestVoice {
+        this.onListeningCallback = callback
         return this
     }
 }
