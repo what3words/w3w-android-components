@@ -23,6 +23,7 @@ import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.text.populateQueryOptions
 import com.what3words.components.utils.DisplayMetricsConverter.convertPixelsToDp
 import com.what3words.components.utils.PulseAnimator
+import com.what3words.components.utils.W3WListeningState
 import com.what3words.components.utils.W3WSuggestion
 import com.what3words.components.utils.transform
 import com.what3words.javawrapper.request.BoundingBox
@@ -66,7 +67,7 @@ class W3WAutoSuggestVoice
     private var errorMessageText: String? = null
     private var callback: Consumer<List<W3WSuggestion>>? =
         null
-    private var onListeningCallback: Consumer<Boolean>? =
+    private var onListeningCallback: Consumer<W3WListeningState>? =
         null
     private var selectedCallback: Consumer<W3WSuggestion?>? =
         null
@@ -111,7 +112,10 @@ class W3WAutoSuggestVoice
         setVoicePulseListeners()
 
         w3wLogo.setOnClickListener {
-            handleVoice()
+            if (isEnabled) {
+                onListeningCallback?.accept(W3WListeningState.Connecting)
+                handleVoice()
+            }
         }
 
         // Add a viewTreeObserver to obtain the initial size of the circle overlays
@@ -215,15 +219,16 @@ class W3WAutoSuggestVoice
         Runnable { w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive) }
 
     fun setIsVoiceRunning(isVoiceRunning: Boolean, withError: Boolean = false) {
-        onListeningCallback?.accept(isVoiceRunning)
         this.isVoiceRunning = isVoiceRunning
         if (isVoiceRunning) {
+            onListeningCallback?.accept(W3WListeningState.Started)
             handler?.removeCallbacks(changeBackIcon)
             w3wLogo.setImageResource(R.drawable.ic_voice_only_active)
             View.VISIBLE
         } else {
             resetLayout()
             if (withError) {
+                onListeningCallback?.accept(W3WListeningState.Stopped)
                 w3wLogo.setImageResource(R.drawable.ic_voice_only_error)
                 handler?.postDelayed(
                     changeBackIcon,
@@ -619,7 +624,7 @@ class W3WAutoSuggestVoice
      * @param callback will return a [Boolean].
      * @return same [W3WAutoSuggestVoice] instance
      */
-    fun onListening(callback: Consumer<Boolean>): W3WAutoSuggestVoice {
+    fun onListeningStateChanged(callback: Consumer<W3WListeningState>): W3WAutoSuggestVoice {
         this.onListeningCallback = callback
         return this
     }
