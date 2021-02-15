@@ -225,8 +225,8 @@ class W3WAutoSuggestVoice
             View.VISIBLE
         } else {
             resetLayout()
+            onListeningCallback?.accept(W3WListeningState.Stopped)
             if (withError) {
-                onListeningCallback?.accept(W3WListeningState.Stopped)
                 w3wLogo.setImageResource(R.drawable.ic_voice_only_error)
                 handler?.postDelayed(
                     changeBackIcon,
