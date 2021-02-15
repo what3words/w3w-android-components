@@ -37,8 +37,8 @@ class VoiceActivity : AppCompatActivity() {
                     setAction("OK") { dismiss() }
                     show()
                 }
-            }.onListening {
-                Log.i("MainActivity", if (it) "listening" else "stopped")
+            }.onListeningStateChanged {
+                Log.i("MainActivity", "${it.name}")
             }
 
         checkboxCoordinates.setOnCheckedChangeListener { _, b ->

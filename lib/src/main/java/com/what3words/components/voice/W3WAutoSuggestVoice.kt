@@ -112,10 +112,7 @@ class W3WAutoSuggestVoice
         setVoicePulseListeners()
 
         w3wLogo.setOnClickListener {
-            if (isEnabled) {
-                onListeningCallback?.accept(W3WListeningState.Connecting)
-                handleVoice()
-            }
+            handleVoice()
         }
 
         // Add a viewTreeObserver to obtain the initial size of the circle overlays
@@ -282,10 +279,16 @@ class W3WAutoSuggestVoice
     private fun handleVoice() {
         if (builder?.isListening() == true) {
             builder?.stopListening()
+            onListeningCallback?.accept(W3WListeningState.Stopped)
             setIsVoiceRunning(false)
             return
         }
 
+        if (!isEnabled) {
+            return
+        }
+
+        onListeningCallback?.accept(W3WListeningState.Connecting)
         populateQueryOptions(
             queryMap,
             "voice",
@@ -616,6 +619,22 @@ class W3WAutoSuggestVoice
     ): W3WAutoSuggestVoice {
         this.errorCallback = errorCallback
         return this
+    }
+
+    fun start() {
+        if (builder == null || builder?.isListening() == false) {
+            handleVoice()
+            return
+        }
+    }
+
+    fun stop() {
+        if (builder?.isListening() == true) {
+            builder?.stopListening()
+            onListeningCallback?.accept(W3WListeningState.Stopped)
+            setIsVoiceRunning(false)
+            return
+        }
     }
 
     /**
