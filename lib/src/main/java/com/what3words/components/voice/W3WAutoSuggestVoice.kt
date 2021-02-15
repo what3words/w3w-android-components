@@ -86,6 +86,7 @@ class W3WAutoSuggestVoice
     private var nResults: Int? = null
     private var wrapper: What3WordsV3? = null
     private var builder: VoiceBuilder? = null
+    private var microphone: VoiceBuilder.Microphone? = null
     private var suggestionsPicker: W3WAutoSuggestPicker? = null
 
     init {
@@ -279,7 +280,7 @@ class W3WAutoSuggestVoice
     private fun handleVoice() {
         if (builder?.isListening() == true) {
             builder?.stopListening()
-            onListeningCallback?.accept(W3WListeningState.Stopped)
+            microphone?.onListening {}
             setIsVoiceRunning(false)
             return
         }
@@ -316,8 +317,8 @@ class W3WAutoSuggestVoice
                         returnCoordinates
                     )
                     suggestionsPicker?.visibility = GONE
-                    val microphone = VoiceBuilder.Microphone()
-                    builder = wrapper!!.autosuggest(microphone, voiceLanguage).apply {
+                    microphone = VoiceBuilder.Microphone()
+                    builder = wrapper!!.autosuggest(microphone!!, voiceLanguage).apply {
                         nResults?.let {
                             this.nResults(it)
                         }
@@ -352,7 +353,7 @@ class W3WAutoSuggestVoice
                         }
                     }
 
-                    setup(builder!!, microphone)
+                    setup(builder!!, microphone!!)
                 }
 
                 override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
