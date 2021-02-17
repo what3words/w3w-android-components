@@ -225,7 +225,6 @@ class W3WAutoSuggestVoice
             View.VISIBLE
         } else {
             resetLayout()
-            onListeningCallback?.accept(W3WListeningState.Stopped)
             if (withError) {
                 w3wLogo.setImageResource(R.drawable.ic_voice_only_error)
                 handler?.postDelayed(
@@ -272,6 +271,7 @@ class W3WAutoSuggestVoice
             }
             builder.startListening()
         } else {
+            onListeningCallback?.accept(W3WListeningState.Stopped)
             builder.stopListening()
             setIsVoiceRunning(false)
         }
@@ -281,6 +281,7 @@ class W3WAutoSuggestVoice
         if (builder?.isListening() == true) {
             builder?.stopListening()
             microphone?.onListening {}
+            onListeningCallback?.accept(W3WListeningState.Stopped)
             setIsVoiceRunning(false)
             return
         }
@@ -342,6 +343,7 @@ class W3WAutoSuggestVoice
                         }
                         this.onSuggestions { suggestions ->
                             handleSuggestions(suggestions)
+                            onListeningCallback?.accept(W3WListeningState.Stopped)
                             setIsVoiceRunning(
                                 isVoiceRunning = false,
                                 withError = suggestions.isEmpty()
@@ -349,6 +351,7 @@ class W3WAutoSuggestVoice
                         }
                         this.onError {
                             errorCallback?.accept(it)
+                            onListeningCallback?.accept(W3WListeningState.Stopped)
                             setIsVoiceRunning(isVoiceRunning = false, withError = true)
                         }
                     }
@@ -633,6 +636,7 @@ class W3WAutoSuggestVoice
         if (builder?.isListening() == true) {
             builder?.stopListening()
             microphone?.onListening {}
+            onListeningCallback?.accept(W3WListeningState.Stopped)
             setIsVoiceRunning(false)
             return
         }
