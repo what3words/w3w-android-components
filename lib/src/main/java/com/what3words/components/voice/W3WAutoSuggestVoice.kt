@@ -633,7 +633,6 @@ class W3WAutoSuggestVoice
         if (builder?.isListening() == true) {
             builder?.stopListening()
             microphone?.onListening {}
-            onListeningCallback?.accept(W3WListeningState.Stopped)
             setIsVoiceRunning(false)
             return
         }
