@@ -643,9 +643,9 @@ class W3WAutoSuggestVoice
     }
 
     /**
-     * onListening will return true if listening and false when stopped.
+     * onListening will return [W3WListeningState] updating the current state of the component (Connecting, Started, Stopped).
      *
-     * @param callback will return a [Boolean].
+     * @param callback will return a [W3WListeningState].
      * @return same [W3WAutoSuggestVoice] instance
      */
     fun onListeningStateChanged(callback: Consumer<W3WListeningState>): W3WAutoSuggestVoice {
