@@ -23,6 +23,7 @@ import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.text.populateQueryOptions
 import com.what3words.components.utils.DisplayMetricsConverter.convertPixelsToDp
 import com.what3words.components.utils.PulseAnimator
+import com.what3words.components.utils.W3WListeningState
 import com.what3words.components.utils.W3WSuggestion
 import com.what3words.components.utils.transform
 import com.what3words.javawrapper.request.BoundingBox
@@ -66,6 +67,8 @@ class W3WAutoSuggestVoice
     private var errorMessageText: String? = null
     private var callback: Consumer<List<W3WSuggestion>>? =
         null
+    private var onListeningCallback: Consumer<W3WListeningState>? =
+        null
     private var selectedCallback: Consumer<W3WSuggestion?>? =
         null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? =
@@ -83,6 +86,7 @@ class W3WAutoSuggestVoice
     private var nResults: Int? = null
     private var wrapper: What3WordsV3? = null
     private var builder: VoiceBuilder? = null
+    private var microphone: VoiceBuilder.Microphone? = null
     private var suggestionsPicker: W3WAutoSuggestPicker? = null
 
     init {
@@ -215,6 +219,7 @@ class W3WAutoSuggestVoice
     fun setIsVoiceRunning(isVoiceRunning: Boolean, withError: Boolean = false) {
         this.isVoiceRunning = isVoiceRunning
         if (isVoiceRunning) {
+            onListeningCallback?.accept(W3WListeningState.Started)
             handler?.removeCallbacks(changeBackIcon)
             w3wLogo.setImageResource(R.drawable.ic_voice_only_active)
             View.VISIBLE
@@ -266,6 +271,7 @@ class W3WAutoSuggestVoice
             }
             builder.startListening()
         } else {
+            onListeningCallback?.accept(W3WListeningState.Stopped)
             builder.stopListening()
             setIsVoiceRunning(false)
         }
@@ -274,10 +280,17 @@ class W3WAutoSuggestVoice
     private fun handleVoice() {
         if (builder?.isListening() == true) {
             builder?.stopListening()
+            microphone?.onListening {}
+            onListeningCallback?.accept(W3WListeningState.Stopped)
             setIsVoiceRunning(false)
             return
         }
 
+        if (!isEnabled) {
+            return
+        }
+
+        onListeningCallback?.accept(W3WListeningState.Connecting)
         populateQueryOptions(
             queryMap,
             "voice",
@@ -305,8 +318,8 @@ class W3WAutoSuggestVoice
                         returnCoordinates
                     )
                     suggestionsPicker?.visibility = GONE
-                    val microphone = VoiceBuilder.Microphone()
-                    builder = wrapper!!.autosuggest(microphone, voiceLanguage).apply {
+                    microphone = VoiceBuilder.Microphone()
+                    builder = wrapper!!.autosuggest(microphone!!, voiceLanguage).apply {
                         nResults?.let {
                             this.nResults(it)
                         }
@@ -330,6 +343,7 @@ class W3WAutoSuggestVoice
                         }
                         this.onSuggestions { suggestions ->
                             handleSuggestions(suggestions)
+                            onListeningCallback?.accept(W3WListeningState.Stopped)
                             setIsVoiceRunning(
                                 isVoiceRunning = false,
                                 withError = suggestions.isEmpty()
@@ -337,11 +351,12 @@ class W3WAutoSuggestVoice
                         }
                         this.onError {
                             errorCallback?.accept(it)
+                            onListeningCallback?.accept(W3WListeningState.Stopped)
                             setIsVoiceRunning(isVoiceRunning = false, withError = true)
                         }
                     }
 
-                    setup(builder!!, microphone)
+                    setup(builder!!, microphone!!)
                 }
 
                 override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
@@ -607,6 +622,34 @@ class W3WAutoSuggestVoice
         errorCallback: Consumer<APIResponse.What3WordsError>
     ): W3WAutoSuggestVoice {
         this.errorCallback = errorCallback
+        return this
+    }
+
+    fun start() {
+        if (builder == null || builder?.isListening() == false) {
+            handleVoice()
+            return
+        }
+    }
+
+    fun stop() {
+        if (builder?.isListening() == true) {
+            builder?.stopListening()
+            microphone?.onListening {}
+            onListeningCallback?.accept(W3WListeningState.Stopped)
+            setIsVoiceRunning(false)
+            return
+        }
+    }
+
+    /**
+     * onListening will return [W3WListeningState] updating the current state of the component (Connecting, Started, Stopped).
+     *
+     * @param callback will return a [W3WListeningState].
+     * @return same [W3WAutoSuggestVoice] instance
+     */
+    fun onListeningStateChanged(callback: Consumer<W3WListeningState>): W3WAutoSuggestVoice {
+        this.onListeningCallback = callback
         return this
     }
 }

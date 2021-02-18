@@ -6,3 +6,9 @@ data class W3WSuggestion(
     val suggestion: Suggestion,
     val coordinates: com.what3words.javawrapper.response.Coordinates? = null
 )
+
+enum class W3WListeningState {
+    Connecting,
+    Started,
+    Stopped
+}
