@@ -12,6 +12,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
+import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
@@ -19,6 +20,7 @@ import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.components.BuildConfig
 import com.what3words.components.R
 import com.what3words.components.picker.W3WAutoSuggestPicker
+import com.what3words.components.text.AutoSuggestOptions
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.text.populateQueryOptions
 import com.what3words.components.utils.DisplayMetricsConverter.convertPixelsToDp
@@ -28,6 +30,7 @@ import com.what3words.components.utils.W3WSuggestion
 import com.what3words.components.utils.transform
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
+import com.what3words.javawrapper.request.SourceApi
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.android.synthetic.main.w3w_voice_only.view.*
@@ -62,7 +65,7 @@ class W3WAutoSuggestVoice
     private lateinit var voicePulseEndListener: Animator.AnimatorListener
 
     private var key: String? = null
-    private var queryMap: MutableMap<String, String> = mutableMapOf()
+    private var options: AutoSuggestOptions = AutoSuggestOptions()
     private var isEnterprise: Boolean = false
     private var errorMessageText: String? = null
     private var callback: Consumer<List<W3WSuggestion>>? =
@@ -291,9 +294,8 @@ class W3WAutoSuggestVoice
         }
 
         onListeningCallback?.accept(W3WListeningState.Connecting)
-        populateQueryOptions(
-            queryMap,
-            "voice",
+        options = populateQueryOptions(
+            SourceApi.VOICE,
             voiceLanguage,
             focus,
             null,
@@ -314,7 +316,7 @@ class W3WAutoSuggestVoice
                     suggestionsPicker?.refreshSuggestions(
                         emptyList(),
                         "",
-                        emptyMap(),
+                        AutoSuggestOptions(),
                         returnCoordinates
                     )
                     suggestionsPicker?.visibility = GONE
@@ -370,7 +372,7 @@ class W3WAutoSuggestVoice
     private fun handleSuggestions(suggestions: List<Suggestion>) {
         suggestionsPicker?.let {
             if (suggestions.isNotEmpty()) it.visibility = VISIBLE
-            it.refreshSuggestions(suggestions, null, queryMap, returnCoordinates)
+            it.refreshSuggestions(suggestions, null, options, returnCoordinates)
         } ?: run {
             if (returnCoordinates) {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -402,7 +404,7 @@ class W3WAutoSuggestVoice
         wrapper = What3WordsV3(
             key,
             context,
-            mapOf("X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})")
+            mapOf("X-W3W-AS-Component" to "what3words-Android/${VERSION_NAME} (Android ${Build.VERSION.RELEASE})")
         )
         return this
     }

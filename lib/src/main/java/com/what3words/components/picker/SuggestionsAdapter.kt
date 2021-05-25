@@ -3,12 +3,16 @@ package com.what3words.components.picker
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.what3words.components.R
 import com.what3words.components.utils.FlagResourceTranslatorImpl
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.android.synthetic.main.item_suggestion.view.*
+import java.text.NumberFormat
+import java.util.*
 
 internal class SuggestionsAdapter(
     private val typeface: Typeface,
@@ -55,27 +59,40 @@ internal class SuggestionsAdapter(
             query: String?,
             onSuggestionClicked: (Suggestion) -> Unit
         ) {
-            if (query == suggestion.words) {
-                view.w3wAddressLabel.setTypeface(typeface, Typeface.BOLD)
+            if (query?.replace(view.context.getString(R.string.w3w_slash),"").equals(suggestion.words, ignoreCase = true)
+            ) {
+                view.w3wSuggestionHolder.setBackgroundColor(view.context.getColor(R.color.w3wHover))
             } else {
-                view.w3wAddressLabel.setTypeface(typeface, Typeface.NORMAL)
+                view.w3wSuggestionHolder.setBackgroundColor(view.context.getColor(R.color.white))
             }
             view.w3wAddressLabel.text = suggestion.words
             view.w3wAddressLabel.setTextColor(view.context.getColor(textColor))
             if (!suggestion.nearestPlace.isNullOrEmpty()) {
+                view.w3wNearestPlaceLabel.visibility = VISIBLE
                 view.w3wNearestPlaceLabel.text =
                     if (suggestion.language != "en") suggestion.nearestPlace else view.w3wNearestPlaceLabel.context.getString(
                         R.string.near,
                         suggestion.nearestPlace
                     )
+            } else {
+                view.w3wNearestPlaceLabel.visibility = GONE
             }
             view.w3wNearestPlaceLabel.setTypeface(typeface, Typeface.NORMAL)
-            if (suggestion.country.isNullOrEmpty() || suggestion.country != "-99") {
+            if (suggestion.country == "ZZ") {
+                view.w3wAddressFlagIcon.visibility = VISIBLE
                 FlagResourceTranslatorImpl(view.w3wAddressFlagIcon.context).let {
                     view.w3wAddressFlagIcon.setImageResource(it.translate(suggestion.country))
                 }
             } else {
-                view.w3wAddressFlagIcon.setImageResource(R.drawable.ic_location_pin)
+                view.w3wAddressFlagIcon.visibility = GONE
+            }
+            suggestion.distanceToFocusKm?.let {
+                val nFormat = NumberFormat.getNumberInstance(Locale.getDefault())
+                view.w3wDistanceToFocus.text =
+                    view.context.getString(R.string.distance_metric, nFormat.format(it))
+                view.w3wDistanceToFocus.visibility = VISIBLE
+            } ?: run {
+                view.w3wDistanceToFocus.visibility = GONE
             }
             view.setOnClickListener {
                 onSuggestionClicked(suggestion)

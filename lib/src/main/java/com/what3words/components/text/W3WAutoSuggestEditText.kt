@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.KeyEvent
+import android.view.View
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -15,11 +16,10 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.util.Consumer
+import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.voice.VoiceBuilder
-import com.what3words.components.BuildConfig
 import com.what3words.components.R
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
@@ -31,6 +31,7 @@ import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
+
 
 /**
  * A [AppCompatEditText] to simplify the integration of what3words text and voice auto-suggest API in your app.
@@ -55,6 +56,7 @@ class W3WAutoSuggestEditText
             "^/*[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}([.｡。･・︒។։။۔።।,-_/ ]+)[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}([.｡。･・︒។։။۔።।,-_/ ]+)[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$";
     }
 
+    private var focusFromVoice: Boolean = false
     private var isRendered: Boolean = false
     internal var pickedFromVoice: Boolean = false
     private var pickedFromDropDown: Boolean = false
@@ -63,9 +65,10 @@ class W3WAutoSuggestEditText
 
     internal var isShowingTick: Boolean = false
     internal var key: String? = null
-    internal var queryMap: MutableMap<String, String> = mutableMapOf()
+    internal var options: AutoSuggestOptions = AutoSuggestOptions()
     internal var isEnterprise: Boolean = false
     internal var errorMessageText: String? = null
+    internal var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
     internal var correctionMessage: String = context.getString(R.string.correction_message)
     internal var invalidSelectionMessageText: String? = null
     internal var lastSuggestions: MutableList<Suggestion> = mutableListOf()
@@ -95,22 +98,10 @@ class W3WAutoSuggestEditText
     internal var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? = null
     private var customInvalidAddressMessageView: AppCompatTextView? = null
 
-    internal val slashes: Drawable? by lazy {
-        val d = ContextCompat.getDrawable(context, R.drawable.ic_slashes)
-        if (d != null) {
-            val wd: Drawable = DrawableCompat.wrap(d)
-            DrawableCompat.setTint(wd, slashesColor)
-            wd.setBounds(
-                0,
-                0,
-                this@W3WAutoSuggestEditText.textSize.toInt(),
-                this@W3WAutoSuggestEditText.textSize.toInt()
-            )
-            wd
-        } else {
-            null
-        }
+    enum class DisplayUnits {
+        SYSTEM, IMPERIAL, METRIC
     }
+
 
     internal val tick: Drawable? by lazy {
         ContextCompat.getDrawable(context, R.drawable.ic_tick).apply {
@@ -136,7 +127,7 @@ class W3WAutoSuggestEditText
     internal val defaultCorrectionPicker: W3WAutoSuggestCorrectionPicker by lazy {
         val p = W3WAutoSuggestCorrectionPicker(context)
         p.setCorrectionMessage(correctionMessage).internalCallback { selectedSuggestion ->
-            setText(selectedSuggestion.words)
+            setText(context.getString(R.string.w3w_slashes_with_address, selectedSuggestion.words))
             p.visibility = GONE
         }
     }
@@ -159,9 +150,9 @@ class W3WAutoSuggestEditText
                 val searchText = s.toString().trim()
 
                 if (fromPaste) {
-                    if (isValid3wa(searchText.removePrefix("///"))) {
+                    if (isValid3wa(searchText.removePrefix(context.getString(R.string.w3w_slashes)))) {
                         fromPaste = false
-                        setText(searchText.removePrefix("///"))
+                        setText(searchText.removePrefix(context.getString(R.string.w3w_slashes)))
                     }
 
                     if (fromPaste) {
@@ -189,7 +180,6 @@ class W3WAutoSuggestEditText
                     return
                 }
 
-                showImages()
                 if (searchText == searchFor) {
                     return
                 }
@@ -200,14 +190,14 @@ class W3WAutoSuggestEditText
                         handleAutoSuggest(searchText, searchFor)
                     }
                 } else if (isPossible3wa(searchText)) {
-                    val words = searchText.split(split_regex, 3).joinToString(".")
+                    val words = getPossible3wa(searchText).split(split_regex, 3).joinToString(".")
                     handleAutoSuggest(words, words, true)
                 } else {
                     getPicker().visibility = GONE
                     getPicker().refreshSuggestions(
                         emptyList(),
                         searchFor,
-                        emptyMap(),
+                        AutoSuggestOptions(),
                         returnCoordinates
                     )
                 }
@@ -266,6 +256,9 @@ class W3WAutoSuggestEditText
                 voiceFullscreen =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceFullscreen, false)
                 voiceLanguage = getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
+                displayUnits =
+                    DisplayUnits.values()[getInt(R.styleable.W3WAutoSuggestEditText_displayUnit, 0)]
+
             } finally {
                 this@W3WAutoSuggestEditText.textDirection = TEXT_DIRECTION_LOCALE
                 showImages()
@@ -283,6 +276,7 @@ class W3WAutoSuggestEditText
         }
 
         inlineVoicePulseLayout.onStartVoiceClick {
+            focusFromVoice = true
             if (!isShowingTick && wrapper != null) {
                 handleVoice()
             }
@@ -291,7 +285,7 @@ class W3WAutoSuggestEditText
         setOnFocusChangeListener { _, isFocused ->
             when {
                 !pickedFromDropDown && !isFocused && isReal3wa(text.toString()) -> {
-                    handleAddressAutoPicked(lastSuggestions.firstOrNull { it.words == text.toString() })
+                    handleAddressAutoPicked(getReal3wa(text.toString()))
                 }
                 !pickedFromDropDown && !isFocused && !isReal3wa(text.toString()) -> {
                     handleAddressAutoPicked(null)
@@ -301,10 +295,13 @@ class W3WAutoSuggestEditText
                 val keyboard: InputMethodManager =
                     (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                 keyboard.hideSoftInputFromWindow(windowToken, 0)
-                showImages(isReal3wa(text.toString()))
             } else {
+                if (this.text.isNullOrEmpty() && !focusFromVoice) this.setText(
+                    context.getString(R.string.w3w_slashes)
+                )
                 showImages(false)
             }
+            focusFromVoice = false
         }
 
         addTextChangedListener(watcher)
@@ -313,13 +310,15 @@ class W3WAutoSuggestEditText
             object :
                 ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
-                    isRendered = true
-                    if (customPicker == null) buildSuggestionList()
-                    if (customErrorView == null) buildErrorMessage()
-                    if (customCorrectionPicker == null) buildCorrection()
-                    buildVoice()
-                    if (voiceFullscreen) buildBackgroundVoice()
-                    viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    if (!isRendered && visibility == VISIBLE) {
+                        isRendered = true
+                        if (customPicker == null) buildSuggestionList()
+                        if (customErrorView == null) buildErrorMessage()
+                        if (customCorrectionPicker == null) buildCorrection()
+                        buildVoice()
+                        if (voiceFullscreen) buildBackgroundVoice()
+                        viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    }
                 }
             })
     }
@@ -349,7 +348,7 @@ class W3WAutoSuggestEditText
         wrapper = What3WordsV3(
             key,
             context,
-            mapOf("X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})")
+            mapOf("X-W3W-AS-Component" to "what3words-Android/${VERSION_NAME} (Android ${Build.VERSION.RELEASE})")
         )
         return this
     }
@@ -634,7 +633,12 @@ class W3WAutoSuggestEditText
         this.customCorrectionPicker = customCorrectionPicker
         this.customCorrectionPicker?.setCorrectionMessage(correctionMessage)
             ?.internalCallback { selectedSuggestion ->
-                setText(selectedSuggestion.words)
+                setText(
+                    context.getString(
+                        R.string.w3w_slashes_with_address,
+                        selectedSuggestion.words
+                    )
+                )
                 this.customCorrectionPicker?.visibility = GONE
             }
         return this

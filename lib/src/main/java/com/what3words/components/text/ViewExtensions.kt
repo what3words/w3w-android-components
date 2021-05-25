@@ -1,6 +1,7 @@
 package com.what3words.components.text
 
 import android.app.Activity
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.what3words.components.R
 import com.what3words.components.utils.MyDividerItemDecorator
 import com.what3words.components.utils.VoicePulseLayout
+import kotlinx.android.synthetic.main.item_suggestion.view.*
 import java.util.*
 
 internal fun W3WAutoSuggestEditText.buildErrorMessage() {
@@ -84,8 +86,9 @@ internal fun W3WAutoSuggestEditText.buildBackgroundVoice() {
     ((parent as? ViewGroup)?.rootView as? ViewGroup)?.addView(voicePulseLayout)
 }
 
+
 internal fun W3WAutoSuggestEditText.buildSuggestionList() {
-     val params = ViewGroup.MarginLayoutParams(
+    val params = ViewGroup.MarginLayoutParams(
         width,
         WRAP_CONTENT
     )
@@ -123,7 +126,7 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
     isShowingTick = showTick
     if (TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR) {
         setCompoundDrawables(
-            slashes,
+            null,
             null,
             if (showTick) tick else null,
             null
@@ -132,7 +135,7 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
         setCompoundDrawables(
             if (showTick) tick else null,
             null,
-            slashes,
+            null,
             null
         )
     }
@@ -157,4 +160,38 @@ internal fun W3WAutoSuggestEditText.hideKeyboard() {
     val imm: InputMethodManager =
         context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(windowToken, 0)
+}
+
+//internal fun W3WAutoSuggestEditText.formatUnits(distanceKm: Int): String {
+//    when {
+//        //Display <1km/<1m
+//        this.displayUnits == W3WAutoSuggestEditText.DisplayUnits.SYSTEM && Locale.getDefault()
+//            .isMetric() && distanceKm == 0 -> {
+//            return context.getString(R.string.distance_metric_low)
+//        }
+//        this.displayUnits == W3WAutoSuggestEditText.DisplayUnits.SYSTEM && !Locale.getDefault()
+//            .isMetric() && distanceKm == 0 -> {
+//            return context.getString(R.string.distance_imperial_low)
+//        }
+//        this.displayUnits == W3WAutoSuggestEditText.DisplayUnits.METRIC && distanceKm == 0 -> {
+//            return context.getString(R.string.distance_metric_low)
+//        }
+//        this.displayUnits == W3WAutoSuggestEditText.DisplayUnits.IMPERIAL && distanceKm == 0 -> {
+//            return context.getString(R.string.distance_imperial_low)
+//        }
+//
+//
+//        // >1
+//        this.displayUnits == W3WAutoSuggestEditText.DisplayUnits.METRIC -> {
+//
+//        }
+//    }
+//}
+
+
+internal fun Locale.isMetric(): Boolean {
+    return when (country.toUpperCase()) {
+        "US", "GB", "MM", "LR" -> false
+        else -> true
+    }
 }

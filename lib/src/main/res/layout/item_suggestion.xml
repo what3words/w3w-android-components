@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/w3wSuggestionHolder"
     android:layout_width="match_parent"
     android:layout_height="@dimen/suggestion_height"
-    android:background="@drawable/bg_suggestion"
     android:paddingStart="@dimen/xlarge_margin"
     android:paddingEnd="@dimen/xlarge_margin">
 
@@ -28,14 +28,15 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:textDirection="locale"
             android:id="@+id/w3wAddressLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/w3wBlue"
+            android:textDirection="locale"
             android:textSize="@dimen/default_text"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/w3wSlashesLabel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/w3wSlashesLabel"
@@ -44,31 +45,44 @@
 
         <ImageView
             android:id="@+id/w3wAddressFlagIcon"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/medium_margin"
+            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginEnd="@dimen/medium_margin"
             android:importantForAccessibility="no"
-            android:scaleType="fitXY"
-            app:layout_constraintEnd_toEndOf="@id/w3wSlashesLabel"
-            app:layout_constraintStart_toStartOf="@id/w3wSlashesLabel"
-            app:layout_constraintTop_toBottomOf="@id/w3wSlashesLabel"
-            tools:src="@color/colorAccent" />
+            android:src="@drawable/ic_zz"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/w3wNearestPlaceLabel"
+            app:layout_constraintStart_toStartOf="@id/w3wAddressLabel"
+            app:layout_constraintTop_toBottomOf="@id/w3wAddressLabel" />
 
         <TextView
             android:id="@+id/w3wNearestPlaceLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:gravity="center_vertical|start"
             android:maxLines="1"
             android:textAlignment="viewStart"
             android:textColor="@color/w3wGray"
             android:textSize="@dimen/secondary_text"
-            app:layout_constraintBottom_toBottomOf="@id/w3wAddressFlagIcon"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/w3wDistanceToFocus"
             app:layout_constraintStart_toEndOf="@id/w3wAddressFlagIcon"
-            app:layout_constraintTop_toTopOf="@id/w3wAddressFlagIcon"
+            app:layout_constraintTop_toBottomOf="@id/w3wAddressLabel"
             tools:text="Bayswater, London" />
+
+        <TextView
+            android:id="@+id/w3wDistanceToFocus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|start"
+            android:maxLines="1"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/w3wGray"
+            android:textSize="@dimen/secondary_text"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/w3wAddressLabel"
+            tools:text="10,256 km" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

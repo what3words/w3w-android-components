@@ -40,11 +40,11 @@ android {
 }
 
 dependencies {
-    implementation "androidx.recyclerview:recyclerview:1.1.0"
-    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation "androidx.recyclerview:recyclerview:1.2.0"
+    implementation 'androidx.core:core-ktx:1.5.0'
 
     // What3Words wrapper
-    implementation "com.what3words:w3w-android-wrapper:3.1.9"
+    implementation "com.what3words:w3w-android-wrapper:3.1.11"
     implementation 'com.intentfilter:android-permissions:2.0.54'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 }

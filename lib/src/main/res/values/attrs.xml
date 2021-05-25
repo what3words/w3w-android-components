@@ -12,6 +12,11 @@
         <attr name="voiceFullscreen" format="boolean" />
         <attr name="voiceLanguage" format="string" />
         <attr name="voicePlaceholder" format="string" />
+        <attr name="displayUnit" format="enum">
+            <enum name="system" value="0"/>
+            <enum name="imperial" value="1"/>
+            <enum name="metric" value="2"/>
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="CustomTheme">
