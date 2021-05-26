@@ -6,13 +6,15 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.what3words.components.R
+import com.what3words.components.text.W3WAutoSuggestEditText
+import com.what3words.components.text.formatUnits
+import com.what3words.components.utils.DisplayUnits
 import com.what3words.components.utils.FlagResourceTranslatorImpl
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.android.synthetic.main.item_suggestion.view.*
-import java.text.NumberFormat
-import java.util.*
 
 internal class SuggestionsAdapter(
     private val typeface: Typeface,
@@ -21,12 +23,18 @@ internal class SuggestionsAdapter(
 ) :
     RecyclerView.Adapter<SuggestionsAdapter.W3WLocationViewHolder>() {
 
+    private var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
     private var suggestions: List<Suggestion>? = null
     private var query: String? = null
 
-    fun refreshSuggestions(suggestions: List<Suggestion>, query: String?) {
+    fun refreshSuggestions(
+        suggestions: List<Suggestion>,
+        query: String?,
+        displayUnits: DisplayUnits
+    ) {
         this.suggestions = suggestions
         this.query = query
+        this.displayUnits = displayUnits
         notifyDataSetChanged()
     }
 
@@ -35,7 +43,7 @@ internal class SuggestionsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): W3WLocationViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.item_suggestion, parent, false)
-        return W3WLocationViewHolder(view, typeface, textColor)
+        return W3WLocationViewHolder(view, typeface, textColor, displayUnits)
     }
 
     override fun onBindViewHolder(holder: W3WLocationViewHolder, position: Int) {
@@ -51,7 +59,8 @@ internal class SuggestionsAdapter(
     class W3WLocationViewHolder(
         private val view: View,
         private val typeface: Typeface,
-        private val textColor: Int
+        private val textColor: Int,
+        private val displayUnits: DisplayUnits
     ) :
         RecyclerView.ViewHolder(view) {
         fun bind(
@@ -59,14 +68,15 @@ internal class SuggestionsAdapter(
             query: String?,
             onSuggestionClicked: (Suggestion) -> Unit
         ) {
-            if (query?.replace(view.context.getString(R.string.w3w_slash),"").equals(suggestion.words, ignoreCase = true)
+            if (query?.replace(view.context.getString(R.string.w3w_slash), "")
+                    .equals(suggestion.words, ignoreCase = true)
             ) {
-                view.w3wSuggestionHolder.setBackgroundColor(view.context.getColor(R.color.w3wHover))
+                view.w3wSuggestionHolder.setBackgroundColor(ContextCompat.getColor(view.context, R.color.w3wHover))
             } else {
-                view.w3wSuggestionHolder.setBackgroundColor(view.context.getColor(R.color.white))
+                view.w3wSuggestionHolder.setBackgroundColor(ContextCompat.getColor(view.context, R.color.white))
             }
             view.w3wAddressLabel.text = suggestion.words
-            view.w3wAddressLabel.setTextColor(view.context.getColor(textColor))
+            view.w3wAddressLabel.setTextColor(ContextCompat.getColor(view.context, textColor))
             if (!suggestion.nearestPlace.isNullOrEmpty()) {
                 view.w3wNearestPlaceLabel.visibility = VISIBLE
                 view.w3wNearestPlaceLabel.text =
@@ -87,9 +97,8 @@ internal class SuggestionsAdapter(
                 view.w3wAddressFlagIcon.visibility = GONE
             }
             suggestion.distanceToFocusKm?.let {
-                val nFormat = NumberFormat.getNumberInstance(Locale.getDefault())
                 view.w3wDistanceToFocus.text =
-                    view.context.getString(R.string.distance_metric, nFormat.format(it))
+                    formatUnits(suggestion.distanceToFocusKm, displayUnits, view.context)
                 view.w3wDistanceToFocus.visibility = VISIBLE
             } ?: run {
                 view.w3wDistanceToFocus.visibility = GONE

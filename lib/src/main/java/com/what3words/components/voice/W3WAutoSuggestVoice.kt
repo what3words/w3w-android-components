@@ -23,10 +23,9 @@ import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.text.AutoSuggestOptions
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.text.populateQueryOptions
+import com.what3words.components.utils.*
 import com.what3words.components.utils.DisplayMetricsConverter.convertPixelsToDp
 import com.what3words.components.utils.PulseAnimator
-import com.what3words.components.utils.W3WListeningState
-import com.what3words.components.utils.W3WSuggestion
 import com.what3words.components.utils.transform
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
@@ -88,6 +87,7 @@ class W3WAutoSuggestVoice
     private var focus: Coordinates? = null
     private var nResults: Int? = null
     private var wrapper: What3WordsV3? = null
+    internal var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
     private var builder: VoiceBuilder? = null
     private var microphone: VoiceBuilder.Microphone? = null
     private var suggestionsPicker: W3WAutoSuggestPicker? = null
@@ -106,6 +106,8 @@ class W3WAutoSuggestVoice
                 returnCoordinates =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_returnCoordinates, false)
                 voiceLanguage = getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
+                displayUnits =
+                    DisplayUnits.values()[getInt(R.styleable.W3WAutoSuggestEditText_displayUnit, 0)]
             } finally {
                 recycle()
             }
@@ -606,7 +608,7 @@ class W3WAutoSuggestVoice
         callback: Consumer<W3WSuggestion?>
     ): W3WAutoSuggestVoice {
         this.selectedCallback = callback
-        picker.setup(wrapper!!, isEnterprise, key!!)
+        picker.setup(wrapper!!, isEnterprise, key!!, displayUnits)
         picker.internalCallback {
             selectedCallback?.accept(it)
         }

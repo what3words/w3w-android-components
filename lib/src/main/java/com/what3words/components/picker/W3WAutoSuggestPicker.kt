@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.components.R
 import com.what3words.components.text.AutoSuggestOptions
+import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.text.handleSelectionTrack
+import com.what3words.components.utils.DisplayUnits
 import com.what3words.components.utils.MyDividerItemDecorator
 import com.what3words.components.utils.W3WSuggestion
 import com.what3words.javawrapper.response.Suggestion
@@ -30,6 +32,7 @@ class W3WAutoSuggestPicker
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
     private var options: AutoSuggestOptions = AutoSuggestOptions()
+    private var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
     private var key: String = ""
     private var isEnterprise: Boolean = false
     private var returnCoordinates: Boolean = false
@@ -50,12 +53,17 @@ class W3WAutoSuggestPicker
     private fun handleAddressPicked(
         suggestion: Suggestion?
     ) {
-        suggestionsAdapter.refreshSuggestions(emptyList(), null)
+        suggestionsAdapter.refreshSuggestions(emptyList(), null, displayUnits)
         visibility = GONE
         if (suggestion == null) {
             callback?.invoke(null)
         } else {
-            if (!isEnterprise && wrapper != null) handleSelectionTrack(suggestion, query, options, wrapper!!)
+            if (!isEnterprise && wrapper != null) handleSelectionTrack(
+                suggestion,
+                query,
+                options,
+                wrapper!!
+            )
             if (!returnCoordinates) {
                 callback?.invoke(W3WSuggestion(suggestion))
             } else {
@@ -97,11 +105,13 @@ class W3WAutoSuggestPicker
     internal fun setup(
         wrapper: What3WordsV3,
         isEnterprise: Boolean,
-        key: String
+        key: String,
+        displayUnits: DisplayUnits
     ) {
         this.isEnterprise = isEnterprise
         this.key = key
         this.wrapper = wrapper
+        this.displayUnits = displayUnits
     }
 
     internal fun refreshSuggestions(
@@ -110,14 +120,14 @@ class W3WAutoSuggestPicker
         options: AutoSuggestOptions,
         returnCoordinates: Boolean
     ) {
-        suggestionsAdapter.refreshSuggestions(suggestions, query)
+        suggestionsAdapter.refreshSuggestions(suggestions, query, displayUnits)
         this.returnCoordinates = returnCoordinates
         this.query = query ?: ""
         this.options = options
     }
 
     internal fun forceClear() {
-        suggestionsAdapter.refreshSuggestions(emptyList(), "")
+        suggestionsAdapter.refreshSuggestions(emptyList(), "", displayUnits)
         visibility = GONE
     }
 }

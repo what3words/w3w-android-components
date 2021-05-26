@@ -1,9 +1,13 @@
 package com.what3words.components.text
 
 import android.app.Activity
-import android.util.Log
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.content.Context
+import android.icu.text.MeasureFormat
+import android.icu.text.MeasureFormat.FormatWidth
+import android.icu.util.Measure
+import android.icu.util.MeasureUnit
+import android.view.View
+import android.view.View.*
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.inputmethod.InputMethodManager
@@ -13,10 +17,14 @@ import androidx.core.text.TextUtilsCompat
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.what3words.components.R
+import com.what3words.components.utils.DisplayUnits
 import com.what3words.components.utils.MyDividerItemDecorator
 import com.what3words.components.utils.VoicePulseLayout
 import kotlinx.android.synthetic.main.item_suggestion.view.*
+import java.text.NumberFormat
 import java.util.*
+import kotlin.math.roundToInt
+
 
 internal fun W3WAutoSuggestEditText.buildErrorMessage() {
     val params = ViewGroup.MarginLayoutParams(
@@ -85,7 +93,6 @@ internal fun W3WAutoSuggestEditText.buildBackgroundVoice() {
     }
     ((parent as? ViewGroup)?.rootView as? ViewGroup)?.addView(voicePulseLayout)
 }
-
 
 internal fun W3WAutoSuggestEditText.buildSuggestionList() {
     val params = ViewGroup.MarginLayoutParams(
@@ -162,31 +169,55 @@ internal fun W3WAutoSuggestEditText.hideKeyboard() {
     imm.hideSoftInputFromWindow(windowToken, 0)
 }
 
-//internal fun W3WAutoSuggestEditText.formatUnits(distanceKm: Int): String {
-//    when {
-//        //Display <1km/<1m
-//        this.displayUnits == W3WAutoSuggestEditText.DisplayUnits.SYSTEM && Locale.getDefault()
-//            .isMetric() && distanceKm == 0 -> {
-//            return context.getString(R.string.distance_metric_low)
-//        }
-//        this.displayUnits == W3WAutoSuggestEditText.DisplayUnits.SYSTEM && !Locale.getDefault()
-//            .isMetric() && distanceKm == 0 -> {
-//            return context.getString(R.string.distance_imperial_low)
-//        }
-//        this.displayUnits == W3WAutoSuggestEditText.DisplayUnits.METRIC && distanceKm == 0 -> {
-//            return context.getString(R.string.distance_metric_low)
-//        }
-//        this.displayUnits == W3WAutoSuggestEditText.DisplayUnits.IMPERIAL && distanceKm == 0 -> {
-//            return context.getString(R.string.distance_imperial_low)
-//        }
-//
-//
-//        // >1
-//        this.displayUnits == W3WAutoSuggestEditText.DisplayUnits.METRIC -> {
-//
-//        }
-//    }
-//}
+internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: Context): String {
+    if (distanceKm == 0 ||
+        (displayUnits == DisplayUnits.SYSTEM && !Locale.getDefault().isMetric() && (distanceKm / 1.609) < 1) ||
+        (displayUnits == DisplayUnits.IMPERIAL && (distanceKm / 1.609) < 1)
+    ) {
+        if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault().isMetric()) ||
+            displayUnits == DisplayUnits.METRIC) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                val fmtFr = MeasureFormat.getInstance(Locale.getDefault(), FormatWidth.SHORT)
+                val measureF = Measure(1, MeasureUnit.KILOMETER)
+                return context.getString(R.string.distance_metric_low, fmtFr.format(measureF))
+            } else {
+                return context.getString(R.string.distance_metric_low, "1 km")
+            }
+        } else {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                val fmtFr = MeasureFormat.getInstance(Locale.getDefault(), FormatWidth.SHORT)
+                val measureF = Measure(1, MeasureUnit.MILE)
+                return context.getString(R.string.distance_metric_low, fmtFr.format(measureF))
+            } else {
+                return context.getString(R.string.distance_imperial_low, "1 mi")
+            }
+        }
+    } else {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            val fmtFr = MeasureFormat.getInstance(Locale.getDefault(), FormatWidth.SHORT)
+            return if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
+                    .isMetric()) || displayUnits == DisplayUnits.METRIC
+            ) {
+                val measureF = Measure(distanceKm, MeasureUnit.KILOMETER)
+                fmtFr.format(measureF)
+            } else {
+                val measureF = Measure((distanceKm / 1.609).roundToInt(), MeasureUnit.MILE)
+                fmtFr.format(measureF)
+            }
+        } else {
+            val nFormat = NumberFormat.getNumberInstance(Locale.getDefault())
+            if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault().isMetric()) || displayUnits == DisplayUnits.METRIC) {
+                return context.getString(R.string.distance_metric, nFormat.format(distanceKm))
+            }
+            else {
+                return context.getString(
+                    R.string.distance_imperial,
+                    nFormat.format((distanceKm / 1.609).roundToInt())
+                )
+            }
+        }
+    }
+}
 
 
 internal fun Locale.isMetric(): Boolean {

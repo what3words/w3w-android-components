@@ -8,8 +8,8 @@
     <string name="voice_placeholder">Say a 3 word address…</string>
     <string name="near">near %s</string>
     <string name="distance_metric">%s km</string>
-    <string name="distance_imperial">%s m</string>
-    <string name="distance_metric_low">&lt;1 km</string>
-    <string name="distance_imperial_low">&lt;1 m</string>
+    <string name="distance_imperial">%s mi</string>
+    <string name="distance_metric_low">&lt;%s</string>
+    <string name="distance_imperial_low">&lt;%s</string>
     <string name="correction_message">Did you mean?</string>
 </resources>

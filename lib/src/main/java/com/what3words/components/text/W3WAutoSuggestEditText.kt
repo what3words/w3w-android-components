@@ -7,8 +7,8 @@ import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import android.util.Log
 import android.view.KeyEvent
-import android.view.View
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -24,6 +24,7 @@ import com.what3words.components.R
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.picker.W3WAutoSuggestPicker
+import com.what3words.components.utils.DisplayUnits
 import com.what3words.components.utils.InlineVoicePulseLayout
 import com.what3words.components.utils.VoicePulseLayout
 import com.what3words.components.utils.W3WSuggestion
@@ -98,11 +99,6 @@ class W3WAutoSuggestEditText
     internal var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? = null
     private var customInvalidAddressMessageView: AppCompatTextView? = null
 
-    enum class DisplayUnits {
-        SYSTEM, IMPERIAL, METRIC
-    }
-
-
     internal val tick: Drawable? by lazy {
         ContextCompat.getDrawable(context, R.drawable.ic_tick).apply {
             this?.setBounds(
@@ -116,7 +112,7 @@ class W3WAutoSuggestEditText
 
     internal val defaultPicker: W3WAutoSuggestPicker by lazy {
         val p = W3WAutoSuggestPicker(context)
-        p.setup(wrapper!!, isEnterprise, key!!)
+        p.setup(wrapper!!, isEnterprise, key!!, displayUnits)
         p.internalCallback { selectedSuggestion ->
             pickedFromDropDown = true
             handleAddressPicked(selectedSuggestion)
@@ -316,6 +312,7 @@ class W3WAutoSuggestEditText
                         if (customErrorView == null) buildErrorMessage()
                         if (customCorrectionPicker == null) buildCorrection()
                         buildVoice()
+                        //focusableParent()
                         if (voiceFullscreen) buildBackgroundVoice()
                         viewTreeObserver.removeOnGlobalLayoutListener(this)
                     }
@@ -593,7 +590,7 @@ class W3WAutoSuggestEditText
     ): W3WAutoSuggestEditText {
         this.callback = callback
         if (picker != null) {
-            picker.setup(wrapper!!, isEnterprise, key!!)
+            picker.setup(wrapper!!, isEnterprise, key!!, displayUnits)
             picker.internalCallback { selectedSuggestion ->
                 pickedFromDropDown = true
                 handleAddressPicked(selectedSuggestion)
@@ -654,6 +651,19 @@ class W3WAutoSuggestEditText
         message: String
     ): W3WAutoSuggestEditText {
         this.correctionMessage = message
+        return this
+    }
+
+    /**
+     * Set end-user display unit, [DisplayUnits.SYSTEM],[DisplayUnits.METRIC],[DisplayUnits.IMPERIAL]
+     *
+     * @param units [DisplayUnits.SYSTEM], [DisplayUnits.METRIC],[DisplayUnits.IMPERIAL],
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun displayUnit(
+        units: DisplayUnits
+    ): W3WAutoSuggestEditText {
+        this.displayUnits = units
         return this
     }
 
