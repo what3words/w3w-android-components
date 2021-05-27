@@ -6,7 +6,6 @@ import android.icu.text.MeasureFormat
 import android.icu.text.MeasureFormat.FormatWidth
 import android.icu.util.Measure
 import android.icu.util.MeasureUnit
-import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -63,7 +62,7 @@ internal fun W3WAutoSuggestEditText.buildVoice() {
         resources.getDimensionPixelSize(R.dimen.voice_button_width),
         resources.getDimensionPixelSize(R.dimen.input_height)
     )
-    inlineVoicePulseLayout.apply {
+    inlineVoicePulseLayout?.apply {
         if (TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR) {
             this.x =
                 this@buildVoice.x + this@buildVoice.width - (resources.getDimensionPixelSize(R.dimen.voice_button_width))
@@ -77,7 +76,7 @@ internal fun W3WAutoSuggestEditText.buildVoice() {
         visibility = if (voiceEnabled) VISIBLE else GONE
         setIsVoiceRunning(false)
     }
-    (parent as? ViewGroup)?.addView(inlineVoicePulseLayout)
+    if (inlineVoicePulseLayout != null) (parent as? ViewGroup)?.addView(inlineVoicePulseLayout)
 }
 
 internal fun W3WAutoSuggestEditText.buildBackgroundVoice() {
@@ -148,9 +147,9 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
     }
 
     if (!showTick && voiceEnabled) {
-        inlineVoicePulseLayout.visibility = VISIBLE
+        inlineVoicePulseLayout?.visibility = VISIBLE
     } else {
-        inlineVoicePulseLayout.visibility = GONE
+        inlineVoicePulseLayout?.visibility = GONE
     }
 }
 
@@ -171,11 +170,13 @@ internal fun W3WAutoSuggestEditText.hideKeyboard() {
 
 internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: Context): String {
     if (distanceKm == 0 ||
-        (displayUnits == DisplayUnits.SYSTEM && !Locale.getDefault().isMetric() && (distanceKm / 1.609) < 1) ||
+        (displayUnits == DisplayUnits.SYSTEM && !Locale.getDefault()
+            .isMetric() && (distanceKm / 1.609) < 1) ||
         (displayUnits == DisplayUnits.IMPERIAL && (distanceKm / 1.609) < 1)
     ) {
         if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault().isMetric()) ||
-            displayUnits == DisplayUnits.METRIC) {
+            displayUnits == DisplayUnits.METRIC
+        ) {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 val fmtFr = MeasureFormat.getInstance(Locale.getDefault(), FormatWidth.SHORT)
                 val measureF = Measure(1, MeasureUnit.KILOMETER)
@@ -206,10 +207,11 @@ internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: C
             }
         } else {
             val nFormat = NumberFormat.getNumberInstance(Locale.getDefault())
-            if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault().isMetric()) || displayUnits == DisplayUnits.METRIC) {
+            if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
+                    .isMetric()) || displayUnits == DisplayUnits.METRIC
+            ) {
                 return context.getString(R.string.distance_metric, nFormat.format(distanceKm))
-            }
-            else {
+            } else {
                 return context.getString(
                     R.string.distance_imperial,
                     nFormat.format((distanceKm / 1.609).roundToInt())

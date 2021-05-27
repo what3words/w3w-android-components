@@ -7,7 +7,6 @@ import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
-import android.util.Log
 import android.view.KeyEvent
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
@@ -132,8 +131,12 @@ class W3WAutoSuggestEditText
         W3WAutoSuggestErrorMessage(context)
     }
 
-    internal val inlineVoicePulseLayout: InlineVoicePulseLayout by lazy {
-        InlineVoicePulseLayout(context)
+    internal val inlineVoicePulseLayout: InlineVoicePulseLayout? by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            InlineVoicePulseLayout(context)
+        } else {
+            null
+        }
     }
 
     internal var voicePulseLayout: VoicePulseLayout? = null
@@ -271,7 +274,7 @@ class W3WAutoSuggestEditText
             }
         }
 
-        inlineVoicePulseLayout.onStartVoiceClick {
+        inlineVoicePulseLayout?.onStartVoiceClick {
             focusFromVoice = true
             if (!isShowingTick && wrapper != null) {
                 handleVoice()
@@ -311,7 +314,7 @@ class W3WAutoSuggestEditText
                         if (customPicker == null) buildSuggestionList()
                         if (customErrorView == null) buildErrorMessage()
                         if (customCorrectionPicker == null) buildCorrection()
-                        buildVoice()
+                        if (inlineVoicePulseLayout != null) buildVoice()
                         //focusableParent()
                         if (voiceFullscreen) buildBackgroundVoice()
                         viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -518,7 +521,7 @@ class W3WAutoSuggestEditText
         enabled: Boolean
     ): W3WAutoSuggestEditText {
         this.voiceEnabled = enabled
-        inlineVoicePulseLayout.visibility = if (enabled && !isShowingTick) VISIBLE else GONE
+        inlineVoicePulseLayout?.visibility = if (enabled && !isShowingTick) VISIBLE else GONE
         return this
     }
 

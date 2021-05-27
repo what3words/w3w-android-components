@@ -202,7 +202,7 @@ internal fun W3WAutoSuggestEditText.handleAddressAutoPicked(suggestion: Suggesti
 internal fun W3WAutoSuggestEditText.handleVoice() {
     if (builder?.isListening() == true) {
         builder?.stopListening()
-        inlineVoicePulseLayout.setIsVoiceRunning(false)
+        inlineVoicePulseLayout?.setIsVoiceRunning(false)
         return
     }
 
@@ -279,7 +279,7 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                         }
                         if (voiceFullscreen) {
                             voicePulseLayout?.setIsVoiceRunning(false, shouldAnimate = true)
-                        } else inlineVoicePulseLayout.setIsVoiceRunning(false)
+                        } else inlineVoicePulseLayout?.setIsVoiceRunning(false)
                     }
                     this.onError {
                         this@handleVoice.hint = textPlaceholder
@@ -291,7 +291,7 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                             false,
                             shouldAnimate = true
                         )
-                        else inlineVoicePulseLayout.setIsVoiceRunning(false)
+                        else inlineVoicePulseLayout?.setIsVoiceRunning(false)
                     }
                 }
 
@@ -306,7 +306,7 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                     }
                 } else {
                     this@handleVoice.hint = voicePlaceholder
-                    inlineVoicePulseLayout.setup(builder!!, microphone)
+                    inlineVoicePulseLayout?.setup(builder!!, microphone)
                 }
             }
 
