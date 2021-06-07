@@ -36,7 +36,7 @@ AndroidManifest.xml
     ...
 ```
 
-if **minSdkVersion < 24** add this to build.gradle (app level)
+add this to build.gradle (app level)
 ```
 compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
