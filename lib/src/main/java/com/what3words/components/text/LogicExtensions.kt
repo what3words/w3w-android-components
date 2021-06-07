@@ -269,9 +269,10 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                                 )
                             )
                             getPicker().visibility = AppCompatEditText.VISIBLE
+                            //Query empty because we don't want to highlight when using voice.
                             getPicker().refreshSuggestions(
                                 suggestions,
-                                suggestions.minByOrNull { it.rank }!!.words,
+                                "",
                                 options,
                                 returnCoordinates
                             )

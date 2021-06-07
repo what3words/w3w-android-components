@@ -315,7 +315,6 @@ class W3WAutoSuggestEditText
                         if (customErrorView == null) buildErrorMessage()
                         if (customCorrectionPicker == null) buildCorrection()
                         if (inlineVoicePulseLayout != null) buildVoice()
-                        //focusableParent()
                         if (voiceFullscreen) buildBackgroundVoice()
                         viewTreeObserver.removeOnGlobalLayoutListener(this)
                     }

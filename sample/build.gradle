@@ -15,8 +15,8 @@ android {
         applicationId "com.what3words.autosuggest"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 15
-        versionName "1.14"
+        versionCode 17
+        versionName "1.16"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
