@@ -46,7 +46,7 @@
             android:id="@+id/w3wAddressFlagIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="@dimen/medium_margin"
             android:importantForAccessibility="no"
             android:src="@drawable/ic_zz"

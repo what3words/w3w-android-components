@@ -62,7 +62,7 @@ internal fun W3WAutoSuggestEditText.buildVoice() {
         resources.getDimensionPixelSize(R.dimen.voice_button_width),
         resources.getDimensionPixelSize(R.dimen.input_height)
     )
-    inlineVoicePulseLayout?.apply {
+    inlineVoicePulseLayout.apply {
         if (TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR) {
             this.x =
                 this@buildVoice.x + this@buildVoice.width - (resources.getDimensionPixelSize(R.dimen.voice_button_width))
@@ -76,7 +76,7 @@ internal fun W3WAutoSuggestEditText.buildVoice() {
         visibility = if (voiceEnabled) VISIBLE else GONE
         setIsVoiceRunning(false)
     }
-    if (inlineVoicePulseLayout != null) (parent as? ViewGroup)?.addView(inlineVoicePulseLayout)
+    (parent as? ViewGroup)?.addView(inlineVoicePulseLayout)
 }
 
 internal fun W3WAutoSuggestEditText.buildBackgroundVoice() {
@@ -147,9 +147,9 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
     }
 
     if (!showTick && voiceEnabled) {
-        inlineVoicePulseLayout?.visibility = VISIBLE
+        inlineVoicePulseLayout.visibility = VISIBLE
     } else {
-        inlineVoicePulseLayout?.visibility = GONE
+        inlineVoicePulseLayout.visibility = GONE
     }
 }
 

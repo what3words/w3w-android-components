@@ -13,17 +13,17 @@ android {
 
     defaultConfig {
         applicationId "com.what3words.autosuggest"
-        minSdkVersion 19
+        minSdkVersion 23
         targetSdkVersion 30
-        versionCode 17
-        versionName "1.16"
+        versionCode 18
+        versionName "1.17"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

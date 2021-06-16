@@ -83,7 +83,7 @@ internal fun W3WAutoSuggestEditText.handleAutoSuggest(
         )
 
         val res =
-            wrapper!!.autosuggest(searchFor).apply {
+            wrapper!!.autosuggest(searchFor.replace("/", "")).apply {
                 this@handleAutoSuggest.focus?.let {
                     this.focus(it)
                 }
@@ -155,6 +155,8 @@ internal fun W3WAutoSuggestEditText.handleAddressPicked(
     showImages(suggestion != null)
     getPicker().refreshSuggestions(emptyList(), null, AutoSuggestOptions(), returnCoordinates)
     getPicker().visibility = GONE
+    getCorrectionPicker().setSuggestion(null)
+    getCorrectionPicker().visibility = GONE
     clearFocus()
     if (suggestion != null) {
         setText(context.getString(R.string.w3w_slashes_with_address, suggestion.suggestion.words))
@@ -185,7 +187,12 @@ internal fun W3WAutoSuggestEditText.handleAddressAutoPicked(suggestion: Suggesti
     }
     if (suggestion == null) callback?.accept(null)
     else {
-        if (!isEnterprise && wrapper != null) handleSelectionTrack(suggestion, originalQuery, options, wrapper!!)
+        if (!isEnterprise && wrapper != null) handleSelectionTrack(
+            suggestion,
+            originalQuery,
+            options,
+            wrapper!!
+        )
         if (!returnCoordinates) callback?.accept(W3WSuggestion(suggestion))
         else {
             CoroutineScope(Dispatchers.IO).launch {

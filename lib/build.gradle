@@ -6,7 +6,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.0"
+    buildToolsVersion "30.0.3"
 
     compileOptions {
         kotlin {
@@ -22,7 +22,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 23
         targetSdkVersion 30
         versionCode 3
         versionName "2.0.2"
@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-    implementation "androidx.recyclerview:recyclerview:1.2.0"
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation 'androidx.core:core-ktx:1.5.0'
 
     // What3Words wrapper

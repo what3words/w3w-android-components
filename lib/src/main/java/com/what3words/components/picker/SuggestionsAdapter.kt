@@ -3,8 +3,7 @@ package com.what3words.components.picker
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -85,7 +84,7 @@ internal class SuggestionsAdapter(
                         suggestion.nearestPlace
                     )
             } else {
-                view.w3wNearestPlaceLabel.visibility = GONE
+                view.w3wNearestPlaceLabel.visibility = INVISIBLE
             }
             view.w3wNearestPlaceLabel.setTypeface(typeface, Typeface.NORMAL)
             if (suggestion.country == "ZZ") {
@@ -101,7 +100,7 @@ internal class SuggestionsAdapter(
                     formatUnits(suggestion.distanceToFocusKm, displayUnits, view.context)
                 view.w3wDistanceToFocus.visibility = VISIBLE
             } ?: run {
-                view.w3wDistanceToFocus.visibility = GONE
+                view.w3wDistanceToFocus.visibility = INVISIBLE
             }
             view.setOnClickListener {
                 onSuggestionClicked(suggestion)
