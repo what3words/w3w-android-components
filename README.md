@@ -18,7 +18,7 @@ The artifact is available through [![Maven Central](https://img.shields.io/maven
 ### Gradle
 
 ```
-implementation 'com.what3words:w3w-android-components:2.0.2'
+implementation 'com.what3words:w3w-android-components:2.1.0'
 ```
 
 ## Documentation
@@ -36,12 +36,19 @@ AndroidManifest.xml
     ...
 ```
 
-if **minSdkVersion < 24** add this to build.gradle (app level)
+add this to build.gradle (app level)
 ```
 compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
 }
+```
+
+add this the following proguard rules
+```
+-keep class com.what3words.javawrapper.request.* { *; }
+-keep class com.what3words.javawrapper.response.* { *; }
+-keep class com.what3words.androidwrapper.voice.* { *; } //only needed if using voice functionality.
 ```
 
 activity_main.xml
