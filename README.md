@@ -15,6 +15,9 @@ To obtain an API key, please visit [https://what3words.com/select-plan](https://
 
 The artifact is available through [![Maven Central](https://img.shields.io/maven-central/v/com.what3words/w3w-android-components.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.what3words%22%20AND%20a:%22w3w-android-components%22)
 
+### Android support
+[![Generic badge](https://img.shields.io/badge/minSdk-23-green.svg)](https://developer.android.com/about/versions/marshmallow/android-6.0/)
+
 ### Gradle
 
 ```
@@ -48,7 +51,6 @@ add this the following proguard rules
 ```
 -keep class com.what3words.javawrapper.request.* { *; }
 -keep class com.what3words.javawrapper.response.* { *; }
--keep class com.what3words.androidwrapper.voice.* { *; } //only needed if using voice functionality.
 ```
 
 activity_main.xml
@@ -160,6 +162,11 @@ AndroidManifest.xml
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     ...
+```
+
+add following proguard rules
+```
+-keep class com.what3words.androidwrapper.voice.* { *; } //only needed if using voice functionality.
 ```
 
 activity_main.xml
