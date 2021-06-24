@@ -8,10 +8,12 @@ import androidx.appcompat.widget.AppCompatEditText
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.voice.VoiceBuilder
+import com.what3words.components.R
 import com.what3words.components.error.showError
 import com.what3words.components.text.W3WAutoSuggestEditText.Companion.dym_regex
 import com.what3words.components.text.W3WAutoSuggestEditText.Companion.regex
 import com.what3words.components.utils.W3WSuggestion
+import com.what3words.javawrapper.request.SourceApi
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.coroutines.CoroutineScope
@@ -27,14 +29,33 @@ internal fun isValid3wa(query: String): Boolean {
     }
 }
 
-internal fun isPossible3wa(query: String): Boolean {
+internal fun W3WAutoSuggestEditText.isPossible3wa(query: String): Boolean {
+    val queryFormatted = query.replace(context.getString(R.string.w3w_slash), "").toLowerCase(
+        Locale.getDefault()
+    )
     Pattern.compile(dym_regex).also {
-        return it.matcher(query).find()
+        return it.matcher(queryFormatted).find()
     }
 }
 
+internal fun W3WAutoSuggestEditText.getPossible3wa(query: String): String {
+    return query.replace(context.getString(R.string.w3w_slash), "").toLowerCase(
+        Locale.getDefault()
+    )
+}
+
 internal fun W3WAutoSuggestEditText.isReal3wa(query: String): Boolean {
-    return lastSuggestions.any { it.words == query }
+    val queryFormatted = query.replace(context.getString(R.string.w3w_slash), "").toLowerCase(
+        Locale.getDefault()
+    )
+    return lastSuggestions.any { it.words == queryFormatted }
+}
+
+internal fun W3WAutoSuggestEditText.getReal3wa(query: String): Suggestion? {
+    val queryFormatted = query.replace(context.getString(R.string.w3w_slash), "").toLowerCase(
+        Locale.getDefault()
+    )
+    return lastSuggestions.firstOrNull { it.words == queryFormatted }
 }
 
 internal fun W3WAutoSuggestEditText.handleAutoSuggest(
@@ -47,9 +68,8 @@ internal fun W3WAutoSuggestEditText.handleAutoSuggest(
         if (searchText != searchFor)
             return@launch
 
-        populateQueryOptions(
-            queryMap,
-            "text",
+        options = populateQueryOptions(
+            SourceApi.TEXT,
             null,
             focus,
             language,
@@ -63,7 +83,7 @@ internal fun W3WAutoSuggestEditText.handleAutoSuggest(
         )
 
         val res =
-            wrapper!!.autosuggest(searchFor).apply {
+            wrapper!!.autosuggest(searchFor.replace("/", "")).apply {
                 this@handleAutoSuggest.focus?.let {
                     this.focus(it)
                 }
@@ -116,7 +136,7 @@ internal fun W3WAutoSuggestEditText.handleAutoSuggest(
                         getPicker().refreshSuggestions(
                             res.suggestions,
                             searchFor,
-                            queryMap,
+                            options,
                             returnCoordinates
                         )
                     }
@@ -133,10 +153,17 @@ internal fun W3WAutoSuggestEditText.handleAddressPicked(
         getInvalidAddressView().showError(invalidSelectionMessageText)
     }
     showImages(suggestion != null)
-    getPicker().refreshSuggestions(emptyList(), null, emptyMap(), returnCoordinates)
+    getPicker().refreshSuggestions(emptyList(), null, AutoSuggestOptions(), returnCoordinates)
     getPicker().visibility = GONE
+    getCorrectionPicker().setSuggestion(null)
+    getCorrectionPicker().visibility = GONE
     clearFocus()
-    setText(suggestion?.suggestion?.words)
+    if (suggestion != null) {
+        setText(context.getString(R.string.w3w_slashes_with_address, suggestion.suggestion.words))
+    } else {
+        text = null
+    }
+
     callback?.accept(suggestion)
 }
 
@@ -145,14 +172,14 @@ internal fun W3WAutoSuggestEditText.handleAddressAutoPicked(suggestion: Suggesti
         getInvalidAddressView().showError(invalidSelectionMessageText)
     }
     showImages(suggestion != null)
-    getPicker().refreshSuggestions(emptyList(), null, emptyMap(), returnCoordinates)
+    getPicker().refreshSuggestions(emptyList(), null, AutoSuggestOptions(), returnCoordinates)
     getPicker().visibility = GONE
     getCorrectionPicker().setSuggestion(null)
     getCorrectionPicker().visibility = GONE
     clearFocus()
     val originalQuery = text.toString()
     if (suggestion != null) {
-        setText(suggestion.words)
+        setText(context.getString(R.string.w3w_slashes_with_address, suggestion.words))
     } else {
         if (!allowInvalid3wa) {
             text = null
@@ -160,7 +187,12 @@ internal fun W3WAutoSuggestEditText.handleAddressAutoPicked(suggestion: Suggesti
     }
     if (suggestion == null) callback?.accept(null)
     else {
-        if (!isEnterprise) handleSelectionTrack(suggestion, originalQuery, queryMap, key!!)
+        if (!isEnterprise && wrapper != null) handleSelectionTrack(
+            suggestion,
+            originalQuery,
+            options,
+            wrapper!!
+        )
         if (!returnCoordinates) callback?.accept(W3WSuggestion(suggestion))
         else {
             CoroutineScope(Dispatchers.IO).launch {
@@ -177,13 +209,12 @@ internal fun W3WAutoSuggestEditText.handleAddressAutoPicked(suggestion: Suggesti
 internal fun W3WAutoSuggestEditText.handleVoice() {
     if (builder?.isListening() == true) {
         builder?.stopListening()
-        inlineVoicePulseLayout.setIsVoiceRunning(false)
+        inlineVoicePulseLayout?.setIsVoiceRunning(false)
         return
     }
 
-    populateQueryOptions(
-        queryMap,
-        "voice",
+    options = populateQueryOptions(
+        SourceApi.VOICE,
         voiceLanguage,
         focus,
         language,
@@ -204,7 +235,7 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                 getPicker().refreshSuggestions(
                     emptyList(),
                     "",
-                    emptyMap(),
+                    AutoSuggestOptions(),
                     returnCoordinates
                 )
                 getPicker().visibility = GONE
@@ -238,19 +269,25 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                             getInvalidAddressView().showError(invalidSelectionMessageText)
                         } else {
                             pickedFromVoice = true
-                            this@handleVoice.setText(suggestions.minByOrNull { it.rank }!!.words)
+                            this@handleVoice.setText(
+                                context.getString(
+                                    R.string.w3w_slashes_with_address,
+                                    suggestions.minByOrNull { it.rank }!!.words
+                                )
+                            )
                             getPicker().visibility = AppCompatEditText.VISIBLE
+                            //Query empty because we don't want to highlight when using voice.
                             getPicker().refreshSuggestions(
                                 suggestions,
-                                suggestions.minByOrNull { it.rank }!!.words,
-                                queryMap,
+                                "",
+                                options,
                                 returnCoordinates
                             )
                             showKeyboard()
                         }
                         if (voiceFullscreen) {
                             voicePulseLayout?.setIsVoiceRunning(false, shouldAnimate = true)
-                        } else inlineVoicePulseLayout.setIsVoiceRunning(false)
+                        } else inlineVoicePulseLayout?.setIsVoiceRunning(false)
                     }
                     this.onError {
                         this@handleVoice.hint = textPlaceholder
@@ -262,7 +299,7 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                             false,
                             shouldAnimate = true
                         )
-                        else inlineVoicePulseLayout.setIsVoiceRunning(false)
+                        else inlineVoicePulseLayout?.setIsVoiceRunning(false)
                     }
                 }
 
@@ -277,7 +314,7 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                     }
                 } else {
                     this@handleVoice.hint = voicePlaceholder
-                    inlineVoicePulseLayout.setup(builder!!, microphone)
+                    inlineVoicePulseLayout?.setup(builder!!, microphone)
                 }
             }
 

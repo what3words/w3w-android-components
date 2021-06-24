@@ -7,7 +7,6 @@
     <dimen name="voice_button_height">56dp</dimen>
     <dimen name="voice_button_width">128dp</dimen>
 
-    <dimen name="suggestion_height">74dp</dimen>
     <dimen name="voice_popup_height">309dp</dimen>
 
     <dimen name="flag_width">16dp</dimen>

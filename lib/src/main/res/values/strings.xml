@@ -1,9 +1,15 @@
 <resources>
     <string name="w3w_slashes">///</string>
-    <string name="input_hint">e.g. index.home.raft</string>
+    <string name="w3w_slash">/</string>
+    <string name="w3w_slashes_with_address">///%s</string>
+    <string name="input_hint">e.g. ///lock.spout.radar</string>
     <string name="invalid_address_message">No valid what3words address found</string>
     <string name="error_message">An error occurred. Please try again later</string>
     <string name="voice_placeholder">Say a 3 word address…</string>
     <string name="near">near %s</string>
+    <string name="distance_metric">%s km</string>
+    <string name="distance_imperial">%s mi</string>
+    <string name="distance_metric_low">&lt;%s</string>
+    <string name="distance_imperial_low">&lt;%s</string>
     <string name="correction_message">Did you mean?</string>
 </resources>

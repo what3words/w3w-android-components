@@ -5,16 +5,18 @@
 
     </style>
     Uncomment for custom style
-        <style name="YourCustomStyle" parent="Widget.AppCompat.W3WAutoSuggestEditText">
-            <item name="android:textColor">#000000</item>
-            <item name="android:textColorHint">#888888</item>
-            <item name="errorMessage">Your custom error message</item>
-            <item name="android:hint">Your custom placeholder</item>
-            <item name="android:textAppearance">@style/YourCustomStyleTextAppearance</item>
-        </style>
 
-        <style name="YourCustomStyleTextAppearance" parent="TextAppearance.AppCompat">
-            <item name="android:textSize">32sp</item>
-            <item name="android:fontFamily">sans-serif-medium</item>
-        </style>
+    <style name="YourCustomStyle" parent="Widget.AppCompat.W3WAutoSuggestEditText">
+        <item name="android:textColor">#000000</item>
+        <item name="android:textColorHint">#888888</item>
+        <item name="invalidAddressMessage">Your custom invalid address message</item>
+        <item name="errorMessage">Your custom error message</item>
+        <item name="android:hint">Your custom placeholder</item>
+        <item name="android:textAppearance">@style/YourCustomStyleTextAppearance</item>
+    </style>
+
+    <style name="YourCustomStyleTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">22sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
 </resources>
