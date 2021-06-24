@@ -130,7 +130,8 @@ If you run our Enterprise Suite API Server yourself, you may specify the URL to 
 |--|--|--|--|--|--|
 | apiKey| *N/A* | String | Your what3words API key. **mandatory** |  | :heavy_check_mark:
 | hint | *e.g. lock.spout.radar* | String | Placeholder text to display in the input in its default empty state. | :heavy_check_mark:
-| errorMessage | *No valid what3words address found* | String | Overwrite the validation error message with a custom value. | :heavy_check_mark: | :heavy_check_mark:
+| errorMessage | *An error occurred. Please try again later* | String | Overwrite the generic error message with a custom value. | :heavy_check_mark: | :heavy_check_mark:
+| invalidAddressMessage | *No valid what3words address found* | String | Overwrite the validation error message with a custom value. | :heavy_check_mark: | :heavy_check_mark:
 | focus | *N/A* | Coordinates | This is a location, specified as a latitude/longitude (often where the user making the query is). If specified, the results will be weighted to give preference to those near the <code>focus</code> || :heavy_check_mark:
 | clipToCountry | *N/A* | String | Clip results to a given country or comma separated list of countries. Example value:"GB,US". || :heavy_check_mark:
 | clipToCircle | *N/A* | Coordinates, Int | Clip results to a circle, specified by Coordinate(lat,lng) and kilometres, where kilometres in the radius of the circle. || :heavy_check_mark:
@@ -138,7 +139,6 @@ If you run our Enterprise Suite API Server yourself, you may specify the URL to 
 | clipToPolygon | *N/A* | List of Coordinates | Clip results to a bounding box specified using co-ordinates. || :heavy_check_mark:
 | returnCoordinates | *false* | Boolean | Calls the what3words API to obtain the coordinates for the selected 3 word address (to then use on a map or pass through to a logistic company etc) |:heavy_check_mark:| :heavy_check_mark:|
 | allowInvalid3wa | false | Boolean | Allow invalid 3 word address ||:heavy_check_mark:|
-| imageTintColor | *#E11F26* | Color | Changes /// image colour. |:heavy_check_mark:|
 | suggestionsListPosition | *BELOW* | Enum | Suggestion list position which can be `below`  (default) the EditText or `above` |:heavy_check_mark:|:heavy_check_mark:|
 
 
@@ -213,16 +213,17 @@ Use our base style as parent and you can set the custom properties available wit
 
 ```xml
 <style name="YourCustomStyle" parent="Widget.AppCompat.W3WAutoSuggestEditText">
-	<item name="android:textColor">#000000</item>  
-	<item name="android:textColorHint">#888888</item>  
-	<item name="errorMessage">Your custom error message</item>  
-	<item name="android:hint">Your custom placeholder</item>
-    <item name="android:textAppearance">@style/YourCustomStyleTextAppearance</item>  
-</style>  
-  
-<style name="YourCustomStyleTextAppearance" parent="TextAppearance.AppCompat">  
-	 <item name="android:textSize">22sp</item>  
-	 <item name="android:fontFamily">sans-serif-medium</item>
+    <item name="android:textColor">#000000</item>
+    <item name="android:textColorHint">#888888</item>
+    <item name="invalidAddressMessage">Your custom invalid address message</item>
+    <item name="errorMessage">Your custom error message</item>
+    <item name="android:hint">Your custom placeholder</item>
+    <item name="android:textAppearance">@style/YourCustomStyleTextAppearance</item>
+</style>
+
+<style name="YourCustomStyleTextAppearance" parent="TextAppearance.AppCompat">
+    <item name="android:textSize">22sp</item>
+    <item name="android:fontFamily">sans-serif-medium</item>
 </style>
 ```
 
