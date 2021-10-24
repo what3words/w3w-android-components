@@ -1,23 +1,25 @@
 package com.what3words.sample_voice
 
 import android.annotation.SuppressLint
+import android.media.AudioFormat
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
+import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.autosuggestsample.util.addOnTextChangedListener
-import com.what3words.components.utils.W3WSuggestion
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
+import com.what3words.javawrapper.response.SuggestionWithCoordinates
 import kotlinx.android.synthetic.main.activity_voice.*
 
 class VoiceActivity : AppCompatActivity() {
 
-    private fun showSuggestion(selected: W3WSuggestion?) {
+    private fun showSuggestion(selected: SuggestionWithCoordinates?) {
         if (selected != null) {
             selectedInfo.text =
-                "words: ${selected.suggestion.words}\ncountry: ${selected.suggestion.country}\nnear: ${selected.suggestion.nearestPlace}\ndistance: ${if (selected.suggestion.distanceToFocusKm == null) "N/A" else selected.suggestion.distanceToFocusKm.toString() + "km"}\nlatitude: ${selected.coordinates?.lat}\nlongitude: ${selected.coordinates?.lng}"
+                "words: ${selected.words}\ncountry: ${selected.country}\nnear: ${selected.nearestPlace}\ndistance: ${if (selected.distanceToFocusKm == null) "N/A" else selected.distanceToFocusKm.toString() + "km"}\nlatitude: ${selected.coordinates?.lat}\nlongitude: ${selected.coordinates?.lng}"
         } else {
             selectedInfo.text = ""
         }
@@ -28,7 +30,8 @@ class VoiceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_voice)
 
-        w3wVoice.apiKey("YOUR_WHAT3WORDS_API_KEY_HERE")
+        w3wVoice.apiKey("TCRPZKEE")
+            .microphone(16000, AudioFormat.ENCODING_PCM_16BIT, AudioFormat.CHANNEL_IN_MONO)
             .onResults(w3wPicker) { selected ->
                 showSuggestion(selected)
             }.onError {
@@ -53,7 +56,7 @@ class VoiceActivity : AppCompatActivity() {
             } else {
                 w3wVoice.onResults { suggestionsList ->
                     //create/populate your own recyclerview or pick the top ranked suggestion
-                    showSuggestion(suggestionsList.minByOrNull { it.suggestion.rank })
+                    showSuggestion(suggestionsList.minByOrNull { it.rank })
                 }
             }
         }

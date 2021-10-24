@@ -36,5 +36,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.3.0'
 
     //w3w auto suggest
-    implementation "com.what3words:w3w-android-components:2.1.0"
+    //implementation "com.what3words:w3w-android-components:2.1.1"
+    implementation "com.what3words:w3w-android-wrapper:3.1.14"
+    implementation project(":lib")
 }

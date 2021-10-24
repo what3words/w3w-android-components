@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.components.R
 import kotlinx.android.synthetic.main.voice_pulse_layout.view.*
@@ -225,7 +226,7 @@ internal class VoicePulseLayout
         setLayout(outerCircleView, initialSizeList[PulseAnimator.OUTER_CIRCLE_INDEX])
     }
 
-    fun setup(builder: VoiceBuilder, microphone: VoiceBuilder.Microphone) {
+    fun setup(builder: VoiceBuilder, microphone: Microphone) {
         microphone.onListening {
             if (it != null) {
                 onSignalUpdate(transform(it))

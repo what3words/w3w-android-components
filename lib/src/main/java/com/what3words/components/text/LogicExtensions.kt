@@ -7,15 +7,16 @@ import android.view.View.VISIBLE
 import androidx.appcompat.widget.AppCompatEditText
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
+import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.components.R
 import com.what3words.components.error.showError
 import com.what3words.components.text.W3WAutoSuggestEditText.Companion.dym_regex
 import com.what3words.components.text.W3WAutoSuggestEditText.Companion.regex
-import com.what3words.components.utils.W3WSuggestion
 import com.what3words.javawrapper.request.SourceApi
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
+import com.what3words.javawrapper.response.SuggestionWithCoordinates
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -30,7 +31,7 @@ internal fun isValid3wa(query: String): Boolean {
 }
 
 internal fun W3WAutoSuggestEditText.isPossible3wa(query: String): Boolean {
-    val queryFormatted = query.replace(context.getString(R.string.w3w_slash), "").toLowerCase(
+    val queryFormatted = query.replace(context.getString(R.string.w3w_slash), "").lowercase(
         Locale.getDefault()
     )
     Pattern.compile(dym_regex).also {
@@ -39,20 +40,20 @@ internal fun W3WAutoSuggestEditText.isPossible3wa(query: String): Boolean {
 }
 
 internal fun W3WAutoSuggestEditText.getPossible3wa(query: String): String {
-    return query.replace(context.getString(R.string.w3w_slash), "").toLowerCase(
+    return query.replace(context.getString(R.string.w3w_slash), "").lowercase(
         Locale.getDefault()
     )
 }
 
 internal fun W3WAutoSuggestEditText.isReal3wa(query: String): Boolean {
-    val queryFormatted = query.replace(context.getString(R.string.w3w_slash), "").toLowerCase(
+    val queryFormatted = query.replace(context.getString(R.string.w3w_slash), "").lowercase(
         Locale.getDefault()
     )
     return lastSuggestions.any { it.words == queryFormatted }
 }
 
 internal fun W3WAutoSuggestEditText.getReal3wa(query: String): Suggestion? {
-    val queryFormatted = query.replace(context.getString(R.string.w3w_slash), "").toLowerCase(
+    val queryFormatted = query.replace(context.getString(R.string.w3w_slash), "").lowercase(
         Locale.getDefault()
     )
     return lastSuggestions.firstOrNull { it.words == queryFormatted }
@@ -147,7 +148,7 @@ internal fun W3WAutoSuggestEditText.handleAutoSuggest(
 }
 
 internal fun W3WAutoSuggestEditText.handleAddressPicked(
-    suggestion: W3WSuggestion?
+    suggestion: SuggestionWithCoordinates?
 ) {
     if (getPicker().visibility == VISIBLE && suggestion == null) {
         getInvalidAddressView().showError(invalidSelectionMessageText)
@@ -159,7 +160,7 @@ internal fun W3WAutoSuggestEditText.handleAddressPicked(
     getCorrectionPicker().visibility = GONE
     clearFocus()
     if (suggestion != null) {
-        setText(context.getString(R.string.w3w_slashes_with_address, suggestion.suggestion.words))
+        setText(context.getString(R.string.w3w_slashes_with_address, suggestion.words))
     } else {
         text = null
     }
@@ -193,12 +194,12 @@ internal fun W3WAutoSuggestEditText.handleAddressAutoPicked(suggestion: Suggesti
             options,
             wrapper!!
         )
-        if (!returnCoordinates) callback?.accept(W3WSuggestion(suggestion))
+        if (!returnCoordinates) callback?.accept(SuggestionWithCoordinates(suggestion))
         else {
             CoroutineScope(Dispatchers.IO).launch {
                 val res = wrapper!!.convertToCoordinates(suggestion.words).execute()
                 CoroutineScope(Dispatchers.Main).launch {
-                    callback?.accept(W3WSuggestion(suggestion, res.coordinates))
+                    callback?.accept(SuggestionWithCoordinates(suggestion, res.coordinates))
                 }
             }
         }
@@ -239,7 +240,7 @@ internal fun W3WAutoSuggestEditText.handleVoice() {
                     returnCoordinates
                 )
                 getPicker().visibility = GONE
-                val microphone = VoiceBuilder.Microphone()
+                val microphone = Microphone()
                 builder = wrapper!!.autosuggest(microphone, voiceLanguage).apply {
                     nResults?.let {
                         this.nResults(it)

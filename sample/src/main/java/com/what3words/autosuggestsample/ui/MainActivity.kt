@@ -19,11 +19,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        suggestionEditText.apiKey("YOUR_WHAT3WORDS_API_KEY_HERE")
+        suggestionEditText.apiKey("TCRPZKEE")
+            .returnCoordinates(true)
             .onSelected {
                 if (it != null) {
                     selectedInfo.text =
-                        "words: ${it.suggestion.words}\ncountry: ${it.suggestion.country}\nnear: ${it.suggestion.nearestPlace}\ndistance: ${if (it.suggestion.distanceToFocusKm == null) "N/A" else it.suggestion.distanceToFocusKm.toString() + "km"}\nlatitude: ${it.coordinates?.lat}\nlongitude: ${it.coordinates?.lng}"
+                        "words: ${it.words}\ncountry: ${it.country}\nnear: ${it.nearestPlace}\ndistance: ${if (it.distanceToFocusKm == null) "N/A" else it.distanceToFocusKm.toString() + "km"}\nlatitude: ${it.coordinates?.lat}\nlongitude: ${it.coordinates?.lng}"
                 } else {
                     selectedInfo.text = ""
                 }
@@ -166,7 +167,7 @@ class MainActivity : AppCompatActivity() {
         ) {
             if (it != null) {
                 selectedInfo.text =
-                    "words: ${it.suggestion.words}\ncountry: ${it.suggestion.country}\nnear: ${it.suggestion.nearestPlace}\ndistance: ${if (it.suggestion.distanceToFocusKm == null) "N/A" else it.suggestion.distanceToFocusKm.toString() + "km"}\nlatitude: ${it.coordinates?.lat}\nlongitude: ${it.coordinates?.lng}"
+                    "words: ${it.words}\ncountry: ${it.country}\nnear: ${it.nearestPlace}\ndistance: ${if (it.distanceToFocusKm == null) "N/A" else it.distanceToFocusKm.toString() + "km"}\nlatitude: ${it.coordinates?.lat}\nlongitude: ${it.coordinates?.lng}"
             } else {
                 selectedInfo.text = ""
             }

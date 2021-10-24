@@ -10,12 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.components.R
 import com.what3words.components.text.AutoSuggestOptions
-import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.text.handleSelectionTrack
 import com.what3words.components.utils.DisplayUnits
 import com.what3words.components.utils.MyDividerItemDecorator
-import com.what3words.components.utils.W3WSuggestion
 import com.what3words.javawrapper.response.Suggestion
+import com.what3words.javawrapper.response.SuggestionWithCoordinates
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,7 +37,7 @@ class W3WAutoSuggestPicker
     private var returnCoordinates: Boolean = false
     private var query: String = ""
     private var wrapper: What3WordsV3? = null
-    private var callback: ((suggestion: W3WSuggestion?) -> Unit)? =
+    private var callback: ((suggestion: SuggestionWithCoordinates?) -> Unit)? =
         null
 
     private val suggestionsAdapter: SuggestionsAdapter by lazy {
@@ -65,12 +64,12 @@ class W3WAutoSuggestPicker
                 wrapper!!
             )
             if (!returnCoordinates) {
-                callback?.invoke(W3WSuggestion(suggestion))
+                callback?.invoke(SuggestionWithCoordinates(suggestion))
             } else {
                 CoroutineScope(Dispatchers.IO).launch {
                     val res = wrapper!!.convertToCoordinates(suggestion.words).execute()
                     CoroutineScope(Dispatchers.Main).launch {
-                        callback?.invoke(W3WSuggestion(suggestion, res.coordinates))
+                        callback?.invoke(SuggestionWithCoordinates(suggestion, res.coordinates))
                     }
                 }
             }
@@ -97,7 +96,7 @@ class W3WAutoSuggestPicker
         visibility = GONE
     }
 
-    internal fun internalCallback(callback: (selectedSuggestion: W3WSuggestion?) -> Unit): W3WAutoSuggestPicker {
+    internal fun internalCallback(callback: (selectedSuggestion: SuggestionWithCoordinates?) -> Unit): W3WAutoSuggestPicker {
         this.callback = callback
         return this
     }

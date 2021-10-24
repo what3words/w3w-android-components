@@ -24,8 +24,8 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 4
-        versionName "2.1.0"
+        versionCode 5
+        versionName "2.1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -41,10 +41,15 @@ android {
 
 dependencies {
     implementation "androidx.recyclerview:recyclerview:1.2.1"
-    implementation 'androidx.core:core-ktx:1.5.0'
+    implementation 'androidx.core:core-ktx:1.6.0'
+
+    // kotlin
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1"
 
     // What3Words wrapper
-    implementation "com.what3words:w3w-android-wrapper:3.1.11"
+    api "com.what3words:w3w-android-wrapper:3.1.14"
     implementation 'com.intentfilter:android-permissions:2.0.54'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
 }

@@ -27,11 +27,11 @@ import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.utils.DisplayUnits
 import com.what3words.components.utils.InlineVoicePulseLayout
 import com.what3words.components.utils.VoicePulseLayout
-import com.what3words.components.utils.W3WSuggestion
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
+import com.what3words.javawrapper.response.SuggestionWithCoordinates
 
 
 /**
@@ -52,7 +52,7 @@ class W3WAutoSuggestEditText
         internal const val DEBOUNCE_MS = 150L
         internal val split_regex = Regex("[.｡。･・︒។։။۔።।,-_/ ]+")
         internal const val regex =
-            "^/*[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$";
+            "^/*[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$"
         internal const val dym_regex =
             "^/*[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}([.｡。･・︒។։။۔።।,-_/ ]+)[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}([.｡。･・︒។։။۔።।,-_/ ]+)[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$";
     }
@@ -73,7 +73,7 @@ class W3WAutoSuggestEditText
     internal var correctionMessage: String = context.getString(R.string.correction_message)
     internal var invalidSelectionMessageText: String? = null
     internal var lastSuggestions: MutableList<Suggestion> = mutableListOf()
-    internal var callback: Consumer<W3WSuggestion?>? =
+    internal var callback: Consumer<SuggestionWithCoordinates?>? =
         null
     internal var errorCallback: Consumer<APIResponse.What3WordsError>? =
         null
@@ -577,17 +577,17 @@ class W3WAutoSuggestEditText
     }
 
     /**
-     * Will provide the user selected 3 word address, if user selects an invalid 3 word address [W3WSuggestion] will be null.
+     * Will provide the user selected 3 word address, if user selects an invalid 3 word address [SuggestionWithCoordinates] will be null.
      *
      * @param picker set custom 3 word address picker view [W3WAutoSuggestPicker], default picker will show below [W3WAutoSuggestEditText]
      * @param invalidAddressMessageView set custom invalid address view can be any [AppCompatTextView] or [W3WAutoSuggestErrorMessage], default view will show below [W3WAutoSuggestEditText]
-     * @param callback will return [W3WSuggestion] selected by the user.
+     * @param callback will return the [SuggestionWithCoordinates] picked by the end-user, coordinates will be null if returnCoordinates = false.
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun onSelected(
         picker: W3WAutoSuggestPicker? = null,
         invalidAddressMessageView: AppCompatTextView? = null,
-        callback: Consumer<W3WSuggestion?>,
+        callback: Consumer<SuggestionWithCoordinates?>,
     ): W3WAutoSuggestEditText {
         this.callback = callback
         if (picker != null) {

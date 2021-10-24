@@ -162,5 +162,5 @@ internal fun transform(
 private val MIN_SIGNAL_LEVEL = 0.0f
 private val MAX_SIGNAL_LEVEL = 1.0f
 
-private val MIN_SCALED_LEVEL = 1f
+private val MIN_SCALED_LEVEL = 0f
 private val MAX_SCALED_LEVEL = 2.25f

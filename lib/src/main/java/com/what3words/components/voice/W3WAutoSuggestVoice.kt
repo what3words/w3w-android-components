@@ -4,6 +4,7 @@ import android.Manifest
 import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
+import android.media.AudioFormat
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
@@ -16,22 +17,24 @@ import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
+import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.androidwrapper.voice.VoiceBuilder
-import com.what3words.components.BuildConfig
 import com.what3words.components.R
 import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.text.AutoSuggestOptions
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.text.populateQueryOptions
-import com.what3words.components.utils.*
 import com.what3words.components.utils.DisplayMetricsConverter.convertPixelsToDp
+import com.what3words.components.utils.DisplayUnits
 import com.what3words.components.utils.PulseAnimator
+import com.what3words.components.utils.W3WListeningState
 import com.what3words.components.utils.transform
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.request.SourceApi
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
+import com.what3words.javawrapper.response.SuggestionWithCoordinates
 import kotlinx.android.synthetic.main.w3w_voice_only.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,11 +70,11 @@ class W3WAutoSuggestVoice
     private var options: AutoSuggestOptions = AutoSuggestOptions()
     private var isEnterprise: Boolean = false
     private var errorMessageText: String? = null
-    private var callback: Consumer<List<W3WSuggestion>>? =
+    private var callback: Consumer<List<SuggestionWithCoordinates>>? =
         null
     private var onListeningCallback: Consumer<W3WListeningState>? =
         null
-    private var selectedCallback: Consumer<W3WSuggestion?>? =
+    private var selectedCallback: Consumer<SuggestionWithCoordinates?>? =
         null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? =
         null
@@ -89,7 +92,7 @@ class W3WAutoSuggestVoice
     private var wrapper: What3WordsV3? = null
     internal var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
     private var builder: VoiceBuilder? = null
-    private var microphone: VoiceBuilder.Microphone? = null
+    private var microphone: Microphone? = null
     private var suggestionsPicker: W3WAutoSuggestPicker? = null
 
     init {
@@ -262,7 +265,7 @@ class W3WAutoSuggestVoice
         setLayout(outerCircleView, initialSizeList[PulseAnimator.OUTER_CIRCLE_INDEX])
     }
 
-    internal fun setup(builder: VoiceBuilder, microphone: VoiceBuilder.Microphone) {
+    internal fun setup(builder: VoiceBuilder, microphone: Microphone) {
         if (!isVoiceRunning) {
             var oldTimestamp = System.currentTimeMillis()
             microphone.onListening {
@@ -273,6 +276,11 @@ class W3WAutoSuggestVoice
                         onSignalUpdate(transform(it))
                     }
                 }
+            }
+            microphone.onError { microphoneError ->
+                errorCallback?.accept(APIResponse.What3WordsError.UNKNOWN_ERROR.also {
+                    it.message = microphoneError
+                })
             }
             builder.startListening()
         } else {
@@ -322,7 +330,7 @@ class W3WAutoSuggestVoice
                         returnCoordinates
                     )
                     suggestionsPicker?.visibility = GONE
-                    microphone = VoiceBuilder.Microphone()
+                    if (microphone == null) microphone = Microphone()
                     builder = wrapper!!.autosuggest(microphone!!, voiceLanguage).apply {
                         nResults?.let {
                             this.nResults(it)
@@ -378,10 +386,10 @@ class W3WAutoSuggestVoice
         } ?: run {
             if (returnCoordinates) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    val listWithCoordinates = mutableListOf<W3WSuggestion>()
+                    val listWithCoordinates = mutableListOf<SuggestionWithCoordinates>()
                     suggestions.forEach {
                         val res = wrapper!!.convertToCoordinates(it.words).execute()
-                        listWithCoordinates.add(W3WSuggestion(it, res.coordinates))
+                        listWithCoordinates.add(SuggestionWithCoordinates(it, res.coordinates))
                     }
                     CoroutineScope(Dispatchers.Main).launch {
                         callback?.accept(
@@ -390,7 +398,7 @@ class W3WAutoSuggestVoice
                     }
                 }
             } else {
-                callback?.accept(suggestions.map { W3WSuggestion(it, null) })
+                callback?.accept(suggestions.map { SuggestionWithCoordinates(it) })
             }
         }
     }
@@ -408,6 +416,19 @@ class W3WAutoSuggestVoice
             context,
             mapOf("X-W3W-AS-Component" to "what3words-Android/${VERSION_NAME} (Android ${Build.VERSION.RELEASE})")
         )
+        return this
+    }
+
+    /** Set a custom Microphone setup i.e: recording rate, encoding, channel in, etc.
+     *
+     * @param recordingRate your custom recording rate
+     * @param encoding your custom encoding [AudioFormat.ENCODING_]
+     * @param channel your custom channel_in [AudioFormat.CHANNEL_IN_]
+     * @param format your custom channel_in [AudioFormat.CHANNEL_IN_]
+     * @return same [W3WAutoSuggestVoice] instance
+     */
+    fun microphone(recordingRate: Int, encoding: Int, channel: Int): W3WAutoSuggestVoice {
+        this.microphone = Microphone(recordingRate, encoding, channel)
         return this
     }
 
@@ -587,10 +608,10 @@ class W3WAutoSuggestVoice
     /**
      * onResults without [W3WAutoSuggestPicker] will provide a list of 3 word addresses found using our voice API.
      *
-     * @param callback will return a list of [W3WSuggestion].
+     * @param callback will return a list of [SuggestionWithCoordinates].
      * @return same [W3WAutoSuggestVoice] instance
      */
-    fun onResults(callback: Consumer<List<W3WSuggestion>>): W3WAutoSuggestVoice {
+    fun onResults(callback: Consumer<List<SuggestionWithCoordinates>>): W3WAutoSuggestVoice {
         this.callback = callback
         this.suggestionsPicker = null
         return this
@@ -600,12 +621,12 @@ class W3WAutoSuggestVoice
      * onResults with will provide the 3 word address selected by the end-user using the [W3WAutoSuggestPicker] provided.
      *
      * @param picker [W3WAutoSuggestPicker] to show on screen the list of 3 word addresses found using our voice API.
-     * @param callback will return the [W3WSuggestion] picked by the end-user.
+     * @param callback will return the [SuggestionWithCoordinates] picked by the end-user, coordinates will be null if returnCoordinates = false.
      * @return same [W3WAutoSuggestVoice] instance
      */
     fun onResults(
         picker: W3WAutoSuggestPicker,
-        callback: Consumer<W3WSuggestion?>
+        callback: Consumer<SuggestionWithCoordinates?>
     ): W3WAutoSuggestVoice {
         this.selectedCallback = callback
         picker.setup(wrapper!!, isEnterprise, key!!, displayUnits)

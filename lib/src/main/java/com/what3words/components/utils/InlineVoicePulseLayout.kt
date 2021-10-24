@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.components.R
 import kotlinx.android.synthetic.main.inline_voice_pulse_layout.view.*
@@ -177,7 +178,7 @@ internal class InlineVoicePulseLayout
         this.startVoiceClick = callback
     }
 
-    fun setup(builder: VoiceBuilder, microphone: VoiceBuilder.Microphone) {
+    fun setup(builder: VoiceBuilder, microphone: Microphone) {
         if (!isVoiceRunning) {
             microphone.onListening {
                 if (!isVoiceRunning) setIsVoiceRunning(true)
