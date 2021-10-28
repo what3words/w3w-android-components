@@ -58,7 +58,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1"
 
     // What3Words wrapper
-    api "com.what3words:w3w-android-wrapper:3.1.14"
+    api "com.what3words:w3w-android-wrapper:3.1.15"
     implementation 'com.intentfilter:android-permissions:2.0.54'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
 }

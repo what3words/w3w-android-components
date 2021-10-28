@@ -5,6 +5,7 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.media.AudioFormat
+import android.media.MediaRecorder
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
@@ -427,8 +428,8 @@ class W3WAutoSuggestVoice
      * @param format your custom channel_in [AudioFormat.CHANNEL_IN_]
      * @return same [W3WAutoSuggestVoice] instance
      */
-    fun microphone(recordingRate: Int, encoding: Int, channel: Int): W3WAutoSuggestVoice {
-        this.microphone = Microphone(recordingRate, encoding, channel)
+    fun microphone(recordingRate: Int, encoding: Int, channel: Int, audioSource: Int): W3WAutoSuggestVoice {
+        this.microphone = Microphone(recordingRate, encoding, channel, audioSource)
         return this
     }
 
