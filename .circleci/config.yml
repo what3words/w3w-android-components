@@ -78,11 +78,11 @@ jobs:
 #          path: sample-multi-autosuggest-providers/build/outputs/apk/release
 
 workflows:
-  build-test-sonar:
-    jobs:
-      - build-test-sonar:
-          name: Build, run tests, upload to sonar
-          context: SonarCloud
+#  build-test-sonar:
+#    jobs:
+#      - build-test-sonar:
+#          name: Build, run tests, upload to sonar
+#          context: SonarCloud
   build-test-sonar-publish:
     jobs:
       - build-test-sonar:
