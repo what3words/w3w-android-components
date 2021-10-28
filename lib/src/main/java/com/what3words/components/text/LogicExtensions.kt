@@ -8,7 +8,6 @@ import androidx.appcompat.widget.AppCompatEditText
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.voice.Microphone
-import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.components.R
 import com.what3words.components.error.showError
 import com.what3words.components.text.W3WAutoSuggestEditText.Companion.dym_regex
