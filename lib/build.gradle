@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'org.sonarqube' version '3.3'
     id 'maven-publish'
+    id 'kotlin-android-extensions'
     id 'signing'
     id 'org.jetbrains.dokka' version '1.5.0'
 }
