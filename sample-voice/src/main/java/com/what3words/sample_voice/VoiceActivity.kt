@@ -2,6 +2,7 @@ package com.what3words.sample_voice
 
 import android.annotation.SuppressLint
 import android.media.AudioFormat
+import android.media.MediaRecorder
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -31,7 +32,7 @@ class VoiceActivity : AppCompatActivity() {
         setContentView(R.layout.activity_voice)
 
         w3wVoice.apiKey("TCRPZKEE")
-            .microphone(16000, AudioFormat.ENCODING_PCM_16BIT, AudioFormat.CHANNEL_IN_MONO)
+            .microphone(16000, AudioFormat.ENCODING_PCM_16BIT, AudioFormat.CHANNEL_IN_MONO, MediaRecorder.AudioSource.MIC)
             .onResults(w3wPicker) { selected ->
                 showSuggestion(selected)
             }.onError {
