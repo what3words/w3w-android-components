@@ -8,9 +8,8 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.what3words.components.R
-import com.what3words.components.text.W3WAutoSuggestEditText
+import com.what3words.components.models.DisplayUnits
 import com.what3words.components.text.formatUnits
-import com.what3words.components.utils.DisplayUnits
 import com.what3words.components.utils.FlagResourceTranslatorImpl
 import com.what3words.javawrapper.response.Suggestion
 import kotlinx.android.synthetic.main.item_suggestion.view.*
@@ -68,7 +67,7 @@ internal class SuggestionsAdapter(
             onSuggestionClicked: (Suggestion) -> Unit
         ) {
             if (query?.replace(view.context.getString(R.string.w3w_slash), "")
-                    .equals(suggestion.words, ignoreCase = true)
+                .equals(suggestion.words, ignoreCase = true)
             ) {
                 view.w3wSuggestionHolder.setBackgroundColor(ContextCompat.getColor(view.context, R.color.w3wHover))
             } else {

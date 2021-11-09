@@ -21,8 +21,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.what3words.components.utils.W3WSuggestion
 import com.what3words.javawrapper.request.Coordinates
+import com.what3words.javawrapper.response.SuggestionWithCoordinates
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlin.math.abs
 import kotlin.math.pow
@@ -97,10 +97,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun populateMarker(suggestion: W3WSuggestion) {
+    private fun populateMarker(suggestion: SuggestionWithCoordinates) {
         if (pickup == null) {
             pickup = LatLng(suggestion.coordinates!!.lat, suggestion.coordinates!!.lng)
-            mMap.addMarker(MarkerOptions().position(pickup!!).title(suggestion.suggestion.words))
+            mMap.addMarker(MarkerOptions().position(pickup!!).title(suggestion.words))
             mMap.animateCamera(
                 CameraUpdateFactory.newLatLngZoom(pickup, 14f)
             )
@@ -115,7 +115,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             )
         } else {
             dropoff = LatLng(suggestion.coordinates!!.lat, suggestion.coordinates!!.lng)
-            mMap.addMarker(MarkerOptions().position(dropoff!!).title(suggestion.suggestion.words))
+            mMap.addMarker(MarkerOptions().position(dropoff!!).title(suggestion.words))
             drawLine(pickup!!, dropoff!!)
             mMap.animateCamera(
                 CameraUpdateFactory.newLatLngBounds(

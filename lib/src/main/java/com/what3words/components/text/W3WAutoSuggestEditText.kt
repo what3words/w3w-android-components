@@ -9,7 +9,8 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.Log
 import android.view.KeyEvent
-import android.view.ViewTreeObserver
+import android.view.View
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.view.ContextThemeWrapper
@@ -19,20 +20,25 @@ import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.what3words.androidwrapper.What3WordsV3
-import com.what3words.androidwrapper.voice.VoiceBuilder
+import com.what3words.androidwrapper.helpers.didYouMean3wa
+import com.what3words.androidwrapper.helpers.isPossible3wa
+import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.R
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
+import com.what3words.components.error.showError
+import com.what3words.components.models.AutosuggestApiManager
+import com.what3words.components.models.AutosuggestLogicManager
+import com.what3words.components.models.AutosuggestViewModel
+import com.what3words.components.models.DisplayUnits
+import com.what3words.components.models.W3WListeningState
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.picker.W3WAutoSuggestPicker
-import com.what3words.components.utils.DisplayUnits
-import com.what3words.components.utils.InlineVoicePulseLayout
-import com.what3words.components.utils.VoicePulseLayout
+import com.what3words.components.utils.*
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
-
 
 /**
  * A [AppCompatEditText] to simplify the integration of what3words text and voice auto-suggest API in your app.
@@ -48,15 +54,8 @@ class W3WAutoSuggestEditText
     defStyleAttr
 ) {
 
-    companion object {
-        internal const val DEBOUNCE_MS = 150L
-        internal val split_regex = Regex("[.｡。･・︒។։။۔።।,-_/ ]+")
-        internal const val regex =
-            "^/*[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$"
-        internal const val dym_regex =
-            "^/*[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}([.｡。･・︒។։။۔።।,-_/ ]+)[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}([.｡。･・︒។։။۔።।,-_/ ]+)[^0-9`~!@#$%^&*()+\\-_=\\]\\[{\\}\\\\|'<,.>?/\";:£§º©®\\s]{1,}$";
-    }
-
+    private var oldHint: String = ""
+    internal var autosuggestLogicManager: AutosuggestLogicManager? = null
     private var focusFromVoice: Boolean = false
     private var isRendered: Boolean = false
     internal var pickedFromVoice: Boolean = false
@@ -65,9 +64,8 @@ class W3WAutoSuggestEditText
     private var fromPaste: Boolean = false
 
     internal var isShowingTick: Boolean = false
-    internal var key: String? = null
-    internal var options: AutoSuggestOptions = AutoSuggestOptions()
-    internal var isEnterprise: Boolean = false
+
+    // internal var key: String? = null
     internal var errorMessageText: String? = null
     internal var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
     internal var correctionMessage: String = context.getString(R.string.correction_message)
@@ -81,23 +79,12 @@ class W3WAutoSuggestEditText
     internal var voiceEnabled: Boolean = false
     internal var voiceFullscreen: Boolean = false
     internal var allowInvalid3wa: Boolean = false
-    internal var language: String? = null
-    internal var voiceLanguage: String = "en"
     internal var voicePlaceholder: String
-    internal var clipToPolygon: Array<Coordinates>? = null
-    internal var clipToBoundingBox: BoundingBox? = null
-    internal var clipToCircle: Coordinates? = null
-    internal var clipToCircleRadius: Double? = null
-    internal var clipToCountry: Array<String>? = null
-    internal var nFocusResults: Int? = null
-    internal var focus: Coordinates? = null
-    internal var nResults: Int? = null
-    internal var wrapper: What3WordsV3? = null
-    internal var builder: VoiceBuilder? = null
+    internal var voiceLanguage: String
     internal var customPicker: W3WAutoSuggestPicker? = null
     internal var customErrorView: AppCompatTextView? = null
     internal var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? = null
-    private var customInvalidAddressMessageView: AppCompatTextView? = null
+    internal var customInvalidAddressMessageView: AppCompatTextView? = null
 
     internal val tick: Drawable? by lazy {
         ContextCompat.getDrawable(context, R.drawable.ic_tick).apply {
@@ -110,21 +97,27 @@ class W3WAutoSuggestEditText
         }
     }
 
+    internal val viewModel: AutosuggestViewModel by lazy {
+        AutosuggestViewModel()
+    }
+
     internal val defaultPicker: W3WAutoSuggestPicker by lazy {
-        val p = W3WAutoSuggestPicker(context)
-        p.setup(wrapper!!, isEnterprise, key!!, displayUnits)
-        p.internalCallback { selectedSuggestion ->
-            pickedFromDropDown = true
-            handleAddressPicked(selectedSuggestion)
+        W3WAutoSuggestPicker(context).apply {
+            setup(viewModel, displayUnits)
         }
     }
 
-
     internal val defaultCorrectionPicker: W3WAutoSuggestCorrectionPicker by lazy {
-        val p = W3WAutoSuggestCorrectionPicker(context)
-        p.setCorrectionMessage(correctionMessage).internalCallback { selectedSuggestion ->
-            setText(context.getString(R.string.w3w_slashes_with_address, selectedSuggestion.words))
-            p.visibility = GONE
+        W3WAutoSuggestCorrectionPicker(context).apply {
+            setCorrectionMessage(correctionMessage).internalCallback { selectedSuggestion ->
+                setText(
+                    context.getString(
+                        R.string.w3w_slashes_with_address,
+                        selectedSuggestion.words
+                    )
+                )
+                visibility = GONE
+            }
         }
     }
 
@@ -140,20 +133,21 @@ class W3WAutoSuggestEditText
 
     private val watcher by lazy {
         object : TextWatcher {
-            private var searchFor = ""
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val searchText = s.toString().trim()
 
                 if (fromPaste) {
-                    if (isValid3wa(searchText.removePrefix(context.getString(R.string.w3w_slashes)))) {
+                    if (searchText.removePrefix(context.getString(R.string.w3w_slashes))
+                            .isPossible3wa()
+                    ) {
                         fromPaste = false
                         setText(searchText.removePrefix(context.getString(R.string.w3w_slashes)))
                     }
 
                     if (fromPaste) {
                         Uri.parse(searchText).lastPathSegment?.let {
-                            if (isValid3wa(it)) {
+                            if (it.isPossible3wa()) {
                                 fromPaste = false
                                 setText(it)
                             }
@@ -176,24 +170,14 @@ class W3WAutoSuggestEditText
                     return
                 }
 
-                if (searchText == searchFor) {
-                    return
-                }
-
-                searchFor = searchText
-                if (isValid3wa(searchText)) {
-                    if (hasFocus()) {
-                        handleAutoSuggest(searchText, searchFor)
-                    }
-                } else if (isPossible3wa(searchText)) {
-                    val words = getPossible3wa(searchText).split(split_regex, 3).joinToString(".")
-                    handleAutoSuggest(words, words, true)
+                if (searchText.isPossible3wa() || searchText.didYouMean3wa()) {
+                    viewModel.autosuggest(searchText)
                 } else {
                     getPicker().visibility = GONE
                     getPicker().refreshSuggestions(
                         emptyList(),
-                        searchFor,
-                        AutoSuggestOptions(),
+                        searchText,
+                        viewModel.options,
                         returnCoordinates
                     )
                     getCorrectionPicker().setSuggestion(null)
@@ -239,8 +223,6 @@ class W3WAutoSuggestEditText
                 correctionMessage = getString(
                     R.styleable.W3WAutoSuggestEditText_correctionMessage
                 ) ?: resources.getString(R.string.correction_message)
-                nResults = getInteger(R.styleable.W3WAutoSuggestEditText_nResults, 3)
-                language = getString(R.styleable.W3WAutoSuggestEditText_language)
                 voicePlaceholder = getString(R.styleable.W3WAutoSuggestEditText_voicePlaceholder)
                     ?: resources.getString(R.string.voice_placeholder)
                 slashesColor = getColor(
@@ -253,10 +235,10 @@ class W3WAutoSuggestEditText
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
                 voiceFullscreen =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceFullscreen, false)
-                voiceLanguage = getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
+                voiceLanguage =
+                    getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
                 displayUnits =
                     DisplayUnits.values()[getInt(R.styleable.W3WAutoSuggestEditText_displayUnit, 0)]
-
             } finally {
                 this@W3WAutoSuggestEditText.textDirection = TEXT_DIRECTION_LOCALE
                 showImages()
@@ -264,29 +246,173 @@ class W3WAutoSuggestEditText
             }
         }
 
+
+//<editor-fold desc="text observers">
+        viewModel.suggestions.observeForever { suggestions ->
+            if (suggestions != null && hasFocus()) {
+                lastSuggestions.apply {
+                    clear()
+                    addAll(suggestions)
+                }
+                getPicker().visibility =
+                    if (suggestions.isEmpty()) View.GONE else View.VISIBLE
+                getPicker().refreshSuggestions(
+                    suggestions,
+                    text.toString(),
+                    viewModel.options,
+                    returnCoordinates
+                )
+            }
+        }
+
+        viewModel.error.observeForever {
+            if (it != null) {
+                getErrorView().showError(errorMessageText)
+                errorCallback?.accept(it) ?: run {
+                    Log.e("W3WAutoSuggestEditText", it.message)
+                }
+            } else {
+                getErrorView().visibility = GONE
+            }
+        }
+
+        viewModel.didYouMean.observeForever {
+            if (it != null && hasFocus()) {
+                getCorrectionPicker().setSuggestion(it)
+                getCorrectionPicker().visibility = View.VISIBLE
+            } else {
+                getCorrectionPicker().setSuggestion(null)
+                getCorrectionPicker().visibility = View.GONE
+            }
+        }
+//</editor-fold>
+//<editor-fold desc="voice observers">
+        viewModel.voiceSuggestions.observeForever { suggestions ->
+            this.hint = oldHint
+            if (suggestions.isEmpty()) {
+                getInvalidAddressView().showError(invalidSelectionMessageText)
+            } else {
+                pickedFromVoice = true
+                this.setText(
+                    context.getString(
+                        R.string.w3w_slashes_with_address,
+                        suggestions.minByOrNull { it.rank }!!.words
+                    )
+                )
+                getPicker().visibility = VISIBLE
+                // Query empty because we don't want to highlight when using voice.
+                getPicker().refreshSuggestions(
+                    suggestions,
+                    "",
+                    viewModel.options,
+                    returnCoordinates
+                )
+                showKeyboard()
+            }
+            if (voiceFullscreen) {
+                voicePulseLayout?.setIsVoiceRunning(false, shouldAnimate = true)
+            } else inlineVoicePulseLayout.setIsVoiceRunning(false)
+        }
+
+        viewModel.voiceError.observeForever {
+            if (it != null) {
+                getErrorView().showError(errorMessageText)
+                errorCallback?.accept(it) ?: run {
+                    Log.e("W3WAutoSuggestEditText", it.message)
+                }
+                if (voiceFullscreen) voicePulseLayout?.setIsVoiceRunning(
+                    false,
+                    shouldAnimate = true
+                )
+                else inlineVoicePulseLayout.setIsVoiceRunning(false)
+            }
+        }
+
+        viewModel.builder.observeForever {
+            oldHint = hint.toString()
+            setText("")
+            hideKeyboard()
+
+            if (voiceFullscreen) {
+                voicePulseLayout?.setup(it!!, viewModel.microphone)
+                voicePulseLayout?.onCloseCallback {
+                    it?.stopListening()
+                    voicePulseLayout?.setIsVoiceRunning(false, shouldAnimate = true)
+                }
+            } else {
+                hint = voicePlaceholder
+                inlineVoicePulseLayout.setup(it!!, viewModel.microphone)
+            }
+        }
+
+        viewModel.listeningState.observeForever {
+            when (it) {
+                W3WListeningState.Connecting -> {
+
+                }
+                W3WListeningState.Started -> {
+
+                }
+                W3WListeningState.Stopped -> {
+                    hint = oldHint
+                    inlineVoicePulseLayout.setIsVoiceRunning(false)
+                }
+            }
+        }
+
+        inlineVoicePulseLayout.onStartVoiceClick {
+            focusFromVoice = true
+            if (!isShowingTick) {
+                viewModel.voiceAutosuggest(voiceLanguage, context)
+            }
+        }
+//</editor-fold>
+
+        viewModel.selectedSuggestion.observeForever { suggestion ->
+            pickedFromDropDown = true
+            if (getPicker().visibility == VISIBLE && suggestion == null) {
+                getInvalidAddressView().showError(invalidSelectionMessageText)
+            }
+            showImages(suggestion != null)
+            getPicker().refreshSuggestions(emptyList(), null, viewModel.options, returnCoordinates)
+            getPicker().visibility = GONE
+            getCorrectionPicker().setSuggestion(null)
+            getCorrectionPicker().visibility = GONE
+            clearFocus()
+            if (suggestion != null) {
+                setText(context.getString(R.string.w3w_slashes_with_address, suggestion.words))
+            } else {
+                text = null
+            }
+
+            callback?.accept(suggestion)
+        }
+
         setOnEditorActionListener { _, i, event ->
             if (i == EditorInfo.IME_ACTION_DONE || (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER))) {
-                handleAddressAutoPicked(lastSuggestions.firstOrNull { it.words == text.toString() })
+                viewModel.onSuggestionClicked(
+                    text.toString(),
+                    lastSuggestions.firstOrNull { it.words == text.toString() },
+                    returnCoordinates
+                )
                 true
             } else {
                 false
             }
         }
 
-        inlineVoicePulseLayout.onStartVoiceClick {
-            focusFromVoice = true
-            if (!isShowingTick && wrapper != null) {
-                handleVoice()
-            }
-        }
 
         setOnFocusChangeListener { _, isFocused ->
             when {
                 !pickedFromDropDown && !isFocused && isReal3wa(text.toString()) -> {
-                    handleAddressAutoPicked(getReal3wa(text.toString()))
+                    viewModel.onSuggestionClicked(
+                        text.toString(),
+                        getReal3wa(text.toString()),
+                        returnCoordinates
+                    )
                 }
                 !pickedFromDropDown && !isFocused && !isReal3wa(text.toString()) -> {
-                    handleAddressAutoPicked(null)
+                    viewModel.onSuggestionClicked(text.toString(), null, returnCoordinates)
                 }
             }
             if (!isFocused) {
@@ -306,7 +432,7 @@ class W3WAutoSuggestEditText
 
         viewTreeObserver.addOnGlobalLayoutListener(
             object :
-                ViewTreeObserver.OnGlobalLayoutListener {
+                OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
                     if (!isRendered && visibility == VISIBLE) {
                         isRendered = true
@@ -342,12 +468,15 @@ class W3WAutoSuggestEditText
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun apiKey(key: String): W3WAutoSuggestEditText {
-        this.key = key
-        wrapper = What3WordsV3(
-            key,
-            context,
-            mapOf("X-W3W-AS-Component" to "what3words-Android/${VERSION_NAME} (Android ${Build.VERSION.RELEASE})")
-        )
+        viewModel.manager =
+            AutosuggestApiManager(
+                What3WordsV3(
+                    key,
+                    context,
+                    mapOf("X-W3W-AS-Component" to "what3words-Android/$VERSION_NAME (Android ${Build.VERSION.RELEASE})")
+                )
+            )
+        viewModel.microphone = Microphone()
         return this
     }
 
@@ -363,14 +492,29 @@ class W3WAutoSuggestEditText
         endpoint: String,
         headers: Map<String, String> = mapOf()
     ): W3WAutoSuggestEditText {
-        isEnterprise = true
-        this.key = key
-        wrapper = What3WordsV3(
-            key,
-            endpoint,
-            context,
-            headers
-        )
+        viewModel.manager =
+            AutosuggestApiManager(
+                What3WordsV3(
+                    key,
+                    endpoint,
+                    context,
+                    headers
+                )
+            )
+        viewModel.microphone = Microphone()
+        return this
+    }
+
+    /** Set your What3Words Manager with your SDK instance
+     *
+     * @param logicManager manager created using SDK instead of API
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun sdk(
+        logicManager: AutosuggestLogicManager
+    ): W3WAutoSuggestEditText {
+        viewModel.manager = logicManager
+        viewModel.microphone = Microphone()
         return this
     }
 
@@ -383,7 +527,18 @@ class W3WAutoSuggestEditText
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun language(language: String): W3WAutoSuggestEditText {
-        this.language = language
+        viewModel.options.language = language
+        return this
+    }
+
+    /**
+     * Set different [Microphone] setup
+     *
+     * @param microphone custom microphone setup
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun microphone(microphone: Microphone): W3WAutoSuggestEditText {
+        viewModel.microphone = microphone
         return this
     }
 
@@ -395,7 +550,7 @@ class W3WAutoSuggestEditText
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun voiceLanguage(language: String): W3WAutoSuggestEditText {
-        this.voiceLanguage = language
+        voiceLanguage = language
         return this
     }
 
@@ -407,7 +562,7 @@ class W3WAutoSuggestEditText
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun focus(coordinates: Coordinates?): W3WAutoSuggestEditText {
-        focus = coordinates
+        viewModel.options.focus = coordinates
         return this
     }
 
@@ -419,7 +574,7 @@ class W3WAutoSuggestEditText
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun nResults(n: Int?): W3WAutoSuggestEditText {
-        nResults = n ?: 3
+        viewModel.options.nResults = n ?: 3
         return this
     }
 
@@ -433,7 +588,7 @@ class W3WAutoSuggestEditText
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun nFocusResults(n: Int?): W3WAutoSuggestEditText {
-        nFocusResults = n
+        viewModel.options.nFocusResults = n
         return this
     }
 
@@ -449,8 +604,8 @@ class W3WAutoSuggestEditText
         centre: Coordinates?,
         radius: Double?
     ): W3WAutoSuggestEditText {
-        clipToCircle = centre
-        clipToCircleRadius = radius
+        viewModel.options.clipToCircle = centre
+        viewModel.options.clipToCircleRadius = radius
         return this
     }
 
@@ -464,7 +619,8 @@ class W3WAutoSuggestEditText
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun clipToCountry(countryCodes: List<String>): W3WAutoSuggestEditText {
-        clipToCountry = if (countryCodes.isNotEmpty()) countryCodes.toTypedArray() else null
+        viewModel.options.clipToCountry =
+            if (countryCodes.isNotEmpty()) countryCodes else null
         return this
     }
 
@@ -477,7 +633,7 @@ class W3WAutoSuggestEditText
     fun clipToBoundingBox(
         boundingBox: BoundingBox?
     ): W3WAutoSuggestEditText {
-        clipToBoundingBox = boundingBox
+        viewModel.options.clipToBoundingBox = boundingBox
         return this
     }
 
@@ -492,7 +648,7 @@ class W3WAutoSuggestEditText
     fun clipToPolygon(
         polygon: List<Coordinates>
     ): W3WAutoSuggestEditText {
-        clipToPolygon = if (polygon.isNotEmpty()) polygon.toTypedArray() else null
+        viewModel.options.clipToPolygon = if (polygon.isNotEmpty()) polygon else null
         return this
     }
 
@@ -591,11 +747,7 @@ class W3WAutoSuggestEditText
     ): W3WAutoSuggestEditText {
         this.callback = callback
         if (picker != null) {
-            picker.setup(wrapper!!, isEnterprise, key!!, displayUnits)
-            picker.internalCallback { selectedSuggestion ->
-                pickedFromDropDown = true
-                handleAddressPicked(selectedSuggestion)
-            }
+            picker.setup(viewModel, displayUnits)
             defaultPicker.forceClear()
         } else customPicker?.forceClear()
         this.customInvalidAddressMessageView = invalidAddressMessageView
@@ -656,9 +808,9 @@ class W3WAutoSuggestEditText
     }
 
     /**
-     * Set end-user display unit, [DisplayUnits.SYSTEM],[DisplayUnits.METRIC],[DisplayUnits.IMPERIAL]
+     * Set end-user display unit, [DisplayUnits.SYSTEM], [DisplayUnits.METRIC], [DisplayUnits.IMPERIAL]
      *
-     * @param units [DisplayUnits.SYSTEM], [DisplayUnits.METRIC],[DisplayUnits.IMPERIAL],
+     * @param units [DisplayUnits.SYSTEM], [DisplayUnits.METRIC], [DisplayUnits.IMPERIAL],
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun displayUnit(

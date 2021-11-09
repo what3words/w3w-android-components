@@ -59,12 +59,12 @@ internal class InlineVoicePulseLayout
 
         // Add a viewTreeObserver to obtain the initial size of the circle overlays
         voicePulseLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
-            OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                setOverlayBaseSize()
-                voicePulseLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
+                OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    setOverlayBaseSize()
+                    voicePulseLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+            })
     }
 
     fun setOverlayBaseSize() {
@@ -115,7 +115,6 @@ internal class InlineVoicePulseLayout
                     }
                     w3wLogo.setImageResource(R.drawable.ic_small_voice)
                 }
-
             }
 
             override fun onAnimationCancel(animator: Animator?) {

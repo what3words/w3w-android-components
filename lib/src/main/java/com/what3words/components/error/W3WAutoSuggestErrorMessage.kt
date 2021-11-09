@@ -36,7 +36,10 @@ class W3WAutoSuggestErrorMessage
 internal fun AppCompatTextView.showError(errorMessage: String?) {
     text = errorMessage
     visibility = AppCompatTextView.VISIBLE
-    Handler(Looper.getMainLooper()).postDelayed({
-        visibility = AppCompatTextView.GONE
-    }, 5000)
+    Handler(Looper.getMainLooper()).postDelayed(
+        {
+            visibility = AppCompatTextView.GONE
+        },
+        5000
+    )
 }

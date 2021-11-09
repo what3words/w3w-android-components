@@ -3,7 +3,7 @@ package com.what3words.components.utils
 import android.content.Context
 import android.text.TextUtils
 
-internal class FlagResourceTranslatorImpl(private val context: Context): FlagResourceTranslator {
+internal class FlagResourceTranslatorImpl(private val context: Context) : FlagResourceTranslator {
 
     companion object {
         private const val COUNTRY_FLAG_PREFIX = "ic_"
@@ -19,5 +19,4 @@ internal class FlagResourceTranslatorImpl(private val context: Context): FlagRes
 
         return id
     }
-
 }

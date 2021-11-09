@@ -18,9 +18,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         suggestionEditText.apiKey("TCRPZKEE")
-            .returnCoordinates(true)
             .onSelected {
                 if (it != null) {
                     selectedInfo.text =

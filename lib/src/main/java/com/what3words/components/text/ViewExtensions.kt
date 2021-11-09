@@ -6,7 +6,8 @@ import android.icu.text.MeasureFormat
 import android.icu.text.MeasureFormat.FormatWidth
 import android.icu.util.Measure
 import android.icu.util.MeasureUnit
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.inputmethod.InputMethodManager
@@ -16,14 +17,13 @@ import androidx.core.text.TextUtilsCompat
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.what3words.components.R
-import com.what3words.components.utils.DisplayUnits
+import com.what3words.components.models.DisplayUnits
 import com.what3words.components.utils.MyDividerItemDecorator
 import com.what3words.components.utils.VoicePulseLayout
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.roundToInt
-
 
 internal fun W3WAutoSuggestEditText.buildErrorMessage() {
     val params = ViewGroup.MarginLayoutParams(
@@ -34,8 +34,8 @@ internal fun W3WAutoSuggestEditText.buildErrorMessage() {
         this.x = this@buildErrorMessage.x
         this.y =
             this@buildErrorMessage.y + this@buildErrorMessage.height - resources.getDimensionPixelSize(
-                R.dimen.tiny_margin
-            )
+            R.dimen.tiny_margin
+        )
         layoutParams = params
     }
     (parent as? ViewGroup)?.addView(defaultInvalidAddressMessageView)
@@ -50,8 +50,8 @@ internal fun W3WAutoSuggestEditText.buildCorrection() {
         this.x = this@buildCorrection.x
         this.y =
             this@buildCorrection.y + this@buildCorrection.height - resources.getDimensionPixelSize(
-                R.dimen.tiny_margin
-            )
+            R.dimen.tiny_margin
+        )
         layoutParams = params
     }
     (parent as? ViewGroup)?.addView(defaultCorrectionPicker)
@@ -104,8 +104,8 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList() {
         this.x = this@buildSuggestionList.x
         this.y =
             this@buildSuggestionList.y + this@buildSuggestionList.height + resources.getDimensionPixelSize(
-                R.dimen.input_margin
-            )
+            R.dimen.input_margin
+        )
         layoutParams = params
         val linear = LinearLayoutManager(context)
         background = AppCompatResources.getDrawable(context, R.drawable.bg_white_border_gray)
@@ -170,34 +170,38 @@ internal fun W3WAutoSuggestEditText.hideKeyboard() {
 
 internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: Context): String {
     if (distanceKm == 0 ||
-        (displayUnits == DisplayUnits.SYSTEM && !Locale.getDefault()
-            .isMetric() && (distanceKm / 1.609) < 1) ||
+        (
+            displayUnits == DisplayUnits.SYSTEM && !Locale.getDefault()
+                .isMetric() && (distanceKm / 1.609) < 1
+            ) ||
         (displayUnits == DisplayUnits.IMPERIAL && (distanceKm / 1.609) < 1)
     ) {
         if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault().isMetric()) ||
             displayUnits == DisplayUnits.METRIC
         ) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 val fmtFr = MeasureFormat.getInstance(Locale.getDefault(), FormatWidth.SHORT)
                 val measureF = Measure(1, MeasureUnit.KILOMETER)
-                return context.getString(R.string.distance_metric_low, fmtFr.format(measureF))
+                context.getString(R.string.distance_metric_low, fmtFr.format(measureF))
             } else {
-                return context.getString(R.string.distance_metric_low, "1 km")
+                context.getString(R.string.distance_metric_low, "1 km")
             }
         } else {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 val fmtFr = MeasureFormat.getInstance(Locale.getDefault(), FormatWidth.SHORT)
                 val measureF = Measure(1, MeasureUnit.MILE)
-                return context.getString(R.string.distance_metric_low, fmtFr.format(measureF))
+                context.getString(R.string.distance_metric_low, fmtFr.format(measureF))
             } else {
-                return context.getString(R.string.distance_imperial_low, "1 mi")
+                context.getString(R.string.distance_imperial_low, "1 mi")
             }
         }
     } else {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             val fmtFr = MeasureFormat.getInstance(Locale.getDefault(), FormatWidth.SHORT)
-            return if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
-                    .isMetric()) || displayUnits == DisplayUnits.METRIC
+            return if ((
+                displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
+                    .isMetric()
+                ) || displayUnits == DisplayUnits.METRIC
             ) {
                 val measureF = Measure(distanceKm, MeasureUnit.KILOMETER)
                 fmtFr.format(measureF)
@@ -207,12 +211,14 @@ internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: C
             }
         } else {
             val nFormat = NumberFormat.getNumberInstance(Locale.getDefault())
-            if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
-                    .isMetric()) || displayUnits == DisplayUnits.METRIC
+            return if ((
+                        displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
+                            .isMetric()
+                        ) || displayUnits == DisplayUnits.METRIC
             ) {
-                return context.getString(R.string.distance_metric, nFormat.format(distanceKm))
+                context.getString(R.string.distance_metric, nFormat.format(distanceKm))
             } else {
-                return context.getString(
+                context.getString(
                     R.string.distance_imperial,
                     nFormat.format((distanceKm / 1.609).roundToInt())
                 )
@@ -221,9 +227,8 @@ internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: C
     }
 }
 
-
 internal fun Locale.isMetric(): Boolean {
-    return when (country.toUpperCase()) {
+    return when (country.uppercase()) {
         "US", "GB", "MM", "LR" -> false
         else -> true
     }

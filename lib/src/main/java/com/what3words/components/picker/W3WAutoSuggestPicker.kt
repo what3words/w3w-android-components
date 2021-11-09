@@ -7,17 +7,12 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.components.R
-import com.what3words.components.text.AutoSuggestOptions
-import com.what3words.components.text.handleSelectionTrack
-import com.what3words.components.utils.DisplayUnits
+import com.what3words.components.models.AutosuggestViewModel
+import com.what3words.components.models.DisplayUnits
 import com.what3words.components.utils.MyDividerItemDecorator
+import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.Suggestion
-import com.what3words.javawrapper.response.SuggestionWithCoordinates
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * A [RecyclerView] to show [W3WSuggestion] returned by w3w auto suggest component
@@ -30,15 +25,11 @@ class W3WAutoSuggestPicker
     defStyleAttr: Int = 0
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
-    private var options: AutoSuggestOptions = AutoSuggestOptions()
+    private var options: AutosuggestOptions = AutosuggestOptions()
     private var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
-    private var key: String = ""
-    private var isEnterprise: Boolean = false
     private var returnCoordinates: Boolean = false
     private var query: String = ""
-    private var wrapper: What3WordsV3? = null
-    private var callback: ((suggestion: SuggestionWithCoordinates?) -> Unit)? =
-        null
+    private var viewModel: AutosuggestViewModel? = null
 
     private val suggestionsAdapter: SuggestionsAdapter by lazy {
         SuggestionsAdapter(
@@ -54,26 +45,7 @@ class W3WAutoSuggestPicker
     ) {
         suggestionsAdapter.refreshSuggestions(emptyList(), null, displayUnits)
         visibility = GONE
-        if (suggestion == null) {
-            callback?.invoke(null)
-        } else {
-            if (!isEnterprise && wrapper != null) handleSelectionTrack(
-                suggestion,
-                query,
-                options,
-                wrapper!!
-            )
-            if (!returnCoordinates) {
-                callback?.invoke(SuggestionWithCoordinates(suggestion))
-            } else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val res = wrapper!!.convertToCoordinates(suggestion.words).execute()
-                    CoroutineScope(Dispatchers.Main).launch {
-                        callback?.invoke(SuggestionWithCoordinates(suggestion, res.coordinates))
-                    }
-                }
-            }
-        }
+        viewModel?.onSuggestionClicked(query, suggestion, returnCoordinates)
     }
 
     init {
@@ -96,27 +68,18 @@ class W3WAutoSuggestPicker
         visibility = GONE
     }
 
-    internal fun internalCallback(callback: (selectedSuggestion: SuggestionWithCoordinates?) -> Unit): W3WAutoSuggestPicker {
-        this.callback = callback
-        return this
-    }
-
     internal fun setup(
-        wrapper: What3WordsV3,
-        isEnterprise: Boolean,
-        key: String,
+        viewModel: AutosuggestViewModel,
         displayUnits: DisplayUnits
     ) {
-        this.isEnterprise = isEnterprise
-        this.key = key
-        this.wrapper = wrapper
+        this.viewModel = viewModel
         this.displayUnits = displayUnits
     }
 
     internal fun refreshSuggestions(
         suggestions: List<Suggestion>,
         query: String?,
-        options: AutoSuggestOptions,
+        options: AutosuggestOptions,
         returnCoordinates: Boolean
     ) {
         suggestionsAdapter.refreshSuggestions(suggestions, query, displayUnits)

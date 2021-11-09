@@ -110,7 +110,6 @@ internal class PulseAnimator(
 
         private const val VOICE_ANIMATION_DURATION = 200L
     }
-
 }
 
 internal object DisplayMetricsConverter {
