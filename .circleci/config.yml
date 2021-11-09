@@ -78,24 +78,24 @@ jobs:
 #          path: sample-multi-autosuggest-providers/build/outputs/apk/release
 
 workflows:
-#  build-test-sonar:
-#    jobs:
-#      - build-test-sonar:
-#          name: Build, run tests, upload to sonar
-#          context: SonarCloud
+  build-test-sonar:
+    jobs:
+      - build-test-sonar:
+          name: Build, run tests, upload to sonar
+          context: SonarCloud
   build-test-sonar-publish:
     jobs:
       - build-test-sonar:
           context: SonarCloud
-#          filters:
-#            branches:
-#              only:
-#                - dev
+          filters:
+            branches:
+              only:
+                - dev
       - deploy-to-sonatype:
           name: Build, run tests, sonar and push to maven staging
           requires:
             - build-test-sonar
-#          filters:
-#            branches:
-#              only:
-#                - dev
+          filters:
+            branches:
+              only:
+                - dev

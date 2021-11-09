@@ -238,7 +238,7 @@ class AutosuggestViewModelTests {
                 Gson().fromJson(suggestionsJson, Array<Suggestion>::class.java).toList()
 
             val suggestionsWithCoordinates = SuggestionWithCoordinates(suggestions.first())
-            
+
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
