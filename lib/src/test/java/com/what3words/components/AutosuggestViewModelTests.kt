@@ -18,7 +18,9 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -40,7 +42,6 @@ class AutosuggestViewModelTests {
 
     @MockK
     private lateinit var observerSelected: Observer<SuggestionWithCoordinates>
-
 
     @MockK
     private lateinit var viewModel: AutosuggestViewModel
@@ -183,7 +184,6 @@ class AutosuggestViewModelTests {
                 )
                     .toList()
 
-
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
@@ -284,4 +284,3 @@ class AutosuggestViewModelTests {
             }
         }
 }
-

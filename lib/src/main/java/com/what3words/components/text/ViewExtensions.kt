@@ -20,9 +20,8 @@ import com.what3words.components.R
 import com.what3words.components.models.DisplayUnits
 import com.what3words.components.utils.MyDividerItemDecorator
 import com.what3words.components.utils.VoicePulseLayout
-import kotlinx.android.synthetic.main.item_suggestion.view.*
 import java.text.NumberFormat
-import java.util.*
+import java.util.Locale
 import kotlin.math.roundToInt
 
 internal fun W3WAutoSuggestEditText.buildErrorMessage() {
@@ -212,9 +211,9 @@ internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: C
         } else {
             val nFormat = NumberFormat.getNumberInstance(Locale.getDefault())
             return if ((
-                        displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
-                            .isMetric()
-                        ) || displayUnits == DisplayUnits.METRIC
+                displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
+                    .isMetric()
+                ) || displayUnits == DisplayUnits.METRIC
             ) {
                 context.getString(R.string.distance_metric, nFormat.format(distanceKm))
             } else {

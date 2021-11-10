@@ -1,10 +1,6 @@
 package com.what3words.components.models
 
-import android.Manifest
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.intentfilter.androidpermissions.PermissionManager
-import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.javawrapper.request.AutosuggestOptions
@@ -15,7 +11,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 interface DispatcherProvider {
 
@@ -23,7 +18,6 @@ interface DispatcherProvider {
     fun default(): CoroutineDispatcher = Dispatchers.Default
     fun io(): CoroutineDispatcher = Dispatchers.IO
     fun unconfined(): CoroutineDispatcher = Dispatchers.Unconfined
-
 }
 
 class DefaultDispatcherProvider : DispatcherProvider
@@ -70,41 +64,35 @@ internal class AutosuggestViewModel(
         }
     }
 
-    fun voiceAutosuggest(language: String, context: Context) {
-        if (builder.value?.isListening() == true) {
-            builder.value?.stopListening()
-            listeningState.value = W3WListeningState.Stopped
-            return
-        }
+    fun voiceAutosuggest(language: String) {
+        CoroutineScope(dispatchers.io()).launch {
+            if (builder.value?.isListening() == true) {
+                builder.value?.stopListening()
+                listeningState.value = W3WListeningState.Stopped
+                return@launch
+            }
 
-        val permissionManager: PermissionManager = PermissionManager.getInstance(context)
-        permissionManager.checkPermissions(
-            Collections.singleton(Manifest.permission.RECORD_AUDIO),
-            object : PermissionManager.PermissionRequestListener {
-                override fun onPermissionGranted() {
-                    builder.value = manager!!.autosuggest(
-                        microphone, options, language,
-                        { suggestions ->
-                            CoroutineScope(Dispatchers.Main).launch {
-                                voiceSuggestions.value = suggestions
-                                voiceError.value = null
-                            }
-                        },
-                        {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                error.value = it
-                            }
-                        }
-                    )
-                }
+            val builder = manager.autosuggest(
+                microphone, options, language
+            )
 
-                override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
-                    voiceError.value = APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
-                        message = "Microphone permission required"
-                    }
+            builder.onSuggestions { suggestions ->
+                CoroutineScope(dispatchers.main()).launch {
+                    voiceSuggestions.value = suggestions
+                    voiceError.value = null
                 }
             }
-        )
+
+            builder.onError {
+                CoroutineScope(dispatchers.main()).launch {
+                    error.value = it
+                }
+            }
+
+            CoroutineScope(dispatchers.main()).launch {
+                this@AutosuggestViewModel.builder.value = builder
+            }
+        }
     }
 
     fun onSuggestionClicked(rawQuery: String, suggestion: Suggestion?, returnCoordinates: Boolean) {
@@ -114,14 +102,18 @@ internal class AutosuggestViewModel(
             } else if (!returnCoordinates) {
                 val res = manager.selected(rawQuery, suggestion)
                 if (res.isSuccessful()) {
-                    selectedSuggestion.value = res.data()
+                    CoroutineScope(dispatchers.main()).launch {
+                        selectedSuggestion.value = res.data()
+                    }
                 }
             } else {
                 val res = manager.selectedWithCoordinates(rawQuery, suggestion)
-                if (res.isSuccessful()) {
-                    selectedSuggestion.value = res.data()
-                } else {
-                    error.value = res.error()
+                CoroutineScope(dispatchers.main()).launch {
+                    if (res.isSuccessful()) {
+                        selectedSuggestion.value = res.data()
+                    } else {
+                        error.value = res.error()
+                    }
                 }
             }
         }
@@ -133,16 +125,15 @@ internal class AutosuggestViewModel(
         returnCoordinates: Boolean
     ) {
         if (returnCoordinates) {
-            CoroutineScope(Dispatchers.IO).launch {
-                manager?.multipleWithCoordinates("", suggestions, {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        multipleSelectedSuggestions.value = it
+            CoroutineScope(dispatchers.io()).launch {
+                val res = manager.multipleWithCoordinates(rawQuery, suggestions)
+                CoroutineScope(dispatchers.main()).launch {
+                    if (res.isSuccessful()) {
+                        multipleSelectedSuggestions.value = res.data()
+                    } else {
+                        error.value = res.error()
                     }
-                }, {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        error.value = it
-                    }
-                })
+                }
             }
         } else {
             multipleSelectedSuggestions.value = suggestions.map { SuggestionWithCoordinates(it) }

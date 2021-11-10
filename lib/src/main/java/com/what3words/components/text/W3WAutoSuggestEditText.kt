@@ -1,5 +1,6 @@
 package com.what3words.components.text
 
+import android.Manifest
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -19,6 +20,8 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
+import com.intentfilter.androidpermissions.PermissionManager
+import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.helpers.didYouMean3wa
 import com.what3words.androidwrapper.helpers.isPossible3wa
@@ -33,12 +36,14 @@ import com.what3words.components.models.DisplayUnits
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.picker.W3WAutoSuggestPicker
-import com.what3words.components.utils.*
+import com.what3words.components.utils.InlineVoicePulseLayout
+import com.what3words.components.utils.VoicePulseLayout
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
+import java.util.Collections
 
 /**
  * A [AppCompatEditText] to simplify the integration of what3words text and voice auto-suggest API in your app.
@@ -139,7 +144,7 @@ class W3WAutoSuggestEditText
 
                 if (fromPaste) {
                     if (searchText.removePrefix(context.getString(R.string.w3w_slashes))
-                            .isPossible3wa()
+                        .isPossible3wa()
                     ) {
                         fromPaste = false
                         setText(searchText.removePrefix(context.getString(R.string.w3w_slashes)))
@@ -246,8 +251,7 @@ class W3WAutoSuggestEditText
             }
         }
 
-
-//<editor-fold desc="text observers">
+// <editor-fold desc="text observers">
         viewModel.suggestions.observeForever { suggestions ->
             if (suggestions != null && hasFocus()) {
                 lastSuggestions.apply {
@@ -285,8 +289,8 @@ class W3WAutoSuggestEditText
                 getCorrectionPicker().visibility = View.GONE
             }
         }
-//</editor-fold>
-//<editor-fold desc="voice observers">
+// </editor-fold>
+// <editor-fold desc="voice observers">
         viewModel.voiceSuggestions.observeForever { suggestions ->
             this.hint = oldHint
             if (suggestions.isEmpty()) {
@@ -348,10 +352,8 @@ class W3WAutoSuggestEditText
         viewModel.listeningState.observeForever {
             when (it) {
                 W3WListeningState.Connecting -> {
-
                 }
                 W3WListeningState.Started -> {
-
                 }
                 W3WListeningState.Stopped -> {
                     hint = oldHint
@@ -363,10 +365,24 @@ class W3WAutoSuggestEditText
         inlineVoicePulseLayout.onStartVoiceClick {
             focusFromVoice = true
             if (!isShowingTick) {
-                viewModel.voiceAutosuggest(voiceLanguage, context)
+                val permissionManager: PermissionManager = PermissionManager.getInstance(context)
+                permissionManager.checkPermissions(
+                    Collections.singleton(Manifest.permission.RECORD_AUDIO),
+                    object : PermissionManager.PermissionRequestListener {
+                        override fun onPermissionGranted() {
+                            viewModel.voiceAutosuggest(voiceLanguage)
+                        }
+
+                        override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
+                            viewModel.voiceError.value = APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
+                                message = "Microphone permission required"
+                            }
+                        }
+                    }
+                )
             }
         }
-//</editor-fold>
+// </editor-fold>
 
         viewModel.selectedSuggestion.observeForever { suggestion ->
             pickedFromDropDown = true
@@ -400,7 +416,6 @@ class W3WAutoSuggestEditText
                 false
             }
         }
-
 
         setOnFocusChangeListener { _, isFocused ->
             when {

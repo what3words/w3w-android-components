@@ -3,7 +3,9 @@ package com.what3words.components.picker
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +14,11 @@ import com.what3words.components.models.DisplayUnits
 import com.what3words.components.text.formatUnits
 import com.what3words.components.utils.FlagResourceTranslatorImpl
 import com.what3words.javawrapper.response.Suggestion
-import kotlinx.android.synthetic.main.item_suggestion.view.*
+import kotlinx.android.synthetic.main.item_suggestion.view.w3wAddressFlagIcon
+import kotlinx.android.synthetic.main.item_suggestion.view.w3wAddressLabel
+import kotlinx.android.synthetic.main.item_suggestion.view.w3wDistanceToFocus
+import kotlinx.android.synthetic.main.item_suggestion.view.w3wNearestPlaceLabel
+import kotlinx.android.synthetic.main.item_suggestion.view.w3wSuggestionHolder
 
 internal class SuggestionsAdapter(
     private val typeface: Typeface,

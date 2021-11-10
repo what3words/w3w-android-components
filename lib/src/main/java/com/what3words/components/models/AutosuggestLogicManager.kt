@@ -1,6 +1,5 @@
 package com.what3words.components.models
 
-import androidx.core.util.Consumer
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.javawrapper.request.AutosuggestOptions
@@ -39,28 +38,24 @@ interface AutosuggestLogicManager {
         options: AutosuggestOptions?
     ): Result<AutosuggestWithDidyouMean>
 
-    fun autosuggest(
+    suspend fun autosuggest(
         microphone: Microphone,
         options: AutosuggestOptions,
-        voiceLanguage: String,
-        callback: Consumer<List<Suggestion>>,
-        errorCallback: Consumer<APIResponse.What3WordsError>?
+        voiceLanguage: String
     ): VoiceBuilder
 
     suspend fun selected(
         rawQuery: String,
         suggestion: Suggestion
-    ) : Result<SuggestionWithCoordinates>
+    ): Result<SuggestionWithCoordinates>
 
     suspend fun selectedWithCoordinates(
         rawQuery: String,
         suggestion: Suggestion
-    ) : Result<SuggestionWithCoordinates>
+    ): Result<SuggestionWithCoordinates>
 
-    fun multipleWithCoordinates(
+    suspend fun multipleWithCoordinates(
         rawQuery: String,
-        suggestions: List<Suggestion>,
-        callback: Consumer<List<SuggestionWithCoordinates>>,
-        errorCallback: Consumer<APIResponse.What3WordsError>
-    )
+        suggestions: List<Suggestion>
+    ): Result<List<SuggestionWithCoordinates>>
 }

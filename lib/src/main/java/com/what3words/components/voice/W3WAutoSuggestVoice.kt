@@ -1,5 +1,6 @@
 package com.what3words.components.voice
 
+import android.Manifest
 import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
@@ -13,6 +14,8 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
 import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
+import com.intentfilter.androidpermissions.PermissionManager
+import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.R
@@ -31,8 +34,12 @@ import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
-import kotlinx.android.synthetic.main.w3w_voice_only.view.*
-import java.util.*
+import kotlinx.android.synthetic.main.w3w_voice_only.view.innerCircleView
+import kotlinx.android.synthetic.main.w3w_voice_only.view.midCircleView
+import kotlinx.android.synthetic.main.w3w_voice_only.view.outerCircleView
+import kotlinx.android.synthetic.main.w3w_voice_only.view.voicePulseLayout
+import kotlinx.android.synthetic.main.w3w_voice_only.view.w3wLogo
+import java.util.Collections
 
 /**
  * A [View] to simplify the integration of what3words voice auto-suggest API in your app.
@@ -106,7 +113,22 @@ class W3WAutoSuggestVoice
 
         w3wLogo.setOnClickListener {
             if (isEnabled) {
-                viewModel.voiceAutosuggest(voiceLanguage, context)
+                val permissionManager: PermissionManager = PermissionManager.getInstance(context)
+                permissionManager.checkPermissions(
+                    Collections.singleton(Manifest.permission.RECORD_AUDIO),
+                    object : PermissionManager.PermissionRequestListener {
+                        override fun onPermissionGranted() {
+                            viewModel.voiceAutosuggest(voiceLanguage)
+                        }
+
+                        override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
+                            viewModel.voiceError.value =
+                                APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
+                                    message = "Microphone permission required"
+                                }
+                        }
+                    }
+                )
             }
         }
 
@@ -165,12 +187,12 @@ class W3WAutoSuggestVoice
 
         // Add a viewTreeObserver to obtain the initial size of the circle overlays
         voicePulseLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
-            OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                setOverlayBaseSize()
-                voicePulseLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
+                OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    setOverlayBaseSize()
+                    voicePulseLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+            })
     }
 
     fun setOverlayBaseSize() {
@@ -580,7 +602,22 @@ class W3WAutoSuggestVoice
 
     fun start() {
         if (viewModel.builder.value == null || viewModel.builder.value?.isListening() == false) {
-            viewModel.voiceAutosuggest(voiceLanguage, context)
+            val permissionManager: PermissionManager = PermissionManager.getInstance(context)
+            permissionManager.checkPermissions(
+                Collections.singleton(Manifest.permission.RECORD_AUDIO),
+                object : PermissionManager.PermissionRequestListener {
+                    override fun onPermissionGranted() {
+                        viewModel.voiceAutosuggest(voiceLanguage)
+                    }
+
+                    override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
+                        viewModel.voiceError.value =
+                            APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
+                                message = "Microphone permission required"
+                            }
+                    }
+                }
+            )
             return
         }
     }

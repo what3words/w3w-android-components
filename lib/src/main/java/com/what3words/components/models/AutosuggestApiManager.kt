@@ -1,12 +1,10 @@
 package com.what3words.components.models
 
-import androidx.core.util.Consumer
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.helpers.AutosuggestHelper
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.javawrapper.request.AutosuggestOptions
-import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
 import kotlin.coroutines.resume
@@ -23,23 +21,26 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
         options: AutosuggestOptions?
     ): AutosuggestLogicManager.Result<AutosuggestWithDidyouMean> = suspendCoroutine { cont ->
         if (options != null) autosuggestHelper.options(options)
-        autosuggestHelper.update(query, {
-            cont.resume(AutosuggestLogicManager.Result(AutosuggestWithDidyouMean(it, null)))
-        }, {
-            cont.resume(AutosuggestLogicManager.Result(it))
-        }, {
-            cont.resume(AutosuggestLogicManager.Result(AutosuggestWithDidyouMean(null, it)))
-        })
+        autosuggestHelper.update(
+            query,
+            {
+                cont.resume(AutosuggestLogicManager.Result(AutosuggestWithDidyouMean(it, null)))
+            },
+            {
+                cont.resume(AutosuggestLogicManager.Result(it))
+            },
+            {
+                cont.resume(AutosuggestLogicManager.Result(AutosuggestWithDidyouMean(null, it)))
+            }
+        )
     }
 
-    override fun autosuggest(
+    override suspend fun autosuggest(
         microphone: Microphone,
         options: AutosuggestOptions,
-        voiceLanguage: String,
-        callback: Consumer<List<Suggestion>>,
-        errorCallback: Consumer<APIResponse.What3WordsError>?
-    ): VoiceBuilder {
-        return wrapper.autosuggest(microphone, voiceLanguage).apply {
+        voiceLanguage: String
+    ): VoiceBuilder = suspendCoroutine { cont ->
+        val builder = wrapper.autosuggest(microphone, voiceLanguage).apply {
             options.nResults?.let {
                 this.nResults(it)
             }
@@ -61,10 +62,8 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
             options.clipToPolygon?.let { coordinates ->
                 this.clipToPolygon(coordinates.toList())
             }
-
-            this.onSuggestions(callback)
-            if (errorCallback != null) this.onError(errorCallback)
         }
+        cont.resume(builder)
     }
 
     override suspend fun selected(
@@ -88,18 +87,17 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
             suggestion,
             {
                 cont.resume(AutosuggestLogicManager.Result(it))
-            }, {
+            },
+            {
                 cont.resume(AutosuggestLogicManager.Result(it))
             }
         )
     }
 
-    override fun multipleWithCoordinates(
+    override suspend fun multipleWithCoordinates(
         rawQuery: String,
-        suggestions: List<Suggestion>,
-        callback: Consumer<List<SuggestionWithCoordinates>>,
-        errorCallback: Consumer<APIResponse.What3WordsError>
-    ) {
+        suggestions: List<Suggestion>
+    ): AutosuggestLogicManager.Result<List<SuggestionWithCoordinates>> = suspendCoroutine { cont ->
         val list = mutableListOf<SuggestionWithCoordinates>()
         var allSuccess = true
         suggestions.forEach {
@@ -108,10 +106,10 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
                 list.add(SuggestionWithCoordinates(it, res.coordinates))
             } else {
                 allSuccess = false
-                errorCallback.accept(res.error)
+                cont.resume(AutosuggestLogicManager.Result(res.error))
                 return@forEach
             }
         }
-        if (allSuccess) callback.accept(list)
+        if (allSuccess) cont.resume(AutosuggestLogicManager.Result(list))
     }
 }
