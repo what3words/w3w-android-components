@@ -106,7 +106,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             pickup = LatLng(suggestion.coordinates!!.lat, suggestion.coordinates!!.lng)
             mMap.addMarker(MarkerOptions().position(pickup!!).title(suggestion.words))
             mMap.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(pickup, 14f)
+                CameraUpdateFactory.newLatLngZoom(pickup!!, 14f)
             )
             autosuggest.hint = getString(R.string.drop_off_hint)
             autosuggest.setText("")
@@ -123,7 +123,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             drawLine(pickup!!, dropoff!!)
             mMap.animateCamera(
                 CameraUpdateFactory.newLatLngBounds(
-                    LatLngBounds.Builder().include(pickup).include(dropoff).build(), 50
+                    LatLngBounds.Builder().include(pickup!!).include(dropoff!!).build(), 50
                 )
             )
             autosuggest.visibility = GONE
