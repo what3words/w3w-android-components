@@ -132,7 +132,7 @@ class W3WAutoSuggestVoice
             }
         }
 
-        viewModel.builder.observeForever { builder ->
+        viewModel.voiceManager.observeForever { voiceManager ->
             if (!isVoiceRunning) {
                 onListeningCallback?.accept(W3WListeningState.Connecting)
                 var oldTimestamp = System.currentTimeMillis()
@@ -152,10 +152,10 @@ class W3WAutoSuggestVoice
                         }
                     )
                 }
-                builder?.startListening()
+                viewModel.startListening()
             } else {
                 onListeningCallback?.accept(W3WListeningState.Stopped)
-                builder?.stopListening()
+                voiceManager?.stopListening()
                 setIsVoiceRunning(false)
             }
         }
@@ -174,6 +174,12 @@ class W3WAutoSuggestVoice
                 errorCallback?.accept(error)
                 onListeningCallback?.accept(W3WListeningState.Stopped)
                 setIsVoiceRunning(isVoiceRunning = false, withError = true)
+            }
+        }
+
+        viewModel.listeningState.observeForever {
+            if (it == W3WListeningState.Stopped) {
+                setIsVoiceRunning(isVoiceRunning = false, withError = false)
             }
         }
 
@@ -601,7 +607,7 @@ class W3WAutoSuggestVoice
     }
 
     fun start() {
-        if (viewModel.builder.value == null || viewModel.builder.value?.isListening() == false) {
+        if (viewModel.voiceManager.value == null || viewModel.voiceManager.value?.isListening() == false) {
             val permissionManager: PermissionManager = PermissionManager.getInstance(context)
             permissionManager.checkPermissions(
                 Collections.singleton(Manifest.permission.RECORD_AUDIO),
@@ -623,8 +629,8 @@ class W3WAutoSuggestVoice
     }
 
     fun stop() {
-        if (viewModel.builder.value?.isListening() == true) {
-            viewModel.builder.value?.stopListening()
+        if (viewModel.voiceManager.value?.isListening() == true) {
+            viewModel.voiceManager.value?.stopListening()
             viewModel.microphone.onListening {}
             onListeningCallback?.accept(W3WListeningState.Stopped)
             setIsVoiceRunning(false)

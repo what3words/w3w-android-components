@@ -2,7 +2,6 @@ package com.what3words.components.models
 
 import androidx.lifecycle.MutableLiveData
 import com.what3words.androidwrapper.voice.Microphone
-import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
@@ -28,7 +27,7 @@ internal class AutosuggestViewModel(
 
     lateinit var microphone: Microphone
     lateinit var manager: AutosuggestLogicManager
-    var builder = MutableLiveData<VoiceBuilder?>()
+    var voiceManager = MutableLiveData<VoiceAutosuggestManager?>()
     val suggestions = MutableLiveData<List<Suggestion>>()
     val error = MutableLiveData<APIResponse.What3WordsError?>()
     val voiceError = MutableLiveData<APIResponse.What3WordsError?>()
@@ -66,9 +65,11 @@ internal class AutosuggestViewModel(
 
     fun voiceAutosuggest(language: String) {
         CoroutineScope(dispatchers.io()).launch {
-            if (builder.value?.isListening() == true) {
-                builder.value?.stopListening()
-                listeningState.value = W3WListeningState.Stopped
+            if (voiceManager.value?.isListening() == true) {
+                voiceManager.value?.stopListening()
+                CoroutineScope(dispatchers.main()).launch {
+                    listeningState.value = W3WListeningState.Stopped
+                }
                 return@launch
             }
 
@@ -76,21 +77,8 @@ internal class AutosuggestViewModel(
                 microphone, options, language
             )
 
-            builder.onSuggestions { suggestions ->
-                CoroutineScope(dispatchers.main()).launch {
-                    voiceSuggestions.value = suggestions
-                    voiceError.value = null
-                }
-            }
-
-            builder.onError {
-                CoroutineScope(dispatchers.main()).launch {
-                    error.value = it
-                }
-            }
-
             CoroutineScope(dispatchers.main()).launch {
-                this@AutosuggestViewModel.builder.value = builder
+                this@AutosuggestViewModel.voiceManager.value = builder
             }
         }
     }
@@ -137,6 +125,27 @@ internal class AutosuggestViewModel(
             }
         } else {
             multipleSelectedSuggestions.value = suggestions.map { SuggestionWithCoordinates(it) }
+        }
+    }
+
+    fun startListening() {
+        voiceManager.value?.let {
+            CoroutineScope(dispatchers.io()).launch {
+                val res = it.startListening()
+                CoroutineScope(dispatchers.main()).launch {
+                    if (res.isSuccessful()) {
+                        voiceSuggestions.value = res.data()
+                    } else voiceError.value = res.error()
+                }
+            }
+        }
+    }
+
+    fun stopListening() {
+        voiceManager.value?.let {
+            CoroutineScope(dispatchers.io()).launch {
+                it.stopListening()
+            }
         }
     }
 }

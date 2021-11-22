@@ -8,9 +8,8 @@ import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.what3words.androidwrapper.voice.Microphone
-import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.components.R
+import com.what3words.components.models.AutosuggestViewModel
 import kotlinx.android.synthetic.main.voice_pulse_layout.view.*
 
 internal class VoicePulseLayout
@@ -225,8 +224,8 @@ internal class VoicePulseLayout
         setLayout(outerCircleView, initialSizeList[PulseAnimator.OUTER_CIRCLE_INDEX])
     }
 
-    fun setup(builder: VoiceBuilder, microphone: Microphone) {
-        microphone.onListening {
+    fun setup(viewModel: AutosuggestViewModel) {
+        viewModel.microphone.onListening {
             if (it != null) {
                 onSignalUpdate(transform(it))
                 if (it > 0.7) voicePlaceholder.visibility = GONE
@@ -234,15 +233,15 @@ internal class VoicePulseLayout
         }
         onToggle = {
             if (isVoiceRunning) {
-                builder.stopListening()
+                viewModel.stopListening()
                 setIsVoiceRunning(false, shouldAnimate = false)
             } else {
-                builder.startListening()
+                viewModel.startListening()
                 setIsVoiceRunning(true, shouldAnimate = false)
             }
         }
         setIsVoiceRunning(true, shouldAnimate = true)
         voicePlaceholder.visibility = VISIBLE
-        builder.startListening()
+        viewModel.startListening()
     }
 }

@@ -3,7 +3,6 @@ package com.what3words.components.models
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.helpers.AutosuggestHelper
 import com.what3words.androidwrapper.voice.Microphone
-import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
@@ -19,18 +18,18 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
     override suspend fun autosuggest(
         query: String,
         options: AutosuggestOptions?
-    ): AutosuggestLogicManager.Result<AutosuggestWithDidyouMean> = suspendCoroutine { cont ->
+    ): Result<AutosuggestWithDidyouMean> = suspendCoroutine { cont ->
         if (options != null) autosuggestHelper.options(options)
         autosuggestHelper.update(
             query,
             {
-                cont.resume(AutosuggestLogicManager.Result(AutosuggestWithDidyouMean(it, null)))
+                cont.resume(Result(AutosuggestWithDidyouMean(it, null)))
             },
             {
-                cont.resume(AutosuggestLogicManager.Result(it))
+                cont.resume(Result(it))
             },
             {
-                cont.resume(AutosuggestLogicManager.Result(AutosuggestWithDidyouMean(null, it)))
+                cont.resume(Result(AutosuggestWithDidyouMean(null, it)))
             }
         )
     }
@@ -39,7 +38,7 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
         microphone: Microphone,
         options: AutosuggestOptions,
         voiceLanguage: String
-    ): VoiceBuilder = suspendCoroutine { cont ->
+    ): VoiceAutosuggestManager = suspendCoroutine { cont ->
         val builder = wrapper.autosuggest(microphone, voiceLanguage).apply {
             options.nResults?.let {
                 this.nResults(it)
@@ -63,33 +62,34 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
                 this.clipToPolygon(coordinates.toList())
             }
         }
-        cont.resume(builder)
+        val voiceManager = VoiceApiAutosuggestManager(builder)
+        cont.resume(voiceManager)
     }
 
     override suspend fun selected(
         rawQuery: String,
         suggestion: Suggestion
-    ): AutosuggestLogicManager.Result<SuggestionWithCoordinates> = suspendCoroutine { cont ->
+    ): Result<SuggestionWithCoordinates> = suspendCoroutine { cont ->
         autosuggestHelper.selected(
             rawQuery,
             suggestion
         ) {
-            cont.resume(AutosuggestLogicManager.Result(SuggestionWithCoordinates(it)))
+            cont.resume(Result(SuggestionWithCoordinates(it)))
         }
     }
 
     override suspend fun selectedWithCoordinates(
         rawQuery: String,
         suggestion: Suggestion
-    ): AutosuggestLogicManager.Result<SuggestionWithCoordinates> = suspendCoroutine { cont ->
+    ): Result<SuggestionWithCoordinates> = suspendCoroutine { cont ->
         autosuggestHelper.selectedWithCoordinates(
             rawQuery,
             suggestion,
             {
-                cont.resume(AutosuggestLogicManager.Result(it))
+                cont.resume(Result(it))
             },
             {
-                cont.resume(AutosuggestLogicManager.Result(it))
+                cont.resume(Result(it))
             }
         )
     }
@@ -97,7 +97,7 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
     override suspend fun multipleWithCoordinates(
         rawQuery: String,
         suggestions: List<Suggestion>
-    ): AutosuggestLogicManager.Result<List<SuggestionWithCoordinates>> = suspendCoroutine { cont ->
+    ): Result<List<SuggestionWithCoordinates>> = suspendCoroutine { cont ->
         val list = mutableListOf<SuggestionWithCoordinates>()
         var allSuccess = true
         suggestions.forEach {
@@ -106,10 +106,10 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
                 list.add(SuggestionWithCoordinates(it, res.coordinates))
             } else {
                 allSuccess = false
-                cont.resume(AutosuggestLogicManager.Result(res.error))
+                cont.resume(Result(res.error))
                 return@forEach
             }
         }
-        if (allSuccess) cont.resume(AutosuggestLogicManager.Result(list))
+        if (allSuccess) cont.resume(Result(list))
     }
 }

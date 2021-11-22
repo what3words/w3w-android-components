@@ -332,20 +332,20 @@ class W3WAutoSuggestEditText
             }
         }
 
-        viewModel.builder.observeForever {
+        viewModel.voiceManager.observeForever {
             oldHint = hint.toString()
             setText("")
             hideKeyboard()
 
             if (voiceFullscreen) {
-                voicePulseLayout?.setup(it!!, viewModel.microphone)
+                voicePulseLayout?.setup(viewModel)
                 voicePulseLayout?.onCloseCallback {
                     it?.stopListening()
                     voicePulseLayout?.setIsVoiceRunning(false, shouldAnimate = true)
                 }
             } else {
                 hint = voicePlaceholder
-                inlineVoicePulseLayout.setup(it!!, viewModel.microphone)
+                inlineVoicePulseLayout.setup(viewModel)
             }
         }
 

@@ -8,9 +8,8 @@ import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.what3words.androidwrapper.voice.Microphone
-import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.components.R
+import com.what3words.components.models.AutosuggestViewModel
 import kotlinx.android.synthetic.main.inline_voice_pulse_layout.view.*
 
 internal class InlineVoicePulseLayout
@@ -177,15 +176,15 @@ internal class InlineVoicePulseLayout
         this.startVoiceClick = callback
     }
 
-    fun setup(builder: VoiceBuilder, microphone: Microphone) {
+    fun setup(viewModel: AutosuggestViewModel) {
         if (!isVoiceRunning) {
-            microphone.onListening {
+            viewModel.microphone.onListening {
                 if (!isVoiceRunning) setIsVoiceRunning(true)
                 if (it != null) onSignalUpdate(transform(it))
             }
-            builder.startListening()
+            viewModel.startListening()
         } else {
-            builder.stopListening()
+            viewModel.stopListening()
             setIsVoiceRunning(false)
         }
     }

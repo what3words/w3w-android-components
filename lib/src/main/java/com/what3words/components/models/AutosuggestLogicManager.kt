@@ -1,7 +1,6 @@
 package com.what3words.components.models
 
 import com.what3words.androidwrapper.voice.Microphone
-import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
@@ -12,26 +11,26 @@ data class AutosuggestWithDidyouMean(
     val didYouMean: Suggestion?
 )
 
-interface AutosuggestLogicManager {
+class Result<T> {
+    private var error: APIResponse.What3WordsError? = null
+    private var data: T? = null
 
-    class Result<T> {
-        private var error: APIResponse.What3WordsError? = null
-        private var data: T? = null
-
-        constructor(data: T) {
-            this.data = data
-        }
-
-        constructor(error: APIResponse.What3WordsError) {
-            this.error = error
-        }
-
-        fun isSuccessful() = this.data != null && error == null
-
-        fun error(): APIResponse.What3WordsError? = this.error
-
-        fun data(): T? = this.data
+    constructor(data: T) {
+        this.data = data
     }
+
+    constructor(error: APIResponse.What3WordsError) {
+        this.error = error
+    }
+
+    fun isSuccessful() = this.data != null && error == null
+
+    fun error(): APIResponse.What3WordsError? = this.error
+
+    fun data(): T? = this.data
+}
+
+interface AutosuggestLogicManager {
 
     suspend fun autosuggest(
         query: String,
@@ -42,7 +41,7 @@ interface AutosuggestLogicManager {
         microphone: Microphone,
         options: AutosuggestOptions,
         voiceLanguage: String
-    ): VoiceBuilder
+    ): VoiceAutosuggestManager
 
     suspend fun selected(
         rawQuery: String,
