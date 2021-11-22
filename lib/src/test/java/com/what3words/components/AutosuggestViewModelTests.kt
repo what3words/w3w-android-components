@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import com.what3words.components.models.AutosuggestApiManager
-import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.models.AutosuggestViewModel
 import com.what3words.components.models.AutosuggestWithDidyouMean
 import com.what3words.javawrapper.response.APIResponse
@@ -25,6 +24,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
+import com.what3words.components.models.Result
 
 @ExperimentalCoroutinesApi
 class AutosuggestViewModelTests {
@@ -101,7 +101,7 @@ class AutosuggestViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                AutosuggestLogicManager.Result(AutosuggestWithDidyouMean(suggestions, null))
+                Result(AutosuggestWithDidyouMean(suggestions, null))
             }
 
             viewModel.autosuggest("test")
@@ -121,7 +121,7 @@ class AutosuggestViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                AutosuggestLogicManager.Result(
+                Result(
                     AutosuggestWithDidyouMean(
                         null,
                         suggestions.firstOrNull()
@@ -151,7 +151,7 @@ class AutosuggestViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                AutosuggestLogicManager.Result(
+                Result(
                     APIResponse.What3WordsError.INVALID_KEY
                 )
             }
@@ -194,7 +194,7 @@ class AutosuggestViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                AutosuggestLogicManager.Result(
+                Result(
                     AutosuggestWithDidyouMean(
                         suggestions,
                         null
@@ -205,7 +205,7 @@ class AutosuggestViewModelTests {
             coEvery {
                 manager.selectedWithCoordinates("test", suggestions.first())
             } answers {
-                AutosuggestLogicManager.Result(
+                Result(
                     suggestionsWithCoordinates.first()
                 )
             }
@@ -249,7 +249,7 @@ class AutosuggestViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                AutosuggestLogicManager.Result(
+                Result(
                     AutosuggestWithDidyouMean(
                         suggestions,
                         null
@@ -260,7 +260,7 @@ class AutosuggestViewModelTests {
             coEvery {
                 manager.selected("test", suggestions.first())
             } answers {
-                AutosuggestLogicManager.Result(
+                Result(
                     suggestionsWithCoordinates
                 )
             }
@@ -310,7 +310,7 @@ class AutosuggestViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                AutosuggestLogicManager.Result(
+                Result(
                     AutosuggestWithDidyouMean(
                         suggestions,
                         null
@@ -321,7 +321,7 @@ class AutosuggestViewModelTests {
             coEvery {
                 manager.multipleWithCoordinates("test", suggestions)
             } answers {
-                AutosuggestLogicManager.Result(
+                Result(
                     suggestionsWithCoordinates
                 )
             }
@@ -374,7 +374,7 @@ class AutosuggestViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                AutosuggestLogicManager.Result(
+                Result(
                     AutosuggestWithDidyouMean(
                         suggestions,
                         null
@@ -385,7 +385,7 @@ class AutosuggestViewModelTests {
             coEvery {
                 manager.multipleWithCoordinates("test", suggestions)
             } answers {
-                AutosuggestLogicManager.Result(
+                Result(
                     suggestionsWithCoordinates
                 )
             }
