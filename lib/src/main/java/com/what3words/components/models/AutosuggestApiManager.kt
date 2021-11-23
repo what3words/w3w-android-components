@@ -112,4 +112,8 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
         }
         if (allSuccess) cont.resume(Result(list))
     }
+
+    override fun isVoiceEnabled(): Boolean {
+        return true
+    }
 }

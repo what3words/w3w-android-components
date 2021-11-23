@@ -57,4 +57,6 @@ interface AutosuggestLogicManager {
         rawQuery: String,
         suggestions: List<Suggestion>
     ): Result<List<SuggestionWithCoordinates>>
+
+    fun isVoiceEnabled(): Boolean
 }

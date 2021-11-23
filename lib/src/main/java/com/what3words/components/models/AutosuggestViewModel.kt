@@ -86,7 +86,9 @@ internal class AutosuggestViewModel(
     fun onSuggestionClicked(rawQuery: String, suggestion: Suggestion?, returnCoordinates: Boolean) {
         CoroutineScope(dispatchers.io()).launch {
             if (suggestion == null) {
-                selectedSuggestion.value = null
+                CoroutineScope(dispatchers.main()).launch {
+                    selectedSuggestion.value = null
+                }
             } else if (!returnCoordinates) {
                 val res = manager.selected(rawQuery, suggestion)
                 if (res.isSuccessful()) {
