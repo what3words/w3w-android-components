@@ -43,7 +43,7 @@ import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
-import java.util.Collections
+import java.util.*
 
 /**
  * A [AppCompatEditText] to simplify the integration of what3words text and voice auto-suggest API in your app.
@@ -144,7 +144,7 @@ class W3WAutoSuggestEditText
 
                 if (fromPaste) {
                     if (searchText.removePrefix(context.getString(R.string.w3w_slashes))
-                        .isPossible3wa()
+                            .isPossible3wa()
                     ) {
                         fromPaste = false
                         setText(searchText.removePrefix(context.getString(R.string.w3w_slashes)))
@@ -374,9 +374,10 @@ class W3WAutoSuggestEditText
                         }
 
                         override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
-                            viewModel.voiceError.value = APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
-                                message = "Microphone permission required"
-                            }
+                            viewModel.voiceError.value =
+                                APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
+                                    message = "Microphone permission required"
+                                }
                         }
                     }
                 )

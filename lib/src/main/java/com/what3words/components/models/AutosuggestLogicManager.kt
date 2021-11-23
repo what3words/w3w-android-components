@@ -41,7 +41,7 @@ interface AutosuggestLogicManager {
         microphone: Microphone,
         options: AutosuggestOptions,
         voiceLanguage: String
-    ): VoiceAutosuggestManager
+    ): Result<VoiceAutosuggestManager>
 
     suspend fun selected(
         rawQuery: String,

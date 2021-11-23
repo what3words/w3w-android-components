@@ -38,7 +38,7 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
         microphone: Microphone,
         options: AutosuggestOptions,
         voiceLanguage: String
-    ): VoiceAutosuggestManager = suspendCoroutine { cont ->
+    ): Result<VoiceAutosuggestManager> = suspendCoroutine { cont ->
         val builder = wrapper.autosuggest(microphone, voiceLanguage).apply {
             options.nResults?.let {
                 this.nResults(it)
@@ -63,7 +63,7 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
             }
         }
         val voiceManager = VoiceApiAutosuggestManager(builder)
-        cont.resume(voiceManager)
+        cont.resume(Result(voiceManager))
     }
 
     override suspend fun selected(
