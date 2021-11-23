@@ -78,7 +78,11 @@ internal class AutosuggestViewModel(
             )
 
             CoroutineScope(dispatchers.main()).launch {
-                this@AutosuggestViewModel.voiceManager.value = builder
+                if (builder.isSuccessful()) {
+                    this@AutosuggestViewModel.voiceManager.value = builder.data()
+                } else {
+                    this@AutosuggestViewModel.voiceError.value = builder.error()
+                }
             }
         }
     }
