@@ -19,6 +19,18 @@
         <item name="android:textAppearance">@style/W3WAutoSuggestEditTextTextAppearance</item>
     </style>
 
+    <style name="W3WAutoSuggestPicker">
+        <item name="pickerItemBackground">@color/white</item>
+        <item name="pickerItemSpacing">0dp</item>
+        <item name="pickerBackgroundDrawable">@drawable/bg_white_border_gray</item>
+        <item name="pickerDivider">@drawable/divider</item>
+        <item name="pickerDividerVisible">true</item>
+        <item name="pickerItemTitleTextSize">@dimen/default_text</item>
+        <item name="pickerItemSubtitleTextSize">@dimen/secondary_text</item>
+        <item name="pickerItemTitleTextColor">@color/w3wBlue</item>
+        <item name="pickerItemSubtitleTextColor">@color/w3wGray</item>
+    </style>
+
     <style name="W3WAutoSuggestEditTextTextAppearance" parent="TextAppearance.AppCompat">
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">sans-serif</item>

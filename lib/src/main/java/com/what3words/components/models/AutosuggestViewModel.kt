@@ -36,10 +36,7 @@ internal class AutosuggestViewModel(
     val voiceSuggestions = MutableLiveData<List<Suggestion>>()
     val selectedSuggestion = MutableLiveData<SuggestionWithCoordinates>()
     val multipleSelectedSuggestions = MutableLiveData<List<SuggestionWithCoordinates>>()
-
-    val options: AutosuggestOptions by lazy {
-        AutosuggestOptions()
-    }
+    var options: AutosuggestOptions = AutosuggestOptions()
 
     fun autosuggest(searchText: String) {
         CoroutineScope(dispatchers.io()).launch {
@@ -137,6 +134,7 @@ internal class AutosuggestViewModel(
     fun startListening() {
         voiceManager.value?.let {
             CoroutineScope(dispatchers.io()).launch {
+                it.updateOptions(options)
                 val res = it.startListening()
                 CoroutineScope(dispatchers.main()).launch {
                     if (res.isSuccessful()) {

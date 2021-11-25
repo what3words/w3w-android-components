@@ -7,9 +7,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:layout_height="wrap_content">
+        android:focusableInTouchMode="true">
 
         <TextView
             android:id="@+id/textHeader"
@@ -25,15 +25,19 @@
         <com.what3words.components.text.W3WAutoSuggestEditText
             android:id="@+id/suggestionEditText"
             android:layout_width="0dp"
+            style="@style/YourCustomStyle"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
             android:layout_marginEnd="@dimen/main_s"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textHeader" />
+            app:layout_constraintTop_toBottomOf="@+id/textHeader"
+            app:voiceEnabled="true"
+            app:voiceScreenType="fullscreen" />
 
         <com.what3words.components.picker.W3WAutoSuggestPicker
             android:id="@+id/suggestionPicker"
+            style="@style/YourPickerCustomStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
@@ -60,12 +64,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
             android:layout_marginTop="@dimen/main_l"
+            android:layout_marginEnd="@dimen/main_s"
             android:elevation="1dp"
-            app:layout_constraintTop_toBottomOf="@+id/suggestionEditText"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/suggestionEditText" />
 
         <TextView
             android:id="@+id/selectedInfo"
@@ -117,6 +121,20 @@
             app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates" />
 
         <CheckBox
+            android:id="@+id/checkboxVoicePopup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
+            android:checked="false"
+            android:text="@string/voice_popup_enabled"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkboxVoiceEnabled" />
+
+        <CheckBox
             android:id="@+id/checkboxVoiceFullscreen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -128,7 +146,7 @@
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxVoiceEnabled" />
+            app:layout_constraintTop_toBottomOf="@+id/checkboxVoicePopup" />
 
         <CheckBox
             android:id="@+id/checkboxCustomPicker"

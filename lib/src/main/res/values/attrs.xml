@@ -9,18 +9,42 @@
         <attr name="invalidAddressMessage" format="string" />
         <attr name="correctionMessage" format="string" />
         <attr name="voiceEnabled" format="boolean" />
-        <attr name="voiceFullscreen" format="boolean" />
         <attr name="voiceLanguage" format="string" />
         <attr name="voicePlaceholder" format="string" />
+        <attr name="voiceBackgroundColor" format="color" />
+        <attr name="voiceBackgroundDrawable" format="reference" />
+        <attr name="voiceIconsColor" format="color" />
         <attr name="displayUnit" format="enum">
             <enum name="system" value="0"/>
             <enum name="imperial" value="1"/>
             <enum name="metric" value="2"/>
         </attr>
+        <attr name="voiceScreenType" format="enum">
+            <enum name="inline" value="0"/>
+            <enum name="animatedPopup" value="1"/>
+            <enum name="fullscreen" value="2"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="W3WAutoSuggestPicker">
+        <attr name="pickerItemSpacing" format="dimension" />
+        <attr name="pickerBackgroundDrawable" format="reference" />
+        <attr name="pickerItemBackground" format="color" />
+        <attr name="pickerItemBackgroundDrawable" format="reference" />
+        <attr name="pickerDivider" format="reference" />
+        <attr name="pickerDividerVisible" format="boolean" />
+        <attr name="pickerItemTitleTextSize" format="dimension" />
+        <attr name="pickerItemSubtitleTextSize" format="dimension" />
+        <attr name="pickerItemTitleTextColor" format="color" />
+        <attr name="pickerItemSubtitleTextColor" format="color" />
     </declare-styleable>
 
     <declare-styleable name="CustomTheme">
         <attr name="customW3WAutoSuggestEditTextStyle" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomPickerTheme">
+        <attr name="customW3WAutoSuggestPickerStyle" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="CustomVoiceTheme">

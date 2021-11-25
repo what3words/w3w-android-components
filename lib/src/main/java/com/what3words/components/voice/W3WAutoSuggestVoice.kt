@@ -29,17 +29,18 @@ import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.utils.DisplayMetricsConverter.convertPixelsToDp
 import com.what3words.components.utils.PulseAnimator
 import com.what3words.components.utils.transform
+import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
+import java.util.*
 import kotlinx.android.synthetic.main.w3w_voice_only.view.innerCircleView
 import kotlinx.android.synthetic.main.w3w_voice_only.view.midCircleView
 import kotlinx.android.synthetic.main.w3w_voice_only.view.outerCircleView
 import kotlinx.android.synthetic.main.w3w_voice_only.view.voicePulseLayout
 import kotlinx.android.synthetic.main.w3w_voice_only.view.w3wLogo
-import java.util.Collections
 
 /**
  * A [View] to simplify the integration of what3words voice auto-suggest API in your app.
@@ -69,21 +70,20 @@ class W3WAutoSuggestVoice
     private var errorMessageText: String? = null
     private var callback: Consumer<List<SuggestionWithCoordinates>>? =
         null
-    private var onListeningCallback: Consumer<W3WListeningState>? =
+    private var internalCallback: Consumer<List<Suggestion>>? =
         null
     private var selectedCallback: Consumer<SuggestionWithCoordinates?>? =
         null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? =
         null
+    private var onListeningCallback: Consumer<W3WListeningState>? =
+        null
     private var returnCoordinates: Boolean = false
     private var voiceLanguage: String
     private var animationRefreshTime: Int = 2
     internal var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
-    private var suggestionsPicker: W3WAutoSuggestPicker? = null
 
-    internal val viewModel: AutosuggestViewModel by lazy {
-        AutosuggestViewModel()
-    }
+    private lateinit var viewModel: AutosuggestViewModel
 
     init {
         context.theme.obtainStyledAttributes(
@@ -102,6 +102,7 @@ class W3WAutoSuggestVoice
                         ?: "en"
                 displayUnits =
                     DisplayUnits.values()[getInt(R.styleable.W3WAutoSuggestEditText_displayUnit, 0)]
+
             } finally {
                 recycle()
             }
@@ -132,73 +133,16 @@ class W3WAutoSuggestVoice
             }
         }
 
-        viewModel.voiceManager.observeForever { voiceManager ->
-            if (!isVoiceRunning) {
-                onListeningCallback?.accept(W3WListeningState.Connecting)
-                var oldTimestamp = System.currentTimeMillis()
-                viewModel.microphone.onListening {
-                    if (!isVoiceRunning) setIsVoiceRunning(true)
-                    if (it != null) {
-                        if ((System.currentTimeMillis() - oldTimestamp) > animationRefreshTime) {
-                            oldTimestamp = System.currentTimeMillis()
-                            onSignalUpdate(transform(it))
-                        }
-                    }
-                }
-                viewModel.microphone.onError { microphoneError ->
-                    errorCallback?.accept(
-                        APIResponse.What3WordsError.UNKNOWN_ERROR.also {
-                            it.message = microphoneError
-                        }
-                    )
-                }
-                viewModel.startListening()
-            } else {
-                onListeningCallback?.accept(W3WListeningState.Stopped)
-                voiceManager?.stopListening()
-                setIsVoiceRunning(false)
-            }
-        }
-
-        viewModel.voiceSuggestions.observeForever { suggestions ->
-            handleSuggestions(suggestions)
-            onListeningCallback?.accept(W3WListeningState.Stopped)
-            setIsVoiceRunning(
-                isVoiceRunning = false,
-                withError = suggestions.isEmpty()
-            )
-        }
-
-        viewModel.voiceError.observeForever { error ->
-            if (error != null) {
-                errorCallback?.accept(error)
-                onListeningCallback?.accept(W3WListeningState.Stopped)
-                setIsVoiceRunning(isVoiceRunning = false, withError = true)
-            }
-        }
-
-        viewModel.listeningState.observeForever {
-            if (it == W3WListeningState.Stopped) {
-                setIsVoiceRunning(isVoiceRunning = false, withError = false)
-            }
-        }
-
-        viewModel.multipleSelectedSuggestions.observeForever {
-            callback?.accept(it)
-        }
-
-        viewModel.selectedSuggestion.observeForever {
-            selectedCallback?.accept(it)
-        }
-
         // Add a viewTreeObserver to obtain the initial size of the circle overlays
         voicePulseLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
-                OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
+            OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                if (innerCircleView.measuredWidth != 0) {
                     setOverlayBaseSize()
                     voicePulseLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }
-            })
+            }
+        })
     }
 
     fun setOverlayBaseSize() {
@@ -219,6 +163,69 @@ class W3WAutoSuggestVoice
         )
         setIsVoiceRunning(false)
         pulseAnimator.setInitialSize(initialSizeList)
+    }
+
+    private fun observers() {
+        viewModel.voiceManager.observeForever { voiceManager ->
+            if (!isVoiceRunning) {
+                viewModel.listeningState.value = W3WListeningState.Connecting
+                var oldTimestamp = System.currentTimeMillis()
+                viewModel.microphone.onListening {
+                    if (!isVoiceRunning) setIsVoiceRunning(true)
+                    if (it != null) {
+                        if ((System.currentTimeMillis() - oldTimestamp) > animationRefreshTime) {
+                            oldTimestamp = System.currentTimeMillis()
+                            onSignalUpdate(transform(it))
+                        }
+                    }
+                }
+                viewModel.microphone.onError { microphoneError ->
+                    errorCallback?.accept(
+                        APIResponse.What3WordsError.UNKNOWN_ERROR.also {
+                            it.message = microphoneError
+                        }
+                    )
+                }
+                viewModel.startListening()
+            } else {
+                viewModel.listeningState.value = W3WListeningState.Stopped
+                viewModel.stopListening()
+                setIsVoiceRunning(false)
+            }
+        }
+
+        viewModel.voiceSuggestions.observeForever { suggestions ->
+            handleSuggestions(suggestions)
+            internalCallback?.accept(suggestions)
+            viewModel.listeningState.value = W3WListeningState.Stopped
+            setIsVoiceRunning(
+                isVoiceRunning = false,
+                withError = suggestions.isEmpty()
+            )
+        }
+
+        viewModel.voiceError.observeForever { error ->
+            if (error != null) {
+                errorCallback?.accept(error)
+                viewModel.listeningState.value = W3WListeningState.Stopped
+                setIsVoiceRunning(isVoiceRunning = false, withError = true)
+            }
+        }
+
+        viewModel.listeningState.observeForever {
+            onListeningCallback?.accept(it)
+            if (it == W3WListeningState.Stopped) {
+                setIsVoiceRunning(isVoiceRunning = false, withError = false)
+            }
+        }
+
+        viewModel.multipleSelectedSuggestions.observeForever {
+            callback?.accept(it)
+        }
+
+        viewModel.selectedSuggestion.observeForever {
+            selectedCallback?.accept(it)
+        }
     }
 
     private fun setVoicePulseListeners() {
@@ -293,7 +300,7 @@ class W3WAutoSuggestVoice
     fun setIsVoiceRunning(isVoiceRunning: Boolean, withError: Boolean = false) {
         this.isVoiceRunning = isVoiceRunning
         if (isVoiceRunning) {
-            onListeningCallback?.accept(W3WListeningState.Started)
+            viewModel.listeningState.value = W3WListeningState.Started
             handler?.removeCallbacks(changeBackIcon)
             w3wLogo.setImageResource(R.drawable.ic_voice_only_active)
             View.VISIBLE
@@ -332,12 +339,7 @@ class W3WAutoSuggestVoice
     }
 
     private fun handleSuggestions(suggestions: List<Suggestion>) {
-        suggestionsPicker?.let {
-            if (suggestions.isNotEmpty()) it.visibility = VISIBLE
-            it.refreshSuggestions(suggestions, null, viewModel.options, returnCoordinates)
-        } ?: run {
-            viewModel.onMultipleSuggestionsSelected("", suggestions, returnCoordinates)
-        }
+        viewModel.onMultipleSuggestionsSelected("", suggestions, returnCoordinates)
     }
 
     //region Properties
@@ -355,6 +357,18 @@ class W3WAutoSuggestVoice
             )
         )
         viewModel.microphone = Microphone()
+        observers()
+        return this
+    }
+
+    //region Properties
+    /** Set your What3Words API Key which will be used to get suggestions and coordinates (if enabled)
+     *
+     * @param key your API key from what3words developer dashboard
+     * @return same [W3WAutoSuggestVoice] instance
+     */
+    fun options(options: AutosuggestOptions): W3WAutoSuggestVoice {
+        this.viewModel.options = options
         return this
     }
 
@@ -379,6 +393,7 @@ class W3WAutoSuggestVoice
             )
         )
         viewModel.microphone = Microphone()
+        observers()
         return this
     }
 
@@ -390,8 +405,10 @@ class W3WAutoSuggestVoice
     fun sdk(
         logicManager: AutosuggestLogicManager
     ): W3WAutoSuggestVoice {
+        viewModel = AutosuggestViewModel()
         viewModel.manager = logicManager
         viewModel.microphone = Microphone()
+        observers()
         return this
     }
 
@@ -572,26 +589,32 @@ class W3WAutoSuggestVoice
      */
     fun onResults(callback: Consumer<List<SuggestionWithCoordinates>>): W3WAutoSuggestVoice {
         this.callback = callback
-        this.suggestionsPicker = null
+        //this.suggestionsPicker = null
         return this
     }
 
-    /**
-     * onResults with will provide the 3 word address selected by the end-user using the [W3WAutoSuggestPicker] provided.
-     *
-     * @param picker [W3WAutoSuggestPicker] to show on screen the list of 3 word addresses found using our voice API.
-     * @param callback will return the [SuggestionWithCoordinates] picked by the end-user, coordinates will be null if returnCoordinates = false.
-     * @return same [W3WAutoSuggestVoice] instance
-     */
-    fun onResults(
-        picker: W3WAutoSuggestPicker,
-        callback: Consumer<SuggestionWithCoordinates?>
-    ): W3WAutoSuggestVoice {
-        this.selectedCallback = callback
-        picker.setup(viewModel, displayUnits)
-        this.suggestionsPicker = picker
+    internal fun onInternalResults(callback: Consumer<List<Suggestion>>): W3WAutoSuggestVoice {
+        this.internalCallback = callback
+        //this.suggestionsPicker = null
         return this
     }
+
+//    /**
+//     * onResults with will provide the 3 word address selected by the end-user using the [W3WAutoSuggestPicker] provided.
+//     *
+//     * @param picker [W3WAutoSuggestPicker] to show on screen the list of 3 word addresses found using our voice API.
+//     * @param callback will return the [SuggestionWithCoordinates] picked by the end-user, coordinates will be null if returnCoordinates = false.
+//     * @return same [W3WAutoSuggestVoice] instance
+//     */
+//    fun onResults(
+//        picker: W3WAutoSuggestPicker,
+//        callback: Consumer<SuggestionWithCoordinates?>
+//    ): W3WAutoSuggestVoice {
+//        this.selectedCallback = callback
+//        picker.setup(viewModel, displayUnits)
+//        this.suggestionsPicker = picker
+//        return this
+//    }
 
     /**
      * onError will provide any errors [APIResponse.What3WordsError] that might happen during the API call
@@ -633,6 +656,7 @@ class W3WAutoSuggestVoice
             viewModel.voiceManager.value?.stopListening()
             viewModel.microphone.onListening {}
             onListeningCallback?.accept(W3WListeningState.Stopped)
+            viewModel.listeningState.value = W3WListeningState.Stopped
             setIsVoiceRunning(false)
             return
         }

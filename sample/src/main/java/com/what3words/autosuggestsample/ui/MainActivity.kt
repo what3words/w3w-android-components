@@ -8,6 +8,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFI
 import com.google.android.material.snackbar.Snackbar
 import com.what3words.autosuggestsample.R
 import com.what3words.autosuggestsample.util.addOnTextChangedListener
+import com.what3words.components.text.VoiceScreenType
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import kotlinx.android.synthetic.main.activity_main.*
@@ -43,12 +44,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         checkboxVoiceFullscreen.setOnCheckedChangeListener { _, b ->
-            suggestionEditText.voiceFullscreen(b)
+            suggestionEditText.voiceEnabled(b, VoiceScreenType.Fullscreen)
         }
 
         checkboxVoiceEnabled.setOnCheckedChangeListener { _, b ->
-            suggestionEditText.voiceEnabled(b)
+            suggestionEditText.voiceEnabled(b, VoiceScreenType.Inline)
         }
+
+        checkboxVoicePopup.setOnCheckedChangeListener { _, b ->
+            suggestionEditText.voiceEnabled(b, VoiceScreenType.AnimatedPopup)
+        }
+
 
         checkboxCustomPicker.setOnCheckedChangeListener { _, _ ->
             updateOnSelectedAndOnError()

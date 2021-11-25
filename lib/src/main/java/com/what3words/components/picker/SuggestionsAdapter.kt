@@ -1,6 +1,8 @@
 package com.what3words.components.picker
 
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -18,12 +20,19 @@ import kotlinx.android.synthetic.main.item_suggestion.view.w3wAddressFlagIcon
 import kotlinx.android.synthetic.main.item_suggestion.view.w3wAddressLabel
 import kotlinx.android.synthetic.main.item_suggestion.view.w3wDistanceToFocus
 import kotlinx.android.synthetic.main.item_suggestion.view.w3wNearestPlaceLabel
+import kotlinx.android.synthetic.main.item_suggestion.view.w3wSlashesLabel
 import kotlinx.android.synthetic.main.item_suggestion.view.w3wSuggestionHolder
 
 internal class SuggestionsAdapter(
     private val typeface: Typeface,
     private val textColor: Int,
-    private val callback: ((Suggestion) -> Unit)?
+    private val backgroundDrawable: Drawable?,
+    private val backgroundColor: Int?,
+    private val callback: ((Suggestion) -> Unit)?,
+    private val titleTextSize: Int,
+    private val titleTextColor: Int,
+    private val subtitleTextSize: Int,
+    private val subtitleTextColor: Int
 ) :
     RecyclerView.Adapter<SuggestionsAdapter.W3WLocationViewHolder>() {
 
@@ -47,7 +56,7 @@ internal class SuggestionsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): W3WLocationViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.item_suggestion, parent, false)
-        return W3WLocationViewHolder(view, typeface, textColor, displayUnits)
+        return W3WLocationViewHolder(view, typeface, textColor, displayUnits, backgroundDrawable, backgroundColor, titleTextSize, titleTextColor, subtitleTextSize, subtitleTextColor)
     }
 
     override fun onBindViewHolder(holder: W3WLocationViewHolder, position: Int) {
@@ -64,7 +73,13 @@ internal class SuggestionsAdapter(
         private val view: View,
         private val typeface: Typeface,
         private val textColor: Int,
-        private val displayUnits: DisplayUnits
+        private val displayUnits: DisplayUnits,
+        private val backgroundDrawable: Drawable?,
+        private val backgroundColor: Int?,
+        private val titleTextSize: Int,
+        private val titleTextColor: Int,
+        private val subtitleTextSize: Int,
+        private val subtitleTextColor: Int
     ) :
         RecyclerView.ViewHolder(view) {
         fun bind(
@@ -72,15 +87,41 @@ internal class SuggestionsAdapter(
             query: String?,
             onSuggestionClicked: (Suggestion) -> Unit
         ) {
-            if (query?.replace(view.context.getString(R.string.w3w_slash), "")
-                .equals(suggestion.words, ignoreCase = true)
-            ) {
-                view.w3wSuggestionHolder.setBackgroundColor(ContextCompat.getColor(view.context, R.color.w3wHover))
-            } else {
-                view.w3wSuggestionHolder.setBackgroundColor(ContextCompat.getColor(view.context, R.color.white))
+            backgroundDrawable?.let {
+                view.background = it
+            } ?: run {
+                backgroundColor?.let {
+                    view.setBackgroundColor(it)
+                }
+                if (query?.replace(view.context.getString(R.string.w3w_slash), "")
+                        .equals(suggestion.words, ignoreCase = true)
+                ) {
+                    view.w3wSuggestionHolder.setBackgroundColor(
+                        ContextCompat.getColor(
+                            view.context,
+                            R.color.w3wHover
+                        )
+                    )
+                } else {
+                    view.w3wSuggestionHolder.setBackgroundColor(
+                        ContextCompat.getColor(
+                            view.context,
+                            R.color.white
+                        )
+                    )
+                }
             }
+
+            view.w3wSlashesLabel.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX, titleTextSize.toFloat())
+            view.w3wAddressLabel.setTextColor(titleTextColor)
+            view.w3wAddressLabel.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX, titleTextSize.toFloat())
             view.w3wAddressLabel.text = suggestion.words
-            view.w3wAddressLabel.setTextColor(ContextCompat.getColor(view.context, textColor))
+            //view.w3wAddressLabel.setTextColor(ContextCompat.getColor(view.context, textColor))
+            view.w3wNearestPlaceLabel.setTextColor(subtitleTextColor)
+            view.w3wNearestPlaceLabel.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX, subtitleTextSize.toFloat())
             if (!suggestion.nearestPlace.isNullOrEmpty()) {
                 view.w3wNearestPlaceLabel.visibility = VISIBLE
                 view.w3wNearestPlaceLabel.text =
@@ -100,6 +141,10 @@ internal class SuggestionsAdapter(
             } else {
                 view.w3wAddressFlagIcon.visibility = GONE
             }
+
+            view.w3wDistanceToFocus.setTextColor(subtitleTextColor)
+            view.w3wDistanceToFocus.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX, subtitleTextSize.toFloat())
             suggestion.distanceToFocusKm?.let {
                 view.w3wDistanceToFocus.text =
                     formatUnits(suggestion.distanceToFocusKm, displayUnits, view.context)

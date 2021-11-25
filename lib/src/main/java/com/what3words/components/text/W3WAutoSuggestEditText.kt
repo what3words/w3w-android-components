@@ -1,6 +1,5 @@
 package com.what3words.components.text
 
-import android.Manifest
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -20,8 +19,6 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
-import com.intentfilter.androidpermissions.PermissionManager
-import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.helpers.didYouMean3wa
 import com.what3words.androidwrapper.helpers.isPossible3wa
@@ -33,11 +30,11 @@ import com.what3words.components.models.AutosuggestApiManager
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.models.AutosuggestViewModel
 import com.what3words.components.models.DisplayUnits
-import com.what3words.components.models.W3WListeningState
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.utils.InlineVoicePulseLayout
 import com.what3words.components.utils.VoicePulseLayout
+import com.what3words.components.utils.VoicePulseLayoutFullScreen
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
@@ -60,7 +57,6 @@ class W3WAutoSuggestEditText
 ) {
 
     private var oldHint: String = ""
-    internal var autosuggestLogicManager: AutosuggestLogicManager? = null
     private var focusFromVoice: Boolean = false
     private var isRendered: Boolean = false
     internal var pickedFromVoice: Boolean = false
@@ -82,9 +78,14 @@ class W3WAutoSuggestEditText
         null
     internal var returnCoordinates: Boolean = false
     internal var voiceEnabled: Boolean = false
-    internal var voiceFullscreen: Boolean = false
+    internal var voiceScreenType: VoiceScreenType = VoiceScreenType.Inline
     internal var allowInvalid3wa: Boolean = false
     internal var voicePlaceholder: String
+    internal var voiceBackgroundColor: Int =
+        ContextCompat.getColor(context, R.color.w3wVoiceBackground)
+    internal var voiceBackgroundDrawable: Drawable? = null
+    internal var voiceIconsColor: Int =
+        ContextCompat.getColor(context, R.color.w3wGray)
     internal var voiceLanguage: String
     internal var customPicker: W3WAutoSuggestPicker? = null
     internal var customErrorView: AppCompatTextView? = null
@@ -102,12 +103,26 @@ class W3WAutoSuggestEditText
         }
     }
 
+    internal val tickHolder: Drawable? by lazy {
+        ContextCompat.getDrawable(context, R.drawable.ic_empty).apply {
+            this?.setTint(context.getColor(R.color.transparent))
+            this?.setBounds(
+                0,
+                0,
+                (this@W3WAutoSuggestEditText.textSize * 1.20).toInt() + context.resources.getDimensionPixelSize(
+                    R.dimen.medium_margin
+                ),
+                (this@W3WAutoSuggestEditText.textSize * 1.20).toInt()
+            )
+        }
+    }
+
     internal val viewModel: AutosuggestViewModel by lazy {
         AutosuggestViewModel()
     }
 
     internal val defaultPicker: W3WAutoSuggestPicker by lazy {
-        W3WAutoSuggestPicker(context).apply {
+        W3WAutoSuggestPicker(ContextThemeWrapper(context, R.style.W3WAutoSuggestPicker)).apply {
             setup(viewModel, displayUnits)
         }
     }
@@ -131,10 +146,21 @@ class W3WAutoSuggestEditText
     }
 
     internal val inlineVoicePulseLayout: InlineVoicePulseLayout by lazy {
-        InlineVoicePulseLayout(context)
+        InlineVoicePulseLayout(context).apply {
+            this.onResultsCallback {
+                handleVoiceSuggestions(it)
+                this.setIsVoiceRunning(false)
+            }
+            this.onErrorCallback {
+                handleVoiceError(it)
+                this.setIsVoiceRunning(false)
+            }
+        }
     }
 
-    internal var voicePulseLayout: VoicePulseLayout? = null
+    internal var voiceAnimatedPopup: VoicePulseLayout? = null
+
+    internal var voicePulseLayoutFullScreen: VoicePulseLayoutFullScreen? = null
 
     private val watcher by lazy {
         object : TextWatcher {
@@ -234,12 +260,29 @@ class W3WAutoSuggestEditText
                     R.styleable.W3WAutoSuggestEditText_imageTintColor,
                     ContextCompat.getColor(context, R.color.w3wRed)
                 )
+                voiceBackgroundColor = getColor(
+                    R.styleable.W3WAutoSuggestEditText_voiceBackgroundColor,
+                    ContextCompat.getColor(context, R.color.w3wVoiceBackground)
+                )
+                val drawableId = getResourceId(
+                    R.styleable.W3WAutoSuggestEditText_voiceBackgroundDrawable,
+                    -1
+                )
+                voiceBackgroundDrawable =
+                    if (drawableId != -1) ContextCompat.getDrawable(context, drawableId) else null
+                voiceIconsColor = getColor(
+                    R.styleable.W3WAutoSuggestEditText_voiceIconsColor,
+                    ContextCompat.getColor(context, R.color.w3wGray)
+                )
                 returnCoordinates =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_returnCoordinates, false)
                 voiceEnabled =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
-                voiceFullscreen =
-                    getBoolean(R.styleable.W3WAutoSuggestEditText_voiceFullscreen, false)
+                voiceScreenType =
+                    VoiceScreenType.values()[getInt(
+                        R.styleable.W3WAutoSuggestEditText_voiceScreenType,
+                        0
+                    )]
                 voiceLanguage =
                     getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
                 displayUnits =
@@ -290,100 +333,36 @@ class W3WAutoSuggestEditText
             }
         }
 // </editor-fold>
-// <editor-fold desc="voice observers">
-        viewModel.voiceSuggestions.observeForever { suggestions ->
-            this.hint = oldHint
-            if (suggestions.isEmpty()) {
-                getInvalidAddressView().showError(invalidSelectionMessageText)
-            } else {
-                pickedFromVoice = true
-                this.setText(
-                    context.getString(
-                        R.string.w3w_slashes_with_address,
-                        suggestions.minByOrNull { it.rank }!!.words
-                    )
-                )
-                getPicker().visibility = VISIBLE
-                // Query empty because we don't want to highlight when using voice.
-                getPicker().refreshSuggestions(
-                    suggestions,
-                    "",
-                    viewModel.options,
-                    returnCoordinates
-                )
-                showKeyboard()
-            }
-            if (voiceFullscreen) {
-                voicePulseLayout?.setIsVoiceRunning(false, shouldAnimate = true)
-            } else inlineVoicePulseLayout.setIsVoiceRunning(false)
-        }
-
-        viewModel.voiceError.observeForever {
-            if (it != null) {
-                getErrorView().showError(errorMessageText)
-                errorCallback?.accept(it) ?: run {
-                    Log.e("W3WAutoSuggestEditText", it.message)
-                }
-                if (voiceFullscreen) voicePulseLayout?.setIsVoiceRunning(
-                    false,
-                    shouldAnimate = true
-                )
-                else inlineVoicePulseLayout.setIsVoiceRunning(false)
-            }
-        }
-
-        viewModel.voiceManager.observeForever {
-            oldHint = hint.toString()
-            setText("")
-            hideKeyboard()
-
-            if (voiceFullscreen) {
-                voicePulseLayout?.setup(viewModel)
-                voicePulseLayout?.onCloseCallback {
-                    it?.stopListening()
-                    voicePulseLayout?.setIsVoiceRunning(false, shouldAnimate = true)
-                }
-            } else {
-                hint = voicePlaceholder
-                inlineVoicePulseLayout.setup(viewModel)
-            }
-        }
-
-        viewModel.listeningState.observeForever {
-            when (it) {
-                W3WListeningState.Connecting -> {
-                }
-                W3WListeningState.Started -> {
-                }
-                W3WListeningState.Stopped -> {
-                    hint = oldHint
-                    inlineVoicePulseLayout.setIsVoiceRunning(false)
-                }
-            }
-        }
 
         inlineVoicePulseLayout.onStartVoiceClick {
             focusFromVoice = true
             if (!isShowingTick) {
-                val permissionManager: PermissionManager = PermissionManager.getInstance(context)
-                permissionManager.checkPermissions(
-                    Collections.singleton(Manifest.permission.RECORD_AUDIO),
-                    object : PermissionManager.PermissionRequestListener {
-                        override fun onPermissionGranted() {
-                            viewModel.voiceAutosuggest(voiceLanguage)
-                        }
-
-                        override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
-                            viewModel.voiceError.value =
-                                APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
-                                    message = "Microphone permission required"
-                                }
-                        }
+                hideKeyboard()
+                when (voiceScreenType) {
+                    VoiceScreenType.Inline -> {
+                        inlineVoicePulseLayout.toggle(
+                            viewModel.options,
+                            returnCoordinates,
+                            voiceLanguage
+                        )
                     }
-                )
+                    VoiceScreenType.AnimatedPopup -> {
+                        voiceAnimatedPopup?.toggle(
+                            viewModel.options,
+                            returnCoordinates,
+                            voiceLanguage
+                        )
+                    }
+                    VoiceScreenType.Fullscreen -> {
+                        voicePulseLayoutFullScreen?.toggle(
+                            viewModel.options,
+                            returnCoordinates,
+                            voiceLanguage
+                        )
+                    }
+                }
             }
         }
-// </editor-fold>
 
         viewModel.selectedSuggestion.observeForever { suggestion ->
             pickedFromDropDown = true
@@ -456,7 +435,19 @@ class W3WAutoSuggestEditText
                         if (customErrorView == null) buildErrorMessage()
                         if (customCorrectionPicker == null) buildCorrection()
                         buildVoice()
-                        if (voiceFullscreen) buildBackgroundVoice()
+                        when (voiceScreenType) {
+                            VoiceScreenType.Inline -> {
+                                inlineVoicePulseLayout.visibility =
+                                    if (voiceEnabled && !isShowingTick) VISIBLE else GONE
+                                inlineVoicePulseLayout.setup(viewModel.manager)
+                            }
+                            VoiceScreenType.AnimatedPopup -> {
+                                setupAnimatedPopupVoice()
+                            }
+                            VoiceScreenType.Fullscreen -> {
+                                setupFullScreenVoice()
+                            }
+                        }
                         viewTreeObserver.removeOnGlobalLayoutListener(this)
                     }
                 }
@@ -474,6 +465,61 @@ class W3WAutoSuggestEditText
 
     private fun onTextPaste() {
         fromPaste = true
+    }
+
+    private fun handleVoiceError(error: APIResponse.What3WordsError) {
+        getErrorView().showError(errorMessageText)
+        errorCallback?.accept(error) ?: run {
+            Log.e("W3WAutoSuggestEditText", error.message)
+        }
+        when (voiceScreenType) {
+            VoiceScreenType.Inline -> {
+                inlineVoicePulseLayout.setIsVoiceRunning(false)
+            }
+            VoiceScreenType.AnimatedPopup -> voiceAnimatedPopup?.setIsVoiceRunning(
+                false,
+                shouldAnimate = true
+            )
+            VoiceScreenType.Fullscreen -> voicePulseLayoutFullScreen?.setIsVoiceRunning(
+                false
+            )
+        }
+    }
+
+    private fun handleVoiceSuggestions(suggestions: List<Suggestion>) {
+        this.hint = oldHint
+        if (suggestions.isEmpty()) {
+            getInvalidAddressView().showError(invalidSelectionMessageText)
+        } else {
+            pickedFromVoice = true
+            this.setText(
+                context.getString(
+                    R.string.w3w_slashes_with_address,
+                    suggestions.minByOrNull { it.rank }!!.words
+                )
+            )
+            getPicker().visibility = VISIBLE
+            // Query empty because we don't want to highlight when using voice.
+            getPicker().refreshSuggestions(
+                suggestions,
+                "",
+                viewModel.options,
+                returnCoordinates
+            )
+            showKeyboard()
+        }
+        when (voiceScreenType) {
+            VoiceScreenType.Inline -> {
+                inlineVoicePulseLayout.setIsVoiceRunning(false)
+            }
+            VoiceScreenType.AnimatedPopup -> voiceAnimatedPopup?.setIsVoiceRunning(
+                false,
+                shouldAnimate = true
+            )
+            VoiceScreenType.Fullscreen -> voicePulseLayoutFullScreen?.setIsVoiceRunning(
+                false
+            )
+        }
     }
 
 //region Properties
@@ -691,8 +737,70 @@ class W3WAutoSuggestEditText
         enabled: Boolean
     ): W3WAutoSuggestEditText {
         this.voiceEnabled = enabled
+        inlineVoicePulseLayout.setup(viewModel.manager)
         inlineVoicePulseLayout.visibility = if (enabled && !isShowingTick) VISIBLE else GONE
         return this
+    }
+
+    /**
+     * Enable voice for autosuggest component with custom voice view
+     *
+     * @param enabled if voice should be enabled
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun voiceEnabled(
+        enabled: Boolean,
+        type: VoiceScreenType
+    ): W3WAutoSuggestEditText {
+        this.voiceEnabled = enabled
+        this.voiceScreenType = type
+        inlineVoicePulseLayout.visibility = if (enabled && !isShowingTick) VISIBLE else GONE
+        when (type) {
+            VoiceScreenType.Inline -> {
+                inlineVoicePulseLayout.setup(viewModel.manager)
+            }
+            VoiceScreenType.AnimatedPopup -> {
+                if (enabled && voiceAnimatedPopup == null) {
+                    setupAnimatedPopupVoice()
+                }
+            }
+            VoiceScreenType.Fullscreen -> {
+                if (enabled && voicePulseLayoutFullScreen == null) {
+                    setupFullScreenVoice()
+                }
+            }
+        }
+        return this
+    }
+
+    private fun setupFullScreenVoice() {
+        buildVoiceFullscreen()
+        voicePulseLayoutFullScreen?.let { fullScreenVoice ->
+            fullScreenVoice.setup(viewModel.manager)
+            fullScreenVoice.onResultsCallback {
+                handleVoiceSuggestions(it)
+                fullScreenVoice.setIsVoiceRunning(false)
+            }
+            fullScreenVoice.onErrorCallback {
+                handleVoiceError(it)
+                fullScreenVoice.setIsVoiceRunning(false)
+            }
+        }
+    }
+
+    private fun setupAnimatedPopupVoice() {
+        buildVoiceAnimatedPopup()
+        voiceAnimatedPopup?.let { voiceAnimatedPopup ->
+            voiceAnimatedPopup.setup(viewModel.manager)
+            voiceAnimatedPopup.onResultsCallback {
+                handleVoiceSuggestions(it)
+                voiceAnimatedPopup.setIsVoiceRunning(false, true)
+            }
+            voiceAnimatedPopup.onErrorCallback {
+                handleVoiceError(it)
+                voiceAnimatedPopup.setIsVoiceRunning(false, true)
+            }
+        }
     }
 
     /**
@@ -701,11 +809,12 @@ class W3WAutoSuggestEditText
      * @param enabled if voice fullscreen should be enabled
      * @return same [W3WAutoSuggestEditText] instance
      */
+    @Deprecated("Use enabledVoice(boolean, screenType)")
     fun voiceFullscreen(
         enabled: Boolean
     ): W3WAutoSuggestEditText {
-        this.voiceFullscreen = enabled
-        if (enabled && voicePulseLayout == null) buildBackgroundVoice()
+        this.voiceScreenType = VoiceScreenType.AnimatedPopup
+        if (enabled && voiceAnimatedPopup == null) buildVoiceAnimatedPopup()
         return this
     }
 
@@ -847,4 +956,10 @@ class W3WAutoSuggestEditText
         return this
     }
 //endregion
+}
+
+enum class VoiceScreenType {
+    Inline,
+    AnimatedPopup,
+    Fullscreen
 }
