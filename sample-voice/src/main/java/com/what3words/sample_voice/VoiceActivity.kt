@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
-import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.autosuggestsample.util.addOnTextChangedListener
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
@@ -17,10 +16,12 @@ import kotlinx.android.synthetic.main.activity_voice.*
 
 class VoiceActivity : AppCompatActivity() {
 
-    private fun showSuggestion(selected: SuggestionWithCoordinates?) {
-        if (selected != null) {
-            selectedInfo.text =
-                "words: ${selected.words}\ncountry: ${selected.country}\nnear: ${selected.nearestPlace}\ndistance: ${if (selected.distanceToFocusKm == null) "N/A" else selected.distanceToFocusKm.toString() + "km"}\nlatitude: ${selected.coordinates?.lat}\nlongitude: ${selected.coordinates?.lng}"
+    private fun showSuggestion(suggestions: List<SuggestionWithCoordinates>?) {
+        if (suggestions != null && suggestions.isNotEmpty()) {
+            suggestions.forEach { selected ->
+                selectedInfo.text =
+                    selectedInfo.text.toString() + "words: ${selected.words}\ncountry: ${selected.country}\nnear: ${selected.nearestPlace}\ndistance: ${if (selected.distanceToFocusKm == null) "N/A" else selected.distanceToFocusKm.toString() + "km"}\nlatitude: ${selected.coordinates?.lat}\nlongitude: ${selected.coordinates?.lng}"
+            }
         } else {
             selectedInfo.text = ""
         }
@@ -32,9 +33,14 @@ class VoiceActivity : AppCompatActivity() {
         setContentView(R.layout.activity_voice)
 
         w3wVoice.apiKey("TCRPZKEE")
-            .microphone(16000, AudioFormat.ENCODING_PCM_16BIT, AudioFormat.CHANNEL_IN_MONO, MediaRecorder.AudioSource.MIC)
-            .onResults(w3wPicker) { selected ->
-                showSuggestion(selected)
+            .microphone(
+                16000,
+                AudioFormat.ENCODING_PCM_16BIT,
+                AudioFormat.CHANNEL_IN_MONO,
+                MediaRecorder.AudioSource.MIC
+            )
+            .onResults { suggestions ->
+                showSuggestion(suggestions)
             }.onError {
                 Log.e("MainActivity", "${it.key} - ${it.message}")
                 Snackbar.make(main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
@@ -47,19 +53,6 @@ class VoiceActivity : AppCompatActivity() {
 
         checkboxCoordinates.setOnCheckedChangeListener { _, b ->
             w3wVoice.returnCoordinates(b)
-        }
-
-        checkboxPicker.setOnCheckedChangeListener { _, b ->
-            if (b) {
-                w3wVoice.onResults(w3wPicker) {
-                    showSuggestion(it)
-                }
-            } else {
-                w3wVoice.onResults { suggestionsList ->
-                    //create/populate your own recyclerview or pick the top ranked suggestion
-                    showSuggestion(suggestionsList.minByOrNull { it.rank })
-                }
-            }
         }
 
         textVoiceLanguage.setText("en")

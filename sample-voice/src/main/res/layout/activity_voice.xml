@@ -73,21 +73,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textCustomHeader" />
 
-        <CheckBox
-            android:id="@+id/checkboxPicker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginTop="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:checked="true"
-            android:text="@string/show_suggestions_picker"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates" />
-
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderVoiceLanguage"
             android:layout_width="match_parent"
@@ -97,7 +82,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/voice_language"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/checkboxPicker">
+            app:layout_constraintTop_toBottomOf="@id/checkboxCoordinates">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textVoiceLanguage"

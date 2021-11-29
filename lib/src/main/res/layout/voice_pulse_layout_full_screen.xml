@@ -51,7 +51,7 @@
             app:layout_constraintHeight_percent=".5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent=".5" />
+            app:layout_constraintWidth_percent=".35" />
 
         <ImageView
             android:id="@+id/icLogo"
