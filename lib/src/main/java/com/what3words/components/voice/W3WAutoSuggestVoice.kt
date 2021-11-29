@@ -349,6 +349,7 @@ class W3WAutoSuggestVoice
      * @return same [W3WAutoSuggestVoice] instance
      */
     fun apiKey(key: String): W3WAutoSuggestVoice {
+        viewModel = AutosuggestViewModel()
         viewModel.manager = AutosuggestApiManager(
             What3WordsV3(
                 key,
@@ -384,6 +385,7 @@ class W3WAutoSuggestVoice
         endpoint: String,
         headers: Map<String, String> = mapOf()
     ): W3WAutoSuggestVoice {
+        viewModel = AutosuggestViewModel()
         viewModel.manager = AutosuggestApiManager(
             What3WordsV3(
                 key,
