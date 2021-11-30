@@ -24,6 +24,9 @@ class MainActivity : AppCompatActivity() {
             .onHomeClick {
                 Toast.makeText(this, "home clicked", Toast.LENGTH_SHORT).show()
             }
+            .onDisplaySuggestions {
+                Toast.makeText(this, "suggestions visible = ${it}", Toast.LENGTH_SHORT).show()
+            }
             .onSelected {
                 if (it != null) {
                     selectedInfo.text =

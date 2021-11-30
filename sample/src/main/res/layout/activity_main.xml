@@ -29,6 +29,7 @@
             android:layout_marginStart="@dimen/main_s"
             android:layout_marginEnd="@dimen/main_s"
             style="@style/YourCustomStyle"
+            android:drawablePadding="@dimen/main_xxl"
             android:drawableStart="@drawable/ic_arrow_back_42"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

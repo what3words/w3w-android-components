@@ -167,9 +167,6 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList() {
 
 internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
     isShowingTick = showTick
-    if (drawableStart != null) {
-        compoundDrawablePadding = context.resources.getDimensionPixelSize(R.dimen.large_margin)
-    }
     if (TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR) {
         setCompoundDrawablesRelative(
             drawableStart,

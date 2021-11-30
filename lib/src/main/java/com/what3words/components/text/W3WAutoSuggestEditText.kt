@@ -82,6 +82,8 @@ class W3WAutoSuggestEditText
         null
     internal var errorCallback: Consumer<APIResponse.What3WordsError>? =
         null
+    internal var onDisplaySuggestions: Consumer<Boolean>? =
+        null
     internal var returnCoordinates: Boolean = false
     internal var voiceEnabled: Boolean = false
     internal var voiceScreenType: VoiceScreenType = VoiceScreenType.Inline
@@ -210,6 +212,7 @@ class W3WAutoSuggestEditText
                 if (searchText.isPossible3wa() || searchText.didYouMean3wa()) {
                     viewModel.autosuggest(searchText)
                 } else {
+                    onDisplaySuggestions?.accept(false)
                     getPicker().visibility = GONE
                     getPicker().refreshSuggestions(
                         emptyList(),
@@ -310,6 +313,7 @@ class W3WAutoSuggestEditText
                     clear()
                     addAll(suggestions)
                 }
+                onDisplaySuggestions?.accept(suggestions.isNotEmpty())
                 getPicker().visibility =
                     if (suggestions.isEmpty()) View.GONE else View.VISIBLE
                 getPicker().refreshSuggestions(
@@ -381,6 +385,7 @@ class W3WAutoSuggestEditText
             showImages(suggestion != null)
             getPicker().refreshSuggestions(emptyList(), null, viewModel.options, returnCoordinates)
             getPicker().visibility = GONE
+            onDisplaySuggestions?.accept(false)
             getCorrectionPicker().setSuggestion(null)
             getCorrectionPicker().visibility = GONE
             clearFocus()
@@ -512,6 +517,7 @@ class W3WAutoSuggestEditText
         this.hint = oldHint
         if (suggestions.isEmpty()) {
             getInvalidAddressView().showError(invalidSelectionMessageText)
+            onDisplaySuggestions?.accept(false)
         } else {
             pickedFromVoice = true
             this.setText(
@@ -521,6 +527,7 @@ class W3WAutoSuggestEditText
                 )
             )
             getPicker().visibility = VISIBLE
+            onDisplaySuggestions?.accept(true)
             // Query empty because we don't want to highlight when using voice.
             getPicker().refreshSuggestions(
                 suggestions,
@@ -918,17 +925,30 @@ class W3WAutoSuggestEditText
         return this
     }
 
+
     /**
-     * Will provide any errors [APIResponse.What3WordsError] that might happen during the API call
+     * If DrawableStart is set and it's pressed callback will be called, usage example is to have a back button as drawableStart.
      *
-     * @param errorView set custom error view can be any [AppCompatTextView] or [W3WAutoSuggestErrorMessage], default view will show below [W3WAutoSuggestEditText] (this will only show end-user error friendly message or message provided on [errorMessage])
-     * @param errorCallback will return [APIResponse.What3WordsError] with information about the error occurred.
+     * @param onHomeClickCallback will be called when drawableStart is pressed.
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun onHomeClick(
         onHomeClickCallback: (() -> Unit),
     ): W3WAutoSuggestEditText {
         this.drawableStartCallback = onHomeClickCallback
+        return this
+    }
+
+    /**
+     * Callback to update view when suggestion picker is being displayed or not, i.e: show tips when false hide tips when true
+     *
+     * @param displaySuggestionsCallback Boolean callback with the picker visibility status (true visible, false gone)
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun onDisplaySuggestions(
+        displaySuggestionsCallback: Consumer<Boolean>,
+    ): W3WAutoSuggestEditText {
+        this.onDisplaySuggestions = displaySuggestionsCallback
         return this
     }
 
