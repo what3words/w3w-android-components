@@ -348,33 +348,7 @@ class W3WAutoSuggestEditText
 // </editor-fold>
 
         inlineVoicePulseLayout.onStartVoiceClick {
-            focusFromVoice = true
-            if (!isShowingTick) {
-                hideKeyboard()
-                when (voiceScreenType) {
-                    VoiceScreenType.Inline -> {
-                        inlineVoicePulseLayout.toggle(
-                            viewModel.options,
-                            returnCoordinates,
-                            voiceLanguage
-                        )
-                    }
-                    VoiceScreenType.AnimatedPopup -> {
-                        voiceAnimatedPopup?.toggle(
-                            viewModel.options,
-                            returnCoordinates,
-                            voiceLanguage
-                        )
-                    }
-                    VoiceScreenType.Fullscreen -> {
-                        voicePulseLayoutFullScreen?.toggle(
-                            viewModel.options,
-                            returnCoordinates,
-                            voiceLanguage
-                        )
-                    }
-                }
-            }
+            handleVoiceClick()
         }
 
         viewModel.selectedSuggestion.observeForever { suggestion ->
@@ -512,6 +486,35 @@ class W3WAutoSuggestEditText
         }
     }
 
+    private fun handleVoiceClick() {
+        focusFromVoice = true
+        if (!isShowingTick) {
+            hideKeyboard()
+            when (voiceScreenType) {
+                VoiceScreenType.Inline -> {
+                    inlineVoicePulseLayout.toggle(
+                        viewModel.options,
+                        returnCoordinates,
+                        voiceLanguage
+                    )
+                }
+                VoiceScreenType.AnimatedPopup -> {
+                    voiceAnimatedPopup?.toggle(
+                        viewModel.options,
+                        returnCoordinates,
+                        voiceLanguage
+                    )
+                }
+                VoiceScreenType.Fullscreen -> {
+                    voicePulseLayoutFullScreen?.toggle(
+                        viewModel.options,
+                        returnCoordinates,
+                        voiceLanguage
+                    )
+                }
+            }
+        }
+    }
 
     private fun handleVoiceSuggestions(suggestions: List<Suggestion>) {
         this.hint = oldHint
@@ -1009,6 +1012,17 @@ class W3WAutoSuggestEditText
      */
     fun allowInvalid3wa(isAllowed: Boolean): W3WAutoSuggestEditText {
         this.allowInvalid3wa = isAllowed
+        return this
+    }
+
+    /**
+     * Allow EditText to keep any text user types, default is false, by default EditText will be cleared if not a valid 3 word address, set to true to ignore this default behaviour.
+     *
+     * @param isAllowed are invalid 3 word addresses allowed
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun triggerVoice(): W3WAutoSuggestEditText {
+        handleVoiceClick()
         return this
     }
 //endregion

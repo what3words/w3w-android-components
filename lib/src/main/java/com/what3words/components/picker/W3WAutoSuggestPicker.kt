@@ -8,6 +8,7 @@ import android.util.TypedValue
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.res.ResourcesCompat.getFont
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.what3words.components.R
@@ -32,6 +33,8 @@ class W3WAutoSuggestPicker
     defStyleAttr
 ) {
 
+    private var titleFontFamily: Typeface? = null
+    private var subtitleFontFamily: Typeface? = null
     private var subtitleTextColor: Int
     private var titleTextColor: Int
     private var subtitleTextSize: Int
@@ -96,6 +99,11 @@ class W3WAutoSuggestPicker
                     0f
                 )
 
+                val itemPadding = getDimensionPixelSize(
+                    R.styleable.W3WAutoSuggestPicker_pickerItemPadding,
+                    resources.getDimensionPixelSize(R.dimen.large_margin)
+                )
+
                 titleTextSize =
                     getDimensionPixelSize(
                         R.styleable.W3WAutoSuggestPicker_pickerItemTitleTextSize,
@@ -131,6 +139,23 @@ class W3WAutoSuggestPicker
                     true
                 )
 
+                val titleFontFamilyId = getResourceId(
+                    R.styleable.W3WAutoSuggestPicker_pickerItemTitleFontFamily,
+                    -1
+                )
+                if (titleFontFamilyId != -1) {
+                    titleFontFamily = getFont(context, titleFontFamilyId)
+                }
+
+                val subtitleFontFamilyId = getResourceId(
+                    R.styleable.W3WAutoSuggestPicker_pickerItemSubtitleFontFamily,
+                    -1
+                )
+
+                if (subtitleFontFamilyId != -1) {
+                    subtitleFontFamily = getFont(context, subtitleFontFamilyId)
+                }
+
                 ResourcesCompat.getDrawable(resources, dividerDrawableId, null)?.let {
                     addItemDecoration(
                         MyDividerItemDecorator(
@@ -141,8 +166,6 @@ class W3WAutoSuggestPicker
                     )
                 }
                 suggestionsAdapter = SuggestionsAdapter(
-                    Typeface.DEFAULT,
-                    R.color.w3wBlue,
                     itemBackgroundDrawable,
                     itemBackgroundColor,
                     { suggestion ->
@@ -151,7 +174,10 @@ class W3WAutoSuggestPicker
                     titleTextSize,
                     titleTextColor,
                     subtitleTextSize,
-                    subtitleTextColor
+                    subtitleTextColor,
+                    titleFontFamily,
+                    subtitleFontFamily,
+                    itemPadding
                 )
 
             } finally {

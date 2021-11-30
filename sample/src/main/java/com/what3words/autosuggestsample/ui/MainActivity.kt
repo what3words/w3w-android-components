@@ -3,7 +3,6 @@ package com.what3words.autosuggestsample.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
@@ -12,7 +11,29 @@ import com.what3words.autosuggestsample.util.addOnTextChangedListener
 import com.what3words.components.text.VoiceScreenType
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.checkboxAllowInvalidAddress
+import kotlinx.android.synthetic.main.activity_main.checkboxCoordinates
+import kotlinx.android.synthetic.main.activity_main.checkboxCustomCorrectionPicker
+import kotlinx.android.synthetic.main.activity_main.checkboxCustomError
+import kotlinx.android.synthetic.main.activity_main.checkboxCustomPicker
+import kotlinx.android.synthetic.main.activity_main.checkboxVoiceEnabled
+import kotlinx.android.synthetic.main.activity_main.checkboxVoiceFullscreen
+import kotlinx.android.synthetic.main.activity_main.checkboxVoicePopup
+import kotlinx.android.synthetic.main.activity_main.correctionPicker
+import kotlinx.android.synthetic.main.activity_main.main
+import kotlinx.android.synthetic.main.activity_main.selectedInfo
+import kotlinx.android.synthetic.main.activity_main.suggestionEditText
+import kotlinx.android.synthetic.main.activity_main.suggestionError
+import kotlinx.android.synthetic.main.activity_main.suggestionPicker
+import kotlinx.android.synthetic.main.activity_main.textClipToBoundingBox
+import kotlinx.android.synthetic.main.activity_main.textClipToCircle
+import kotlinx.android.synthetic.main.activity_main.textClipToCountry
+import kotlinx.android.synthetic.main.activity_main.textClipToPolygon
+import kotlinx.android.synthetic.main.activity_main.textFocus
+import kotlinx.android.synthetic.main.activity_main.textLanguage
+import kotlinx.android.synthetic.main.activity_main.textPlaceholder
+import kotlinx.android.synthetic.main.activity_main.textVoiceLanguage
+import kotlinx.android.synthetic.main.activity_main.textVoicePlaceholder
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,12 +42,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         suggestionEditText.apiKey("TCRPZKEE")
-            .onHomeClick {
-                Toast.makeText(this, "home clicked", Toast.LENGTH_SHORT).show()
-            }
-            .onDisplaySuggestions {
-                Toast.makeText(this, "suggestions visible = ${it}", Toast.LENGTH_SHORT).show()
-            }
             .onSelected {
                 if (it != null) {
                     selectedInfo.text =

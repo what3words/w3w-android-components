@@ -27,6 +27,9 @@
         <item name="pickerItemSubtitleTextColor">@color/text_grey</item>
         <item name="pickerItemTitleTextSize">28sp</item>
         <item name="pickerItemSubtitleTextSize">18sp</item>
+        <item name="pickerItemTitleFontFamily">sans-serif-condensed-medium</item>
+        <item name="pickerItemSubtitleFontFamily">sans-serif-condensed</item>
+        <item name="pickerItemPadding">@dimen/main_l</item>
     </style>
 
     <style name="YourCustomStyleTextAppearance" parent="TextAppearance.AppCompat">

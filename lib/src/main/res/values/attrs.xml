@@ -15,19 +15,20 @@
         <attr name="voiceBackgroundDrawable" format="reference" />
         <attr name="voiceIconsColor" format="color" />
         <attr name="displayUnit" format="enum">
-            <enum name="system" value="0"/>
-            <enum name="imperial" value="1"/>
-            <enum name="metric" value="2"/>
+            <enum name="system" value="0" />
+            <enum name="imperial" value="1" />
+            <enum name="metric" value="2" />
         </attr>
         <attr name="voiceScreenType" format="enum">
-            <enum name="inline" value="0"/>
-            <enum name="animatedPopup" value="1"/>
-            <enum name="fullscreen" value="2"/>
+            <enum name="inline" value="0" />
+            <enum name="animatedPopup" value="1" />
+            <enum name="fullscreen" value="2" />
         </attr>
     </declare-styleable>
 
     <declare-styleable name="W3WAutoSuggestPicker">
         <attr name="pickerItemSpacing" format="dimension" />
+        <attr name="pickerItemPadding" format="dimension" />
         <attr name="pickerBackgroundDrawable" format="reference" />
         <attr name="pickerItemBackground" format="color" />
         <attr name="pickerItemBackgroundDrawable" format="reference" />
@@ -37,6 +38,8 @@
         <attr name="pickerItemSubtitleTextSize" format="dimension" />
         <attr name="pickerItemTitleTextColor" format="color" />
         <attr name="pickerItemSubtitleTextColor" format="color" />
+        <attr name="pickerItemTitleFontFamily" format="string" />
+        <attr name="pickerItemSubtitleFontFamily" format="string" />
     </declare-styleable>
 
     <declare-styleable name="CustomTheme">
