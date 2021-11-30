@@ -403,9 +403,13 @@ class W3WAutoSuggestEditText
                     (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                 keyboard.hideSoftInputFromWindow(windowToken, 0)
             } else {
-                if (this.text.isNullOrEmpty() && !focusFromVoice) this.setText(
-                    context.getString(R.string.w3w_slashes)
-                )
+                if (this.text.isNullOrEmpty() && !focusFromVoice) {
+                    this.setText(
+                        context.getString(R.string.w3w_slashes)
+                    )
+                    this.setSelection(this.length())
+                    showKeyboard()
+                }
                 showImages(false)
             }
             focusFromVoice = false
