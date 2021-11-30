@@ -1,5 +1,6 @@
 package com.what3words.components.text
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -9,7 +10,9 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.Log
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnTouchListener
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -45,6 +48,7 @@ import java.util.*
 /**
  * A [AppCompatEditText] to simplify the integration of what3words text and voice auto-suggest API in your app.
  */
+@SuppressLint("ClickableViewAccessibility")
 class W3WAutoSuggestEditText
 @JvmOverloads constructor(
     context: Context,
@@ -56,6 +60,8 @@ class W3WAutoSuggestEditText
     defStyleAttr
 ) {
 
+    private var drawableStartCallback: (() -> Unit)? = null
+    internal var drawableStart: Drawable? = null
     private var oldHint: String = ""
     private var focusFromVoice: Boolean = false
     private var isRendered: Boolean = false
@@ -287,6 +293,9 @@ class W3WAutoSuggestEditText
                     getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
                 displayUnits =
                     DisplayUnits.values()[getInt(R.styleable.W3WAutoSuggestEditText_displayUnit, 0)]
+                if (compoundDrawablesRelative.isNotEmpty()) {
+                    drawableStart = compoundDrawablesRelative[0]
+                }
             } finally {
                 this@W3WAutoSuggestEditText.textDirection = TEXT_DIRECTION_LOCALE
                 showImages()
@@ -423,6 +432,18 @@ class W3WAutoSuggestEditText
             focusFromVoice = false
         }
 
+        this.setOnTouchListener(OnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_UP && drawableStart != null && drawableStartCallback != null) {
+                val textLocation = IntArray(2)
+                this.getLocationOnScreen(textLocation)
+                if (event.rawX <= textLocation[0] + this.totalPaddingLeft) {
+                    drawableStartCallback!!.invoke()
+                    return@OnTouchListener true
+                }
+            }
+            false
+        })
+
         addTextChangedListener(watcher)
 
         viewTreeObserver.addOnGlobalLayoutListener(
@@ -485,6 +506,7 @@ class W3WAutoSuggestEditText
             )
         }
     }
+
 
     private fun handleVoiceSuggestions(suggestions: List<Suggestion>) {
         this.hint = oldHint
@@ -893,6 +915,20 @@ class W3WAutoSuggestEditText
     ): W3WAutoSuggestEditText {
         this.errorCallback = errorCallback
         this.customErrorView = errorView
+        return this
+    }
+
+    /**
+     * Will provide any errors [APIResponse.What3WordsError] that might happen during the API call
+     *
+     * @param errorView set custom error view can be any [AppCompatTextView] or [W3WAutoSuggestErrorMessage], default view will show below [W3WAutoSuggestEditText] (this will only show end-user error friendly message or message provided on [errorMessage])
+     * @param errorCallback will return [APIResponse.What3WordsError] with information about the error occurred.
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun onHomeClick(
+        onHomeClickCallback: (() -> Unit),
+    ): W3WAutoSuggestEditText {
+        this.drawableStartCallback = onHomeClickCallback
         return this
     }
 

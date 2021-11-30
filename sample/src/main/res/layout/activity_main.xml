@@ -25,10 +25,11 @@
         <com.what3words.components.text.W3WAutoSuggestEditText
             android:id="@+id/suggestionEditText"
             android:layout_width="0dp"
-            style="@style/YourCustomStyle"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
             android:layout_marginEnd="@dimen/main_s"
+            style="@style/YourCustomStyle"
+            android:drawableStart="@drawable/ic_arrow_back_42"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textHeader"

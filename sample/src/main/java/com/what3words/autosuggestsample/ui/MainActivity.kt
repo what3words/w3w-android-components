@@ -3,6 +3,7 @@ package com.what3words.autosuggestsample.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
@@ -20,6 +21,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         suggestionEditText.apiKey("TCRPZKEE")
+            .onHomeClick {
+                Toast.makeText(this, "home clicked", Toast.LENGTH_SHORT).show()
+            }
             .onSelected {
                 if (it != null) {
                     selectedInfo.text =

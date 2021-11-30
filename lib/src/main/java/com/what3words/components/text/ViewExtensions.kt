@@ -167,9 +167,12 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList() {
 
 internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
     isShowingTick = showTick
+    if (drawableStart != null) {
+        compoundDrawablePadding = context.resources.getDimensionPixelSize(R.dimen.large_margin)
+    }
     if (TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR) {
-        setCompoundDrawables(
-            null,
+        setCompoundDrawablesRelative(
+            drawableStart,
             null,
             if (showTick) {
                 tick
@@ -181,7 +184,7 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
             null
         )
     } else {
-        setCompoundDrawables(
+        setCompoundDrawablesRelative(
             if (showTick) {
                 tick
             } else if (!showTick && voiceEnabled) {
@@ -190,7 +193,7 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
                 null
             },
             null,
-            null,
+            drawableStart,
             null
         )
     }
