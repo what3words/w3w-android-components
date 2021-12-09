@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         binding = inflate(layoutInflater)
-        binding.suggestionEditText.apiKey("TCRPZKEE")
+        binding.suggestionEditText.apiKey("YOUR_API_KEY_HERE")
             .onSelected {
                 if (it != null) {
                     binding.selectedInfo.text =

@@ -52,7 +52,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         //autosuggest using custom picker and custom error/invalid message
-        binding.autosuggest.apiKey("TCRPZKEE")
+        binding.autosuggest.apiKey("YOUR_API_KEY_HERE")
             .voiceEnabled(true)
             .returnCoordinates(true)
             .customCorrectionPicker(binding.correctionPicker)
