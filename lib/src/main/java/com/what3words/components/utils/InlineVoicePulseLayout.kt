@@ -2,16 +2,14 @@ package com.what3words.components.utils
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
-import com.what3words.components.R
+import com.what3words.components.databinding.InlineVoicePulseLayoutBinding
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
-import kotlinx.android.synthetic.main.inline_voice_pulse_layout.view.autosuggestVoice
-import kotlinx.android.synthetic.main.inline_voice_pulse_layout.view.fakeClick
 
 internal class InlineVoicePulseLayout
 @JvmOverloads constructor(
@@ -25,10 +23,11 @@ internal class InlineVoicePulseLayout
     private var resultsCallback: Consumer<List<Suggestion>>? = null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? = null
 
-    init {
-        View.inflate(context, R.layout.inline_voice_pulse_layout, this)
+    private var binding: InlineVoicePulseLayoutBinding = InlineVoicePulseLayoutBinding.inflate(
+        LayoutInflater.from(context), this, true)
 
-        fakeClick.setOnClickListener {
+    init {
+        binding.fakeClick.setOnClickListener {
             startVoiceClick?.invoke()
         }
     }
@@ -50,7 +49,7 @@ internal class InlineVoicePulseLayout
     }
 
     fun setup(logicManager: AutosuggestLogicManager) {
-        autosuggestVoice.sdk(logicManager)
+        binding.autosuggestVoice.sdk(logicManager)
             .onInternalResults {
                 resultsCallback?.accept(it)
             }.onError {
@@ -61,13 +60,13 @@ internal class InlineVoicePulseLayout
     fun toggle(options: AutosuggestOptions, returnCoordinates: Boolean, voiceLanguage: String) {
         if (!isVoiceRunning) {
             setIsVoiceRunning(true)
-            autosuggestVoice
+            binding.autosuggestVoice
                 .options(options)
                 .returnCoordinates(returnCoordinates)
                 .voiceLanguage(voiceLanguage)
                 .start()
         } else {
-            autosuggestVoice.stop()
+            binding.autosuggestVoice.stop()
         }
     }
 }

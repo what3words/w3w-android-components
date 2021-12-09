@@ -12,9 +12,9 @@ import androidx.core.content.res.ResourcesCompat.getFont
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.what3words.components.R
-import com.what3words.components.models.AutosuggestViewModel
 import com.what3words.components.models.DisplayUnits
 import com.what3words.components.utils.MyDividerItemDecorator
+import com.what3words.components.vm.AutosuggestTextViewModel
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.Suggestion
 
@@ -43,7 +43,7 @@ class W3WAutoSuggestPicker
     private var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
     private var returnCoordinates: Boolean = false
     private var query: String = ""
-    private var viewModel: AutosuggestViewModel? = null
+    private var viewModel: AutosuggestTextViewModel? = null
     internal var itemBackgroundDrawable: Drawable? = null
     internal var itemBackgroundColor: Int
     private var suggestionsAdapter: SuggestionsAdapter
@@ -179,7 +179,6 @@ class W3WAutoSuggestPicker
                     subtitleFontFamily,
                     itemPadding
                 )
-
             } finally {
                 recycle()
             }
@@ -190,7 +189,7 @@ class W3WAutoSuggestPicker
     }
 
     internal fun setup(
-        viewModel: AutosuggestViewModel,
+        viewModel: AutosuggestTextViewModel,
         displayUnits: DisplayUnits
     ) {
         this.viewModel = viewModel

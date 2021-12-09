@@ -3,20 +3,15 @@ package com.what3words.components.utils
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
 import com.what3words.components.R
+import com.what3words.components.databinding.VoicePulseLayoutBinding
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
-import kotlinx.android.synthetic.main.voice_pulse_layout.view.*
-import kotlinx.android.synthetic.main.voice_pulse_layout.view.autosuggestVoice
-import kotlinx.android.synthetic.main.voice_pulse_layout.view.icClose
-import kotlinx.android.synthetic.main.voice_pulse_layout.view.icLogo
-import kotlinx.android.synthetic.main.voice_pulse_layout.view.voiceHolder
-import kotlinx.android.synthetic.main.voice_pulse_layout.view.voicePlaceholder
 
 internal class VoicePulseLayout
 @JvmOverloads constructor(
@@ -36,24 +31,25 @@ internal class VoicePulseLayout
     var isVoiceRunning: Boolean = false
     private var resultsCallback: Consumer<List<Suggestion>>? = null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? = null
+    private var binding: VoicePulseLayoutBinding = VoicePulseLayoutBinding.inflate(
+        LayoutInflater.from(context), this, true)
+
 
     init {
-        View.inflate(context, R.layout.voice_pulse_layout, this)
-
-        icClose.setColorFilter(iconTintColor)
-        icLogo.setColorFilter(iconTintColor)
-        voicePlaceholder.setTextColor(iconTintColor)
+        binding.icClose.setColorFilter(iconTintColor)
+        binding.icLogo.setColorFilter(iconTintColor)
+        binding.voicePlaceholder.setTextColor(iconTintColor)
         if (backgroundDrawable != null) {
-            voiceHolder.background = backgroundDrawable
+            binding.voiceHolder.background = backgroundDrawable
         } else {
-            voiceHolder.setBackgroundColor(backgroundColor)
+            binding.voiceHolder.setBackgroundColor(backgroundColor)
         }
-        icClose.setOnClickListener {
-            autosuggestVoice.stop()
+        binding.icClose.setOnClickListener {
+            binding.autosuggestVoice.stop()
             setIsVoiceRunning(false, true)
         }
 
-        voicePlaceholder.text = placeholder
+        binding.voicePlaceholder.text = placeholder
     }
 
     fun onResultsCallback(callback: Consumer<List<Suggestion>>) {
@@ -69,52 +65,36 @@ internal class VoicePulseLayout
         if (isVoiceRunning) {
             if (shouldAnimate) {
                 visibility = VISIBLE
-                voicePlaceholder.visibility = VISIBLE
-                voiceHolder.animate().translationY(
+                binding.voicePlaceholder.visibility = VISIBLE
+                binding.voiceHolder.animate().translationY(
                     0f
                 ).setDuration(
                     ANIMATION_TIME
                 ).withEndAction {
-//                    w3wLogo.setImageResource(R.drawable.ic_voice_active)
-//                    innerCircleView.visibility = VISIBLE
-//                    midCircleView.visibility = VISIBLE
-//                    outerCircleView.visibility = VISIBLE
-                    icClose.visibility = VISIBLE
+                    binding.icClose.visibility = VISIBLE
                 }.start()
             } else {
-                voicePlaceholder.visibility = VISIBLE
-//                w3wLogo.setImageResource(R.drawable.ic_voice_active)
-//                innerCircleView.visibility = VISIBLE
-//                midCircleView.visibility = VISIBLE
-//                outerCircleView.visibility = VISIBLE
+                binding.voicePlaceholder.visibility = VISIBLE
             }
         } else {
             if (shouldAnimate) {
-                icClose.visibility = GONE
-                voicePlaceholder.visibility = GONE
-                voiceHolder.animate().translationY(
+                binding.icClose.visibility = GONE
+                binding.voicePlaceholder.visibility = GONE
+                binding.voiceHolder.animate().translationY(
                     resources.getDimensionPixelSize(R.dimen.voice_popup_height).toFloat()
                 ).setDuration(
                     ANIMATION_TIME
                 ).withEndAction {
-//                    w3wLogo.setImageResource(R.drawable.ic_voice)
-//                    innerCircleView.visibility = GONE
-//                    midCircleView.visibility = GONE
-//                    outerCircleView.visibility = GONE
                     visibility = GONE
                 }.start()
             } else {
-                voicePlaceholder.visibility = GONE
-//                w3wLogo.setImageResource(R.drawable.ic_voice)
-//                innerCircleView.visibility = GONE
-//                midCircleView.visibility = GONE
-//                outerCircleView.visibility = GONE
+                binding.voicePlaceholder.visibility = GONE
             }
         }
     }
 
     fun setup(logicManager: AutosuggestLogicManager) {
-        autosuggestVoice.sdk(logicManager)
+        binding.autosuggestVoice.sdk(logicManager)
             .onInternalResults {
                 resultsCallback?.accept(it)
             }.onError {
@@ -125,13 +105,13 @@ internal class VoicePulseLayout
     fun toggle(options: AutosuggestOptions, returnCoordinates: Boolean, voiceLanguage: String) {
         if (!isVoiceRunning) {
             setIsVoiceRunning(true, true)
-            autosuggestVoice
+            binding.autosuggestVoice
                 .options(options)
                 .returnCoordinates(returnCoordinates)
                 .voiceLanguage(voiceLanguage)
                 .start()
         } else {
-            autosuggestVoice.stop()
+            binding.autosuggestVoice.stop()
         }
     }
 }

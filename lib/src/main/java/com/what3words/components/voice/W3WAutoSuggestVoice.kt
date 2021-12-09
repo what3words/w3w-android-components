@@ -8,39 +8,39 @@ import android.media.AudioFormat
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
+import androidx.lifecycle.Observer
 import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.R
+import com.what3words.components.databinding.VoicePulseLayoutFullScreenBinding
+import com.what3words.components.databinding.W3wVoiceOnlyBinding
 import com.what3words.components.models.AutosuggestApiManager
 import com.what3words.components.models.AutosuggestLogicManager
-import com.what3words.components.models.AutosuggestViewModel
 import com.what3words.components.models.DisplayUnits
+import com.what3words.components.models.VoiceAutosuggestManager
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.utils.DisplayMetricsConverter.convertPixelsToDp
 import com.what3words.components.utils.PulseAnimator
 import com.what3words.components.utils.transform
+import com.what3words.components.vm.AutosuggestVoiceViewModel
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
-import java.util.*
-import kotlinx.android.synthetic.main.w3w_voice_only.view.innerCircleView
-import kotlinx.android.synthetic.main.w3w_voice_only.view.midCircleView
-import kotlinx.android.synthetic.main.w3w_voice_only.view.outerCircleView
-import kotlinx.android.synthetic.main.w3w_voice_only.view.voicePulseLayout
-import kotlinx.android.synthetic.main.w3w_voice_only.view.w3wLogo
+import java.util.Collections
 
 /**
  * A [View] to simplify the integration of what3words voice auto-suggest API in your app.
@@ -81,9 +81,14 @@ class W3WAutoSuggestVoice
     private var returnCoordinates: Boolean = false
     private var voiceLanguage: String
     private var animationRefreshTime: Int = 2
-    internal var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
+    private var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
 
-    private lateinit var viewModel: AutosuggestViewModel
+    internal val viewModel: AutosuggestVoiceViewModel by lazy {
+        AutosuggestVoiceViewModel()
+    }
+
+    private var binding: W3wVoiceOnlyBinding = W3wVoiceOnlyBinding.inflate(
+        LayoutInflater.from(context), this, true)
 
     init {
         context.theme.obtainStyledAttributes(
@@ -102,28 +107,25 @@ class W3WAutoSuggestVoice
                         ?: "en"
                 displayUnits =
                     DisplayUnits.values()[getInt(R.styleable.W3WAutoSuggestEditText_displayUnit, 0)]
-
             } finally {
                 recycle()
             }
         }
 
-        View.inflate(context, R.layout.w3w_voice_only, this)
-
         setVoicePulseListeners()
 
-        w3wLogo.setOnClickListener {
+        binding.w3wLogo.setOnClickListener {
             if (isEnabled) {
                 val permissionManager: PermissionManager = PermissionManager.getInstance(context)
                 permissionManager.checkPermissions(
                     Collections.singleton(Manifest.permission.RECORD_AUDIO),
                     object : PermissionManager.PermissionRequestListener {
                         override fun onPermissionGranted() {
-                            viewModel.voiceAutosuggest(voiceLanguage)
+                            viewModel.autosuggest(voiceLanguage)
                         }
 
                         override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
-                            viewModel.voiceError.value =
+                            viewModel.error.value =
                                 APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
                                     message = "Microphone permission required"
                                 }
@@ -134,30 +136,30 @@ class W3WAutoSuggestVoice
         }
 
         // Add a viewTreeObserver to obtain the initial size of the circle overlays
-        voicePulseLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
-            OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                if (innerCircleView.measuredWidth != 0) {
-                    setOverlayBaseSize()
-                    voicePulseLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+        binding.voicePulseLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
+                OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    if (binding.innerCircleView.measuredWidth != 0) {
+                        setOverlayBaseSize()
+                        binding.voicePulseLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    }
                 }
-            }
-        })
+            })
     }
 
     fun setOverlayBaseSize() {
         initialSizeList = arrayListOf(
-            innerCircleView.measuredWidth,
-            midCircleView.measuredWidth,
-            outerCircleView.measuredWidth
+            binding.innerCircleView.measuredWidth,
+            binding.midCircleView.measuredWidth,
+            binding.outerCircleView.measuredWidth
         )
         pulseAnimator = PulseAnimator(
-            convertPixelsToDp(innerCircleView.measuredWidth * 1.18f),
-            convertPixelsToDp(midCircleView.measuredWidth * 1.32f),
-            convertPixelsToDp(outerCircleView.measuredWidth * 1.48f),
-            innerCircleView,
-            midCircleView,
-            outerCircleView,
+            convertPixelsToDp(binding.innerCircleView.measuredWidth * 1.18f),
+            convertPixelsToDp(binding.midCircleView.measuredWidth * 1.32f),
+            convertPixelsToDp(binding.outerCircleView.measuredWidth * 1.48f),
+            binding.innerCircleView,
+            binding.midCircleView,
+            binding.outerCircleView,
             animatorList,
             voicePulseEndListener
         )
@@ -165,81 +167,100 @@ class W3WAutoSuggestVoice
         pulseAnimator.setInitialSize(initialSizeList)
     }
 
-    private fun observers() {
-        viewModel.voiceManager.observeForever { voiceManager ->
-            if (!isVoiceRunning) {
-                viewModel.listeningState.value = W3WListeningState.Connecting
-                var oldTimestamp = System.currentTimeMillis()
-                viewModel.microphone.onListening {
-                    if (!isVoiceRunning) setIsVoiceRunning(true)
-                    if (it != null) {
-                        if ((System.currentTimeMillis() - oldTimestamp) > animationRefreshTime) {
-                            oldTimestamp = System.currentTimeMillis()
-                            onSignalUpdate(transform(it))
-                        }
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        viewModel.voiceManager.observeForever(voiceManagerObserver)
+        viewModel.suggestions.observeForever(suggestionObserver)
+        viewModel.error.observeForever(errorObserver)
+        viewModel.listeningState.observeForever(listeningStateObserver)
+        viewModel.multipleSelectedSuggestions.observeForever(multipleSelectedSuggestionsObserver)
+        viewModel.selectedSuggestion.observeForever(selectedSuggestionObserver)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewModel.voiceManager.removeObserver(voiceManagerObserver)
+        viewModel.suggestions.removeObserver(suggestionObserver)
+        viewModel.error.removeObserver(errorObserver)
+        viewModel.listeningState.removeObserver(listeningStateObserver)
+        viewModel.multipleSelectedSuggestions.removeObserver(multipleSelectedSuggestionsObserver)
+        viewModel.selectedSuggestion.removeObserver(selectedSuggestionObserver)
+    }
+
+    private val voiceManagerObserver: Observer<VoiceAutosuggestManager?> = Observer {
+        if (!isVoiceRunning) {
+            viewModel.listeningState.value = W3WListeningState.Connecting
+            var oldTimestamp = System.currentTimeMillis()
+            viewModel.microphone.onListening {
+                if (!isVoiceRunning) setIsVoiceRunning(true)
+                if (it != null) {
+                    if ((System.currentTimeMillis() - oldTimestamp) > animationRefreshTime) {
+                        oldTimestamp = System.currentTimeMillis()
+                        onSignalUpdate(transform(it))
                     }
                 }
-                viewModel.microphone.onError { microphoneError ->
-                    errorCallback?.accept(
-                        APIResponse.What3WordsError.UNKNOWN_ERROR.also {
-                            it.message = microphoneError
-                        }
-                    )
-                }
-                viewModel.startListening()
-            } else {
-                viewModel.listeningState.value = W3WListeningState.Stopped
-                viewModel.stopListening()
-                setIsVoiceRunning(false)
             }
-        }
-
-        viewModel.voiceSuggestions.observeForever { suggestions ->
-            handleSuggestions(suggestions)
-            internalCallback?.accept(suggestions)
+            viewModel.microphone.onError { microphoneError ->
+                errorCallback?.accept(
+                    APIResponse.What3WordsError.UNKNOWN_ERROR.also {
+                        it.message = microphoneError
+                    }
+                )
+            }
+            viewModel.startListening()
+        } else {
             viewModel.listeningState.value = W3WListeningState.Stopped
-            setIsVoiceRunning(
-                isVoiceRunning = false,
-                withError = suggestions.isEmpty()
-            )
+            viewModel.stopListening()
+            setIsVoiceRunning(false)
         }
+    }
 
-        viewModel.voiceError.observeForever { error ->
-            if (error != null) {
-                errorCallback?.accept(error)
-                viewModel.listeningState.value = W3WListeningState.Stopped
-                setIsVoiceRunning(isVoiceRunning = false, withError = true)
-            }
+    private val suggestionObserver: Observer<List<Suggestion>> = Observer { suggestions ->
+        handleSuggestions(suggestions)
+        internalCallback?.accept(suggestions)
+        viewModel.listeningState.value = W3WListeningState.Stopped
+        setIsVoiceRunning(
+            isVoiceRunning = false,
+            withError = suggestions.isEmpty()
+        )
+    }
+
+    private val errorObserver: Observer<APIResponse.What3WordsError?> = Observer { error ->
+        if (error != null) {
+            errorCallback?.accept(error)
+            viewModel.listeningState.value = W3WListeningState.Stopped
+            setIsVoiceRunning(isVoiceRunning = false, withError = true)
         }
+    }
 
-        viewModel.listeningState.observeForever {
-            onListeningCallback?.accept(it)
-            if (it == W3WListeningState.Stopped) {
-                setIsVoiceRunning(isVoiceRunning = false, withError = false)
-            }
+    private val listeningStateObserver: Observer<W3WListeningState> = Observer {
+        onListeningCallback?.accept(it)
+        if (it == W3WListeningState.Stopped) {
+            setIsVoiceRunning(isVoiceRunning = false, withError = false)
         }
+    }
 
-        viewModel.multipleSelectedSuggestions.observeForever {
+    private val multipleSelectedSuggestionsObserver: Observer<List<SuggestionWithCoordinates>> =
+        Observer {
             callback?.accept(it)
         }
 
-        viewModel.selectedSuggestion.observeForever {
-            selectedCallback?.accept(it)
-        }
+    private val selectedSuggestionObserver: Observer<SuggestionWithCoordinates> = Observer {
+        selectedCallback?.accept(it)
     }
 
     private fun setVoicePulseListeners() {
         innerUpdateListener = ValueAnimator.AnimatorUpdateListener {
             val animValue = it.animatedValue as Int
-            setLayout(innerCircleView, animValue)
+            setLayout(binding.innerCircleView, animValue)
         }
         middleUpdateListener = ValueAnimator.AnimatorUpdateListener {
             val animValue = it.animatedValue as Int
-            setLayout(midCircleView, animValue)
+            setLayout(binding.midCircleView, animValue)
         }
         outerUpdateListener = ValueAnimator.AnimatorUpdateListener {
             val animValue = it.animatedValue as Int
-            setLayout(outerCircleView, animValue)
+            setLayout(binding.outerCircleView, animValue)
         }
         animatorList.apply {
             add(innerUpdateListener)
@@ -255,17 +276,17 @@ class W3WAutoSuggestVoice
                     for (i in pulseAnimator.getInitialSize().indices) {
                         when (i) {
                             PulseAnimator.INNER_CIRCLE_INDEX -> {
-                                setLayout(innerCircleView, initialSizeList[i])
+                                setLayout(binding.innerCircleView, initialSizeList[i])
                             }
                             PulseAnimator.MIDDLE_CIRCLE_INDEX -> {
-                                setLayout(midCircleView, initialSizeList[i])
+                                setLayout(binding.midCircleView, initialSizeList[i])
                             }
                             PulseAnimator.OUTER_CIRCLE_INDEX -> {
-                                setLayout(innerCircleView, initialSizeList[i])
+                                setLayout(binding.innerCircleView, initialSizeList[i])
                             }
                         }
                     }
-                    w3wLogo.setImageResource(R.drawable.ic_small_voice)
+                    binding.w3wLogo.setImageResource(R.drawable.ic_small_voice)
                 }
             }
 
@@ -295,31 +316,31 @@ class W3WAutoSuggestVoice
     }
 
     private val changeBackIcon: Runnable =
-        Runnable { w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive) }
+        Runnable { binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive) }
 
     fun setIsVoiceRunning(isVoiceRunning: Boolean, withError: Boolean = false) {
         this.isVoiceRunning = isVoiceRunning
         if (isVoiceRunning) {
             viewModel.listeningState.value = W3WListeningState.Started
             handler?.removeCallbacks(changeBackIcon)
-            w3wLogo.setImageResource(R.drawable.ic_voice_only_active)
+            binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_active)
             View.VISIBLE
         } else {
             resetLayout()
             if (withError) {
-                w3wLogo.setImageResource(R.drawable.ic_voice_only_error)
+                binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_error)
                 handler?.postDelayed(
                     changeBackIcon,
                     5000
                 ) ?: run {
                     changeBackIcon.run()
                 }
-            } else w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive)
+            } else binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive)
             View.INVISIBLE
         }.let {
-            innerCircleView.visibility = it
-            midCircleView.visibility = it
-            outerCircleView.visibility = it
+            binding.innerCircleView.visibility = it
+            binding.midCircleView.visibility = it
+            binding.outerCircleView.visibility = it
         }
     }
 
@@ -333,9 +354,9 @@ class W3WAutoSuggestVoice
 
     private fun resetLayout() {
         if (initialSizeList.isEmpty()) return
-        setLayout(innerCircleView, initialSizeList[PulseAnimator.INNER_CIRCLE_INDEX])
-        setLayout(midCircleView, initialSizeList[PulseAnimator.MIDDLE_CIRCLE_INDEX])
-        setLayout(outerCircleView, initialSizeList[PulseAnimator.OUTER_CIRCLE_INDEX])
+        setLayout(binding.innerCircleView, initialSizeList[PulseAnimator.INNER_CIRCLE_INDEX])
+        setLayout(binding.midCircleView, initialSizeList[PulseAnimator.MIDDLE_CIRCLE_INDEX])
+        setLayout(binding.outerCircleView, initialSizeList[PulseAnimator.OUTER_CIRCLE_INDEX])
     }
 
     private fun handleSuggestions(suggestions: List<Suggestion>) {
@@ -349,7 +370,6 @@ class W3WAutoSuggestVoice
      * @return same [W3WAutoSuggestVoice] instance
      */
     fun apiKey(key: String): W3WAutoSuggestVoice {
-        viewModel = AutosuggestViewModel()
         viewModel.manager = AutosuggestApiManager(
             What3WordsV3(
                 key,
@@ -358,7 +378,6 @@ class W3WAutoSuggestVoice
             )
         )
         viewModel.microphone = Microphone()
-        observers()
         return this
     }
 
@@ -385,7 +404,6 @@ class W3WAutoSuggestVoice
         endpoint: String,
         headers: Map<String, String> = mapOf()
     ): W3WAutoSuggestVoice {
-        viewModel = AutosuggestViewModel()
         viewModel.manager = AutosuggestApiManager(
             What3WordsV3(
                 key,
@@ -395,7 +413,6 @@ class W3WAutoSuggestVoice
             )
         )
         viewModel.microphone = Microphone()
-        observers()
         return this
     }
 
@@ -407,10 +424,8 @@ class W3WAutoSuggestVoice
     fun sdk(
         logicManager: AutosuggestLogicManager
     ): W3WAutoSuggestVoice {
-        viewModel = AutosuggestViewModel()
         viewModel.manager = logicManager
         viewModel.microphone = Microphone()
-        observers()
         return this
     }
 
@@ -454,7 +469,7 @@ class W3WAutoSuggestVoice
 
     /**
      * This is a location [Coordinates], specified as a latitude (often where the user making the query is). If specified, the results will be weighted to
-     * give preference to those near the <code>focus</code>. For convenience, longitude is allowed to wrap around the 180 line, so 361 is equivalent to 1.
+     * give preference to those near the focus. For convenience, longitude is allowed to wrap around the 180 line, so 361 is equivalent to 1.
      *
      * @param coordinates the focus to use
      * @return same [W3WAutoSuggestVoice] instance
@@ -477,9 +492,9 @@ class W3WAutoSuggestVoice
     }
 
     /**
-     * Specifies the number of results (must be &lt;= nResults) within the results set which will have a focus. Defaults to <code>nResults</code>.
+     * Specifies the number of results within the results set which will have a focus. Defaults to [nResults].
      * This allows you to run autosuggest with a mix of focussed and unfocussed results, to give you a "blend" of the two. This is exactly what the old V2
-     * <code>standardblend</code> did, and <code>standardblend</code> behaviour can easily be replicated by passing nFocusResults(1)
+     * standardblend did, and standardblend behaviour can easily be replicated by passing [nFocusResults] (1)
      * which will return just one focussed result and the rest unfocussed.
      *
      * @param n number of results within the results set which will have a focus
@@ -492,7 +507,7 @@ class W3WAutoSuggestVoice
 
     /**
      * Restrict autosuggest results to a circle, specified by [Coordinates] representing the centre of the circle, plus the
-     * <code>radius</code> in kilometres. For convenience, longitude is allowed to wrap around 180 degrees. For example 181 is equivalent to -179.
+     * [radius] in kilometres. For convenience, longitude is allowed to wrap around 180 degrees. For example 181 is equivalent to -179.
      *
      * @param centre the centre of the circle
      * @param radius the radius of the circle in kilometres
@@ -509,7 +524,7 @@ class W3WAutoSuggestVoice
 
     /**
      * Restricts autosuggest to only return results inside the countries specified by comma-separated list of uppercase ISO 3166-1 alpha-2 country codes
-     * (for example, to restrict to Belgium and the UK, use <code>[clipToCountry](listOf("GB", "BE"))</code>. [clipToCountry] will also accept lowercase
+     * (for example, to restrict to Belgium and the UK, use [clipToCountry] (listOf("GB", "BE")). [clipToCountry] will also accept lowercase
      * country codes. Entries must be two a-z letters. WARNING: If the two-letter code does not correspond to a country, there is no error: API simply
      * returns no results.
      *
@@ -591,13 +606,13 @@ class W3WAutoSuggestVoice
      */
     fun onResults(callback: Consumer<List<SuggestionWithCoordinates>>): W3WAutoSuggestVoice {
         this.callback = callback
-        //this.suggestionsPicker = null
+        // this.suggestionsPicker = null
         return this
     }
 
     internal fun onInternalResults(callback: Consumer<List<Suggestion>>): W3WAutoSuggestVoice {
         this.internalCallback = callback
-        //this.suggestionsPicker = null
+        // this.suggestionsPicker = null
         return this
     }
 
@@ -638,11 +653,11 @@ class W3WAutoSuggestVoice
                 Collections.singleton(Manifest.permission.RECORD_AUDIO),
                 object : PermissionManager.PermissionRequestListener {
                     override fun onPermissionGranted() {
-                        viewModel.voiceAutosuggest(voiceLanguage)
+                        viewModel.autosuggest(voiceLanguage)
                     }
 
                     override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
-                        viewModel.voiceError.value =
+                        viewModel.error.value =
                             APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
                                 message = "Microphone permission required"
                             }

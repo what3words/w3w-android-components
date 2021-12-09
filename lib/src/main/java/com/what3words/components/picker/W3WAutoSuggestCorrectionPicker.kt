@@ -2,11 +2,11 @@ package com.what3words.components.picker
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.what3words.components.R
+import com.what3words.components.databinding.CorrectionLayoutBinding
 import com.what3words.javawrapper.response.Suggestion
-import kotlinx.android.synthetic.main.correction_layout.view.*
 
 /**
  * A [View] styled and ready to show a 3 word address correction, i.e: "index home raft", will suggest "index.home.raft" which is a valid 3 word address
@@ -18,12 +18,14 @@ class W3WAutoSuggestCorrectionPicker
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
+    private var binding: CorrectionLayoutBinding = CorrectionLayoutBinding.inflate(
+        LayoutInflater.from(context), this, true)
+
     private var suggestion: Suggestion? = null
     private var callback: ((selectedSuggestion: Suggestion) -> Unit)? = null
 
     init {
-        View.inflate(context, R.layout.correction_layout, this)
-        holderHint.setOnClickListener {
+        binding.holderHint.setOnClickListener {
             if (suggestion != null) callback?.invoke(suggestion!!)
         }
         visibility = GONE
@@ -31,7 +33,7 @@ class W3WAutoSuggestCorrectionPicker
 
     internal fun setSuggestion(suggestion: Suggestion?) {
         this.suggestion = suggestion
-        w3wAddressLabel.text = suggestion?.words
+        binding.w3wAddressLabel.text = suggestion?.words
     }
 
     internal fun internalCallback(callback: (selectedSuggestion: Suggestion) -> Unit): W3WAutoSuggestCorrectionPicker {
@@ -40,7 +42,7 @@ class W3WAutoSuggestCorrectionPicker
     }
 
     fun setCorrectionMessage(message: String): W3WAutoSuggestCorrectionPicker {
-        correctionLabel.text = message
+        binding.correctionLabel.text = message
         return this
     }
 }

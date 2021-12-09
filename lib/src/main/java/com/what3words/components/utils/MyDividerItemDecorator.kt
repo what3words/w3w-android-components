@@ -27,7 +27,7 @@ internal class MyDividerItemDecorator(
 
     override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDrawOver(c, parent, state)
-        if(mDivider == null) return
+        if (mDivider == null) return
         val dividerLeft = parent.paddingLeft
         val dividerRight = parent.width - parent.paddingRight
         val childCount =

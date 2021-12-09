@@ -12,27 +12,29 @@ import com.what3words.autosuggestsample.util.addOnTextChangedListener
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
-import kotlinx.android.synthetic.main.activity_voice.*
+import com.what3words.sample_voice.databinding.ActivityVoiceBinding
+import com.what3words.sample_voice.databinding.ActivityVoiceBinding.inflate
 
 class VoiceActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityVoiceBinding
 
     private fun showSuggestion(suggestions: List<SuggestionWithCoordinates>?) {
+        binding.selectedInfo.text = ""
         if (suggestions != null && suggestions.isNotEmpty()) {
             suggestions.forEach { selected ->
-                selectedInfo.text =
-                    selectedInfo.text.toString() + "words: ${selected.words}\ncountry: ${selected.country}\nnear: ${selected.nearestPlace}\ndistance: ${if (selected.distanceToFocusKm == null) "N/A" else selected.distanceToFocusKm.toString() + "km"}\nlatitude: ${selected.coordinates?.lat}\nlongitude: ${selected.coordinates?.lng}"
+                binding.selectedInfo.text =
+                    binding.selectedInfo.text.toString() + "\n\nwords: ${selected.words}\ncountry: ${selected.country}\nnear: ${selected.nearestPlace}\ndistance: ${if (selected.distanceToFocusKm == null) "N/A" else selected.distanceToFocusKm.toString() + "km"}\nlatitude: ${selected.coordinates?.lat}\nlongitude: ${selected.coordinates?.lng}"
             }
         } else {
-            selectedInfo.text = ""
+            binding.selectedInfo.text = ""
         }
     }
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_voice)
-
-        w3wVoice.apiKey("TCRPZKEE")
+        binding = inflate(layoutInflater)
+        binding.w3wVoice.apiKey("TCRPZKEE")
             .microphone(
                 16000,
                 AudioFormat.ENCODING_PCM_16BIT,
@@ -43,7 +45,7 @@ class VoiceActivity : AppCompatActivity() {
                 showSuggestion(suggestions)
             }.onError {
                 Log.e("MainActivity", "${it.key} - ${it.message}")
-                Snackbar.make(main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
+                Snackbar.make(binding.main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
                     setAction("OK") { dismiss() }
                     show()
                 }
@@ -51,62 +53,62 @@ class VoiceActivity : AppCompatActivity() {
                 Log.i("MainActivity", "${it.name}")
             }
 
-        checkboxCoordinates.setOnCheckedChangeListener { _, b ->
-            w3wVoice.returnCoordinates(b)
+        binding.checkboxCoordinates.setOnCheckedChangeListener { _, b ->
+            binding.w3wVoice.returnCoordinates(b)
         }
 
-        textVoiceLanguage.setText("en")
-        textVoiceLanguage.addOnTextChangedListener {
-            w3wVoice.voiceLanguage(it)
+        binding.textVoiceLanguage.setText("en")
+        binding.textVoiceLanguage.addOnTextChangedListener {
+            binding.w3wVoice.voiceLanguage(it)
         }
 
-        textClipToCountry.addOnTextChangedListener { input ->
+        binding.textClipToCountry.addOnTextChangedListener { input ->
             val test = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
-            w3wVoice.clipToCountry(test)
+            binding.w3wVoice.clipToCountry(test)
         }
 
-        textFocus.addOnTextChangedListener { input ->
+        binding.textFocus.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val lat = latLong.getOrNull(0)?.toDoubleOrNull()
             val long = latLong.getOrNull(1)?.toDoubleOrNull()
             if (lat != null && long != null) {
-                w3wVoice.focus(Coordinates(lat, long))
+                binding.w3wVoice.focus(Coordinates(lat, long))
             } else {
-                w3wVoice.focus(null)
+                binding.w3wVoice.focus(null)
             }
         }
 
-        textClipToCircle.addOnTextChangedListener { input ->
+        binding.textClipToCircle.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val lat = latLong.getOrNull(0)?.toDoubleOrNull()
             val long = latLong.getOrNull(1)?.toDoubleOrNull()
             val km = latLong.getOrNull(2)?.toDoubleOrNull()
             if (lat != null && long != null) {
-                w3wVoice.clipToCircle(Coordinates(lat, long), km ?: 0.0)
+                binding.w3wVoice.clipToCircle(Coordinates(lat, long), km ?: 0.0)
             } else {
-                w3wVoice.clipToCircle(null, null)
+                binding.w3wVoice.clipToCircle(null, null)
             }
         }
 
-        textClipToBoundingBox.addOnTextChangedListener { input ->
+        binding.textClipToBoundingBox.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val swLat = latLong.getOrNull(0)?.toDoubleOrNull()
             val swLong = latLong.getOrNull(1)?.toDoubleOrNull()
             val neLat = latLong.getOrNull(2)?.toDoubleOrNull()
             val neLong = latLong.getOrNull(3)?.toDoubleOrNull()
             if (swLat != null && swLong != null && neLat != null && neLong != null) {
-                w3wVoice.clipToBoundingBox(
+                binding.w3wVoice.clipToBoundingBox(
                     BoundingBox(
                         Coordinates(swLat, swLong),
                         Coordinates(neLat, neLong)
                     )
                 )
             } else {
-                w3wVoice.clipToBoundingBox(null)
+                binding.w3wVoice.clipToBoundingBox(null)
             }
         }
 
-        textClipToPolygon.addOnTextChangedListener { input ->
+        binding.textClipToPolygon.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val listCoordinates = mutableListOf<Coordinates>()
             if (latLong.count() % 2 == 0) {
@@ -123,9 +125,10 @@ class VoiceActivity : AppCompatActivity() {
                     }
                 }
             }
-            w3wVoice.clipToPolygon(
+            binding.w3wVoice.clipToPolygon(
                 listCoordinates
             )
         }
+        setContentView(binding.root)
     }
 }

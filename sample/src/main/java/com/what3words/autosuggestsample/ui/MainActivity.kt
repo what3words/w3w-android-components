@@ -7,162 +7,146 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
 import com.what3words.autosuggestsample.R
+import com.what3words.autosuggestsample.databinding.ActivityMainBinding.inflate
 import com.what3words.autosuggestsample.util.addOnTextChangedListener
 import com.what3words.components.text.VoiceScreenType
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
-import kotlinx.android.synthetic.main.activity_main.checkboxAllowInvalidAddress
-import kotlinx.android.synthetic.main.activity_main.checkboxCoordinates
-import kotlinx.android.synthetic.main.activity_main.checkboxCustomCorrectionPicker
-import kotlinx.android.synthetic.main.activity_main.checkboxCustomError
-import kotlinx.android.synthetic.main.activity_main.checkboxCustomPicker
-import kotlinx.android.synthetic.main.activity_main.checkboxVoiceEnabled
-import kotlinx.android.synthetic.main.activity_main.checkboxVoiceFullscreen
-import kotlinx.android.synthetic.main.activity_main.checkboxVoicePopup
-import kotlinx.android.synthetic.main.activity_main.correctionPicker
-import kotlinx.android.synthetic.main.activity_main.main
-import kotlinx.android.synthetic.main.activity_main.selectedInfo
-import kotlinx.android.synthetic.main.activity_main.suggestionEditText
-import kotlinx.android.synthetic.main.activity_main.suggestionError
-import kotlinx.android.synthetic.main.activity_main.suggestionPicker
-import kotlinx.android.synthetic.main.activity_main.textClipToBoundingBox
-import kotlinx.android.synthetic.main.activity_main.textClipToCircle
-import kotlinx.android.synthetic.main.activity_main.textClipToCountry
-import kotlinx.android.synthetic.main.activity_main.textClipToPolygon
-import kotlinx.android.synthetic.main.activity_main.textFocus
-import kotlinx.android.synthetic.main.activity_main.textLanguage
-import kotlinx.android.synthetic.main.activity_main.textPlaceholder
-import kotlinx.android.synthetic.main.activity_main.textVoiceLanguage
-import kotlinx.android.synthetic.main.activity_main.textVoicePlaceholder
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: com.what3words.autosuggestsample.databinding.ActivityMainBinding
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        suggestionEditText.apiKey("TCRPZKEE")
+        binding = inflate(layoutInflater)
+        binding.suggestionEditText.apiKey("TCRPZKEE")
             .onSelected {
                 if (it != null) {
-                    selectedInfo.text =
+                    binding.selectedInfo.text =
                         "words: ${it.words}\ncountry: ${it.country}\nnear: ${it.nearestPlace}\ndistance: ${if (it.distanceToFocusKm == null) "N/A" else it.distanceToFocusKm.toString() + "km"}\nlatitude: ${it.coordinates?.lat}\nlongitude: ${it.coordinates?.lng}"
                 } else {
-                    selectedInfo.text = ""
+                    binding.selectedInfo.text = ""
                 }
             }.onError {
                 Log.e("MainActivity", "${it.key} - ${it.message}")
-                Snackbar.make(main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
+                Snackbar.make(binding.main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
                     setAction("OK") { dismiss() }
                     show()
                 }
             }
 
-        checkboxCoordinates.setOnCheckedChangeListener { _, b ->
-            suggestionEditText.returnCoordinates(b)
+        binding.checkboxCoordinates.setOnCheckedChangeListener { _, b ->
+            binding.suggestionEditText.returnCoordinates(b)
         }
 
-        checkboxAllowInvalidAddress.setOnCheckedChangeListener { _, b ->
-            suggestionEditText.allowInvalid3wa(b)
+        binding.checkboxAllowInvalidAddress.setOnCheckedChangeListener { _, b ->
+            binding.suggestionEditText.allowInvalid3wa(b)
         }
 
-        checkboxVoiceFullscreen.setOnCheckedChangeListener { _, b ->
-            suggestionEditText.voiceEnabled(b, VoiceScreenType.Fullscreen)
+        binding.checkboxVoiceFullscreen.setOnCheckedChangeListener { _, b ->
+            binding.suggestionEditText.voiceEnabled(b, VoiceScreenType.Fullscreen)
         }
 
-        checkboxVoiceEnabled.setOnCheckedChangeListener { _, b ->
-            suggestionEditText.voiceEnabled(b, VoiceScreenType.Inline)
+        binding.checkboxVoiceEnabled.setOnCheckedChangeListener { _, b ->
+            binding.suggestionEditText.voiceEnabled(b, VoiceScreenType.Inline)
         }
 
-        checkboxVoicePopup.setOnCheckedChangeListener { _, b ->
-            suggestionEditText.voiceEnabled(b, VoiceScreenType.AnimatedPopup)
+        binding.checkboxVoicePopup.setOnCheckedChangeListener { _, b ->
+            binding.suggestionEditText.voiceEnabled(b, VoiceScreenType.AnimatedPopup)
         }
 
 
-        checkboxCustomPicker.setOnCheckedChangeListener { _, _ ->
+        binding.checkboxCustomPicker.setOnCheckedChangeListener { _, _ ->
             updateOnSelectedAndOnError()
         }
 
-        checkboxCustomError.setOnCheckedChangeListener { _, _ ->
+        binding.checkboxCustomError.setOnCheckedChangeListener { _, _ ->
             updateOnSelectedAndOnError()
         }
 
-        checkboxCustomCorrectionPicker.setOnCheckedChangeListener { _, b ->
-            suggestionEditText.customCorrectionPicker(if (b) correctionPicker else null)
+        binding.checkboxCustomCorrectionPicker.setOnCheckedChangeListener { _, b ->
+            binding.suggestionEditText.customCorrectionPicker(if (b) binding.correctionPicker else null)
         }
 
-        textPlaceholder.setText(R.string.input_hint)
-        textPlaceholder.addOnTextChangedListener {
-            suggestionEditText.hint = it
+        binding.textPlaceholder.setText(R.string.input_hint)
+        binding.textPlaceholder.addOnTextChangedListener {
+            binding.suggestionEditText.hint = it
         }
 
-        textVoicePlaceholder.setText(R.string.voice_placeholder)
-        textVoicePlaceholder.addOnTextChangedListener {
-            suggestionEditText.voicePlaceholder(it)
+        binding.textVoicePlaceholder.setText(R.string.voice_placeholder)
+        binding.textVoicePlaceholder.addOnTextChangedListener {
+            binding.suggestionEditText.voicePlaceholder(it)
         }
 
         //how to change fallback text language
-        textLanguage.addOnTextChangedListener {
-            suggestionEditText.language(it)
+        binding.textLanguage.addOnTextChangedListener {
+            binding.suggestionEditText.language(it)
         }
 
         //how to change voicelanguage
-        textVoiceLanguage.setText("en")
-        textVoiceLanguage.addOnTextChangedListener {
-            suggestionEditText.voiceLanguage(it)
+        binding.textVoiceLanguage.setText("en")
+        binding.textVoiceLanguage.addOnTextChangedListener {
+            binding.suggestionEditText.voiceLanguage(it)
         }
 
         //how to clipToCountry
-        textClipToCountry.addOnTextChangedListener { input ->
+        binding.textClipToCountry.addOnTextChangedListener { input ->
             val test = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
-            suggestionEditText.clipToCountry(test)
+            binding.suggestionEditText.clipToCountry(test)
+        }
+
+        binding.closeButton.setOnClickListener {
+            binding.suggestionEditText.setText("")
         }
 
         //how to apply focus
-        textFocus.addOnTextChangedListener { input ->
+        binding.textFocus.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val lat = latLong.getOrNull(0)?.toDoubleOrNull()
             val long = latLong.getOrNull(1)?.toDoubleOrNull()
             if (lat != null && long != null) {
-                suggestionEditText.focus(Coordinates(lat, long))
+                binding.suggestionEditText.focus(Coordinates(lat, long))
             } else {
-                suggestionEditText.focus(null)
+                binding.suggestionEditText.focus(null)
             }
         }
 
         //how to clipToCircle
-        textClipToCircle.addOnTextChangedListener { input ->
+        binding.textClipToCircle.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val lat = latLong.getOrNull(0)?.toDoubleOrNull()
             val long = latLong.getOrNull(1)?.toDoubleOrNull()
             val km = latLong.getOrNull(2)?.toDoubleOrNull()
             if (lat != null && long != null) {
-                suggestionEditText.clipToCircle(Coordinates(lat, long), km ?: 0.0)
+                binding.suggestionEditText.clipToCircle(Coordinates(lat, long), km ?: 0.0)
             } else {
-                suggestionEditText.clipToCircle(null, null)
+                binding.suggestionEditText.clipToCircle(null, null)
             }
         }
 
         //how to clipToBoundingBox
-        textClipToBoundingBox.addOnTextChangedListener { input ->
+        binding.textClipToBoundingBox.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val swLat = latLong.getOrNull(0)?.toDoubleOrNull()
             val swLong = latLong.getOrNull(1)?.toDoubleOrNull()
             val neLat = latLong.getOrNull(2)?.toDoubleOrNull()
             val neLong = latLong.getOrNull(3)?.toDoubleOrNull()
             if (swLat != null && swLong != null && neLat != null && neLong != null) {
-                suggestionEditText.clipToBoundingBox(
+                binding.suggestionEditText.clipToBoundingBox(
                     BoundingBox(
                         Coordinates(swLat, swLong),
                         Coordinates(neLat, neLong)
                     )
                 )
             } else {
-                suggestionEditText.clipToBoundingBox(null)
+                binding.suggestionEditText.clipToBoundingBox(null)
             }
         }
 
         //how to clipToPolygon
-        textClipToPolygon.addOnTextChangedListener { input ->
+        binding.textClipToPolygon.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val listCoordinates = mutableListOf<Coordinates>()
             if (latLong.count() % 2 == 0) {
@@ -179,27 +163,28 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-            suggestionEditText.clipToPolygon(
+            binding.suggestionEditText.clipToPolygon(
                 listCoordinates
             )
         }
+        setContentView(binding.root)
     }
 
     //example of how to use a custom suggestion picker and custom error message on your view instead of using the default provided below the W3WAutoSuggestEditText
     private fun updateOnSelectedAndOnError() {
-        suggestionEditText.onSelected(
-            if (checkboxCustomPicker.isChecked) suggestionPicker else null,
-            if (checkboxCustomError.isChecked) suggestionError else null
+        binding.suggestionEditText.onSelected(
+            if (binding.checkboxCustomPicker.isChecked) binding.suggestionPicker else null,
+            if (binding.checkboxCustomError.isChecked) binding.suggestionError else null
         ) {
             if (it != null) {
-                selectedInfo.text =
+                binding.selectedInfo.text =
                     "words: ${it.words}\ncountry: ${it.country}\nnear: ${it.nearestPlace}\ndistance: ${if (it.distanceToFocusKm == null) "N/A" else it.distanceToFocusKm.toString() + "km"}\nlatitude: ${it.coordinates?.lat}\nlongitude: ${it.coordinates?.lng}"
             } else {
-                selectedInfo.text = ""
+                binding.selectedInfo.text = ""
             }
-        }.onError(if (checkboxCustomError.isChecked) suggestionError else null) {
+        }.onError(if (binding.checkboxCustomError.isChecked) binding.suggestionError else null) {
             Log.e("MainActivity", "${it.key} - ${it.message}")
-            Snackbar.make(main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
+            Snackbar.make(binding.main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
                 setAction("OK") { dismiss() }
                 show()
             }

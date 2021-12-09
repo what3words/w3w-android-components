@@ -28,9 +28,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
             android:layout_marginEnd="@dimen/main_s"
-            style="@style/YourCustomStyle"
-            android:drawablePadding="@dimen/main_xxl"
-            android:drawableStart="@drawable/ic_arrow_back_42"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textHeader"
@@ -475,6 +472,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
+            android:id="@+id/textClipToPolygonBoxInfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
@@ -485,5 +483,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/holderClipToPolygon" />
+
+        <Button
+            android:id="@+id/closeButton"
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/main_l"
+            android:layout_height="wrap_content"
+            android:text="closeView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textClipToPolygonBoxInfo" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

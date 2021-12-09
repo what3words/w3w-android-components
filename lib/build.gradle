@@ -3,7 +3,6 @@ plugins {
     id 'kotlin-android'
     id 'org.sonarqube' version '3.3'
     id 'maven-publish'
-    id 'kotlin-android-extensions'
     id 'signing'
     id 'org.jetbrains.dokka' version '1.5.0'
 }
@@ -18,6 +17,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     defaultConfig {
@@ -49,7 +52,7 @@ android {
 }
 
 dependencies {
-    implementation "androidx.recyclerview:recyclerview:1.2.1"
+    api "androidx.recyclerview:recyclerview:1.2.1"
     implementation 'androidx.core:core-ktx:1.7.0'
 
     // kotlin
@@ -70,5 +73,5 @@ dependencies {
     api "com.what3words:w3w-android-wrapper:3.1.15"
     implementation 'com.google.guava:guava:27.0.1-android'
     implementation 'com.intentfilter:android-permissions:2.0.54'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    api 'androidx.constraintlayout:constraintlayout:2.1.2'
 }

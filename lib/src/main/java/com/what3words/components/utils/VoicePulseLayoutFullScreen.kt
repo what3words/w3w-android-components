@@ -3,19 +3,14 @@ package com.what3words.components.utils
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
-import com.what3words.components.R
+import com.what3words.components.databinding.VoicePulseLayoutFullScreenBinding
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
-import kotlinx.android.synthetic.main.voice_pulse_layout_full_screen.view.autosuggestVoice
-import kotlinx.android.synthetic.main.voice_pulse_layout_full_screen.view.icClose
-import kotlinx.android.synthetic.main.voice_pulse_layout_full_screen.view.icLogo
-import kotlinx.android.synthetic.main.voice_pulse_layout_full_screen.view.voiceHolder
-import kotlinx.android.synthetic.main.voice_pulse_layout_full_screen.view.voicePlaceholder
 
 internal class VoicePulseLayoutFullScreen
 @JvmOverloads constructor(
@@ -27,29 +22,29 @@ internal class VoicePulseLayoutFullScreen
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
+    private var binding: VoicePulseLayoutFullScreenBinding = VoicePulseLayoutFullScreenBinding.inflate(
+        LayoutInflater.from(context), this, true)
 
     var isVoiceRunning: Boolean = false
     private var resultsCallback: Consumer<List<Suggestion>>? = null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? = null
 
     init {
-        View.inflate(context, R.layout.voice_pulse_layout_full_screen, this)
-
-        icClose.setColorFilter(iconTintColor)
-        icLogo.setColorFilter(iconTintColor)
-        voicePlaceholder.setTextColor(iconTintColor)
+        binding.icClose.setColorFilter(iconTintColor)
+        binding.icLogo.setColorFilter(iconTintColor)
+        binding.voicePlaceholder.setTextColor(iconTintColor)
         if (backgroundDrawable != null) {
-            voiceHolder.background = backgroundDrawable
+            binding.voiceHolder.background = backgroundDrawable
         } else {
-            voiceHolder.setBackgroundColor(backgroundColor)
+            binding.voiceHolder.setBackgroundColor(backgroundColor)
         }
 
-        icClose.setOnClickListener {
-            autosuggestVoice.stop()
+        binding.icClose.setOnClickListener {
+            binding.autosuggestVoice.stop()
             setIsVoiceRunning(false)
         }
 
-        voicePlaceholder.text = placeholder
+        binding.voicePlaceholder.text = placeholder
     }
 
     fun onResultsCallback(callback: Consumer<List<Suggestion>>) {
@@ -63,16 +58,16 @@ internal class VoicePulseLayoutFullScreen
     fun setIsVoiceRunning(isVoiceRunning: Boolean) {
         this.isVoiceRunning = isVoiceRunning
         if (isVoiceRunning) {
-            voicePlaceholder.visibility = VISIBLE
+            binding.voicePlaceholder.visibility = VISIBLE
             visibility = VISIBLE
         } else {
-            voicePlaceholder.visibility = GONE
+            binding.voicePlaceholder.visibility = GONE
             visibility = GONE
         }
     }
 
     fun setup(logicManager: AutosuggestLogicManager) {
-        autosuggestVoice.sdk(logicManager)
+        binding.autosuggestVoice.sdk(logicManager)
             .onInternalResults {
                 resultsCallback?.accept(it)
             }.onError {
@@ -83,13 +78,13 @@ internal class VoicePulseLayoutFullScreen
     fun toggle(options: AutosuggestOptions, returnCoordinates: Boolean, voiceLanguage: String) {
         if (!isVoiceRunning) {
             setIsVoiceRunning(true)
-            autosuggestVoice
+            binding.autosuggestVoice
                 .options(options)
                 .returnCoordinates(returnCoordinates)
                 .voiceLanguage(voiceLanguage)
                 .start()
         } else {
-            autosuggestVoice.stop()
+            binding.autosuggestVoice.stop()
         }
     }
 }

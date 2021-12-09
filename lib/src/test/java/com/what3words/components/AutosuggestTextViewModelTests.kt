@@ -4,8 +4,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import com.what3words.components.models.AutosuggestApiManager
-import com.what3words.components.models.AutosuggestViewModel
-import com.what3words.components.models.AutosuggestWithDidyouMean
+import com.what3words.components.models.Result
+import com.what3words.components.vm.AutosuggestTextViewModel
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
@@ -24,10 +24,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
-import com.what3words.components.models.Result
 
 @ExperimentalCoroutinesApi
-class AutosuggestViewModelTests {
+class AutosuggestTextViewModelTests {
     @MockK
     private lateinit var observerError: Observer<APIResponse.What3WordsError?>
 
@@ -47,7 +46,7 @@ class AutosuggestViewModelTests {
     private lateinit var observerMultiple: Observer<List<SuggestionWithCoordinates>>
 
     @MockK
-    private lateinit var viewModel: AutosuggestViewModel
+    private lateinit var viewModel: AutosuggestTextViewModel
 
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
@@ -63,7 +62,7 @@ class AutosuggestViewModelTests {
         observerSelected = mockk()
         observerDidYouMean = mockk()
         observerMultiple = mockk()
-        viewModel = AutosuggestViewModel(coroutinesTestRule.testDispatcherProvider)
+        viewModel = AutosuggestTextViewModel(coroutinesTestRule.testDispatcherProvider)
         viewModel.manager = manager
 
         justRun {
@@ -78,7 +77,6 @@ class AutosuggestViewModelTests {
         viewModel.error.observeForever(observerError)
         viewModel.didYouMean.observeForever(observerDidYouMean)
         viewModel.selectedSuggestion.observeForever(observerSelected)
-        viewModel.multipleSelectedSuggestions.observeForever(observerMultiple)
     }
 
     @After
@@ -87,7 +85,6 @@ class AutosuggestViewModelTests {
         viewModel.error.removeObserver(observerError)
         viewModel.didYouMean.removeObserver(observerDidYouMean)
         viewModel.selectedSuggestion.removeObserver(observerSelected)
-        viewModel.multipleSelectedSuggestions.removeObserver(observerMultiple)
     }
 
     @Test
@@ -101,7 +98,7 @@ class AutosuggestViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                Result(AutosuggestWithDidyouMean(suggestions, null))
+                Result(Pair(suggestions, null))
             }
 
             viewModel.autosuggest("test")
@@ -122,7 +119,7 @@ class AutosuggestViewModelTests {
                 manager.autosuggest("test", any())
             } answers {
                 Result(
-                    AutosuggestWithDidyouMean(
+                    Pair(
                         null,
                         suggestions.firstOrNull()
                     )
@@ -195,7 +192,7 @@ class AutosuggestViewModelTests {
                 manager.autosuggest("test", any())
             } answers {
                 Result(
-                    AutosuggestWithDidyouMean(
+                    Pair(
                         suggestions,
                         null
                     )
@@ -250,7 +247,7 @@ class AutosuggestViewModelTests {
                 manager.autosuggest("test", any())
             } answers {
                 Result(
-                    AutosuggestWithDidyouMean(
+                    Pair(
                         suggestions,
                         null
                     )
@@ -288,137 +285,6 @@ class AutosuggestViewModelTests {
             }
             verify(exactly = 1) {
                 observerSelected.onChanged(suggestionsWithCoordinates)
-            }
-        }
-
-    @Test
-    fun `autosuggest multiple selection with coordinates flow`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            val suggestionsJson =
-                ClassLoader.getSystemResource("suggestions.json").readText()
-            val suggestions =
-                Gson().fromJson(suggestionsJson, Array<Suggestion>::class.java).toList()
-
-            val suggestionsWithCoordinatesJson =
-                ClassLoader.getSystemResource("suggestions-with-coordinates.json").readText()
-            val suggestionsWithCoordinates =
-                Gson().fromJson(
-                    suggestionsWithCoordinatesJson,
-                    Array<SuggestionWithCoordinates>::class.java
-                ).toList()
-
-            coEvery {
-                manager.autosuggest("test", any())
-            } answers {
-                Result(
-                    AutosuggestWithDidyouMean(
-                        suggestions,
-                        null
-                    )
-                )
-            }
-
-            coEvery {
-                manager.multipleWithCoordinates("test", suggestions)
-            } answers {
-                Result(
-                    suggestionsWithCoordinates
-                )
-            }
-
-            viewModel.autosuggest("test")
-            assertEquals(suggestions, viewModel.suggestions.value)
-            assertNull(viewModel.didYouMean.value)
-            assertNull(viewModel.error.value)
-
-            viewModel.onMultipleSuggestionsSelected("test", suggestions, true)
-            assertEquals(
-                suggestionsWithCoordinates,
-                viewModel.multipleSelectedSuggestions.value
-            )
-
-            viewModel.multipleSelectedSuggestions.value!!.forEach {
-                assertNotNull(it.coordinates)
-            }
-
-            verify(exactly = 0) {
-                observerError.onChanged(any())
-            }
-            verify(exactly = 1) {
-                observerSuggestions.onChanged(suggestions)
-            }
-            verify(exactly = 0) {
-                observerDidYouMean.onChanged(any())
-            }
-            verify(exactly = 0) {
-                observerSelected.onChanged(any())
-            }
-            verify(exactly = 1) {
-                observerMultiple.onChanged(any())
-            }
-        }
-
-    @Test
-    fun `autosuggest multiple selection without coordinates flow`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            val suggestionsJson =
-                ClassLoader.getSystemResource("suggestions.json").readText()
-            val suggestions =
-                Gson().fromJson(suggestionsJson, Array<Suggestion>::class.java).toList()
-
-            val suggestionsWithCoordinates = mutableListOf<SuggestionWithCoordinates>()
-            suggestions.forEach {
-                suggestionsWithCoordinates.add(SuggestionWithCoordinates(it))
-            }
-
-            coEvery {
-                manager.autosuggest("test", any())
-            } answers {
-                Result(
-                    AutosuggestWithDidyouMean(
-                        suggestions,
-                        null
-                    )
-                )
-            }
-
-            coEvery {
-                manager.multipleWithCoordinates("test", suggestions)
-            } answers {
-                Result(
-                    suggestionsWithCoordinates
-                )
-            }
-
-            viewModel.autosuggest("test")
-            assertEquals(suggestions, viewModel.suggestions.value)
-            assertNull(viewModel.didYouMean.value)
-            assertNull(viewModel.error.value)
-
-            viewModel.onMultipleSuggestionsSelected("test", suggestions, true)
-            assertEquals(
-                suggestionsWithCoordinates,
-                viewModel.multipleSelectedSuggestions.value
-            )
-
-            viewModel.multipleSelectedSuggestions.value!!.forEach {
-                assertNull(it.coordinates)
-            }
-
-            verify(exactly = 0) {
-                observerError.onChanged(any())
-            }
-            verify(exactly = 1) {
-                observerSuggestions.onChanged(suggestions)
-            }
-            verify(exactly = 0) {
-                observerDidYouMean.onChanged(any())
-            }
-            verify(exactly = 0) {
-                observerSelected.onChanged(any())
-            }
-            verify(exactly = 1) {
-                observerMultiple.onChanged(any())
             }
         }
 }

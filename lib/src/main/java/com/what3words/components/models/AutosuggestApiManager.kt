@@ -18,18 +18,18 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
     override suspend fun autosuggest(
         query: String,
         options: AutosuggestOptions?
-    ): Result<AutosuggestWithDidyouMean> = suspendCoroutine { cont ->
+    ): Result<Pair<List<Suggestion>?, Suggestion?>> = suspendCoroutine { cont ->
         if (options != null) autosuggestHelper.options(options)
         autosuggestHelper.update(
             query,
             {
-                cont.resume(Result(AutosuggestWithDidyouMean(it, null)))
+                cont.resume(Result(Pair(it, null)))
             },
             {
                 cont.resume(Result(it))
             },
             {
-                cont.resume(Result(AutosuggestWithDidyouMean(null, it)))
+                cont.resume(Result(Pair(null, it)))
             }
         )
     }

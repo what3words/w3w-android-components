@@ -25,13 +25,16 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import com.what3words.advanced_sample.databinding.ActivityMapsBinding
+import com.what3words.advanced_sample.databinding.ActivityMapsBinding.inflate
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
-import kotlinx.android.synthetic.main.activity_maps.*
 import kotlin.math.abs
 import kotlin.math.pow
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private lateinit var binding: ActivityMapsBinding
 
     private var pickup: LatLng? = null
     private var dropoff: LatLng? = null
@@ -41,7 +44,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         client = LocationServices.getFusedLocationProviderClient(this)
-        setContentView(R.layout.activity_maps)
+        binding = inflate(layoutInflater)
 
         //TODO: REPLACE GOOGLE MAPS API KEY ANDROIDMANIFEST
         val mapFragment = supportFragmentManager
@@ -49,15 +52,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         //autosuggest using custom picker and custom error/invalid message
-        autosuggest.apiKey("YOUR_WHAT3WORDS_API_KEY_HERE")
+        binding.autosuggest.apiKey("TCRPZKEE")
             .voiceEnabled(true)
             .returnCoordinates(true)
-            .customCorrectionPicker(correctionPicker)
-            .onSelected(picker, message) { suggestion ->
+            .customCorrectionPicker(binding.correctionPicker)
+            .onSelected(binding.picker, binding.message) { suggestion ->
                 if (suggestion != null) populateMarker(suggestion)
-            }.onError(message) {
+            }.onError(binding.message) {
                 Log.e("autosuggest", it.message)
             }
+
+        setContentView(binding.root)
     }
 
     override fun onRequestPermissionsResult(
@@ -90,14 +95,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             moveInitialCamera()
         }
 
-        btnRestart.setOnClickListener {
+        binding.btnRestart.setOnClickListener {
             mMap.clear()
-            autosuggest.hint = getString(R.string.pick_up_hint)
-            autosuggest.setText("")
+            binding.autosuggest.hint = getString(R.string.pick_up_hint)
+            binding.autosuggest.setText("")
             pickup = null
             dropoff = null
-            autosuggest.visibility = VISIBLE
-            btnRestart.visibility = GONE
+            binding.autosuggest.visibility = VISIBLE
+            binding.btnRestart.visibility = GONE
         }
     }
 
@@ -108,10 +113,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             mMap.animateCamera(
                 CameraUpdateFactory.newLatLngZoom(pickup!!, 14f)
             )
-            autosuggest.hint = getString(R.string.drop_off_hint)
-            autosuggest.setText("")
+            binding.autosuggest.hint = getString(R.string.drop_off_hint)
+            binding.autosuggest.setText("")
             //reset focus to pick-up point
-            autosuggest.focus(
+            binding.autosuggest.focus(
                 Coordinates(
                     suggestion.coordinates!!.lat,
                     suggestion.coordinates!!.lng
@@ -126,8 +131,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     LatLngBounds.Builder().include(pickup!!).include(dropoff!!).build(), 50
                 )
             )
-            autosuggest.visibility = GONE
-            btnRestart.visibility = VISIBLE
+            binding.autosuggest.visibility = GONE
+            binding.btnRestart.visibility = VISIBLE
         }
     }
 
@@ -137,7 +142,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.isMyLocationEnabled = true
         requestMyGpsLocation {
             //set focus to user current location
-            autosuggest.focus(
+            binding.autosuggest.focus(
                 Coordinates(
                     it.latitude,
                     it.longitude
