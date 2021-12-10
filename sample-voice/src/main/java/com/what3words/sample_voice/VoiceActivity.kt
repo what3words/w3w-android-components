@@ -34,7 +34,7 @@ class VoiceActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = inflate(layoutInflater)
-        binding.w3wVoice.apiKey("YOUR_API_KEY_HERE")
+        binding.w3wVoice.apiKey("TCRPZKEE")
             .microphone(
                 16000,
                 AudioFormat.ENCODING_PCM_16BIT,

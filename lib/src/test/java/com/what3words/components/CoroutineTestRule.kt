@@ -1,6 +1,6 @@
 package com.what3words.components
 
-import com.what3words.components.models.DispatcherProvider
+import com.what3words.androidwrapper.helpers.DispatcherProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

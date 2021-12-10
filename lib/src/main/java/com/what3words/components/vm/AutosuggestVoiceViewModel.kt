@@ -1,29 +1,49 @@
 package com.what3words.components.vm
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.what3words.androidwrapper.helpers.DefaultDispatcherProvider
+import com.what3words.androidwrapper.helpers.DispatcherProvider
 import com.what3words.androidwrapper.voice.Microphone
-import com.what3words.components.models.DispatcherProvider
+import com.what3words.components.models.Either
 import com.what3words.components.models.VoiceAutosuggestManager
 import com.what3words.components.models.W3WListeningState
+import com.what3words.components.utils.io
+import com.what3words.components.utils.main
+import com.what3words.components.utils.transform
+import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 internal class AutosuggestVoiceViewModel(
     dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) : AutosuggestViewModel(dispatchers) {
-    lateinit var microphone: Microphone
-    val voiceManager = MutableLiveData<VoiceAutosuggestManager?>()
-    val listeningState = MutableLiveData<W3WListeningState>()
-    val multipleSelectedSuggestions = MutableLiveData<List<SuggestionWithCoordinates>>()
+    private lateinit var microphone: Microphone
+
+    private val _voiceManager = MutableLiveData<VoiceAutosuggestManager?>()
+    val voiceManager: LiveData<VoiceAutosuggestManager?>
+        get() = _voiceManager
+
+    private val _listeningState = MutableLiveData<W3WListeningState>()
+    val listeningState: LiveData<W3WListeningState>
+        get() = _listeningState
+
+    private val _multipleSelectedSuggestions = MutableLiveData<List<SuggestionWithCoordinates>>()
+    val multipleSelectedSuggestions: LiveData<List<SuggestionWithCoordinates>>
+        get() = _multipleSelectedSuggestions
+
+    private val _volume = MutableLiveData<Float?>()
+    val volume: LiveData<Float?>
+        get() = _volume
+
+    private var animationRefreshTime: Int = 50
 
     fun autosuggest(language: String) {
-        CoroutineScope(dispatchers.io()).launch {
+        io(dispatchers) launch@{
             if (voiceManager.value?.isListening() == true) {
                 voiceManager.value?.stopListening()
-                CoroutineScope(dispatchers.main()).launch {
-                    listeningState.value = W3WListeningState.Stopped
+                main(dispatchers) {
+                    _listeningState.postValue(W3WListeningState.Stopped)
                 }
                 return@launch
             }
@@ -32,11 +52,15 @@ internal class AutosuggestVoiceViewModel(
                 microphone, options, language
             )
 
-            CoroutineScope(dispatchers.main()).launch {
-                if (builder.isSuccessful()) {
-                    this@AutosuggestVoiceViewModel.voiceManager.value = builder.data()
-                } else {
-                    this@AutosuggestVoiceViewModel.error.value = builder.error()
+            main(dispatchers) {
+                when (builder) {
+                    is Either.Left -> {
+                        _error.postValue(builder.a)
+                    }
+                    is Either.Right -> {
+                        _listeningState.postValue(W3WListeningState.Connecting)
+                        _voiceManager.postValue(builder.b)
+                    }
                 }
             }
         }
@@ -47,31 +71,48 @@ internal class AutosuggestVoiceViewModel(
         suggestions: List<Suggestion>,
         returnCoordinates: Boolean
     ) {
-        if (returnCoordinates) {
-            CoroutineScope(dispatchers.io()).launch {
+        io(dispatchers) {
+            if (returnCoordinates) {
                 val res = manager.multipleWithCoordinates(rawQuery, suggestions)
-                CoroutineScope(dispatchers.main()).launch {
-                    if (res.isSuccessful()) {
-                        multipleSelectedSuggestions.value = res.data()
-                    } else {
-                        error.value = res.error()
+                main(dispatchers) {
+                    when (res) {
+                        is Either.Left -> {
+                            _error.postValue(res.a)
+                        }
+                        is Either.Right -> {
+                            _multipleSelectedSuggestions.postValue(res.b)
+                        }
                     }
                 }
+            } else {
+                main(dispatchers) {
+                    _multipleSelectedSuggestions.postValue(suggestions.map {
+                        SuggestionWithCoordinates(
+                            it
+                        )
+                    })
+                }
             }
-        } else {
-            multipleSelectedSuggestions.value = suggestions.map { SuggestionWithCoordinates(it) }
+            main(dispatchers) {
+                _listeningState.postValue(W3WListeningState.Stopped)
+            }
         }
     }
 
     fun startListening() {
         voiceManager.value?.let {
-            CoroutineScope(dispatchers.io()).launch {
+            io(dispatchers) {
                 it.updateOptions(options)
                 val res = it.startListening()
-                CoroutineScope(dispatchers.main()).launch {
-                    if (res.isSuccessful()) {
-                        suggestions.value = res.data()
-                    } else error.value = res.error()
+                main(dispatchers) {
+                    when (res) {
+                        is Either.Left -> {
+                            _error.postValue(res.a)
+                        }
+                        is Either.Right -> {
+                            _suggestions.postValue(res.b)
+                        }
+                    }
                 }
             }
         }
@@ -79,9 +120,48 @@ internal class AutosuggestVoiceViewModel(
 
     fun stopListening() {
         voiceManager.value?.let {
-            CoroutineScope(dispatchers.io()).launch {
-                it.stopListening()
+            if (it.isListening()) {
+                io(dispatchers) {
+                    it.stopListening()
+                    microphone.onListening {}
+                    main(dispatchers) {
+                        _listeningState.postValue(W3WListeningState.Stopped)
+                    }
+                }
             }
+        }
+    }
+
+    fun setPermissionError() {
+        _error.postValue(APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
+            message = "Microphone permission required"
+        })
+    }
+
+    fun setCustomAnimationRefreshTime(newTime: Int) {
+        animationRefreshTime = newTime
+    }
+
+    fun setMicrophone(customMicrophone: Microphone) {
+        this.microphone = customMicrophone
+        var oldTimestamp = System.currentTimeMillis()
+        microphone.onListening {
+            if (_listeningState.value != W3WListeningState.Started) _listeningState.postValue(
+                W3WListeningState.Started
+            )
+            if (it != null) {
+                if ((System.currentTimeMillis() - oldTimestamp) > animationRefreshTime) {
+                    oldTimestamp = System.currentTimeMillis()
+                    _volume.postValue(transform(it))
+                }
+            }
+        }
+        microphone.onError { microphoneError ->
+            _error.postValue(
+                APIResponse.What3WordsError.UNKNOWN_ERROR.also {
+                    it.message = microphoneError
+                }
+            )
         }
     }
 }

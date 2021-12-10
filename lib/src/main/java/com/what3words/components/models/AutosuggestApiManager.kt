@@ -4,6 +4,7 @@ import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.helpers.AutosuggestHelper
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.javawrapper.request.AutosuggestOptions
+import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
 import kotlin.coroutines.resume
@@ -18,27 +19,28 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
     override suspend fun autosuggest(
         query: String,
         options: AutosuggestOptions?
-    ): Result<Pair<List<Suggestion>?, Suggestion?>> = suspendCoroutine { cont ->
-        if (options != null) autosuggestHelper.options(options)
-        autosuggestHelper.update(
-            query,
-            {
-                cont.resume(Result(Pair(it, null)))
-            },
-            {
-                cont.resume(Result(it))
-            },
-            {
-                cont.resume(Result(Pair(null, it)))
-            }
-        )
-    }
+    ): Either<APIResponse.What3WordsError, Pair<List<Suggestion>?, Suggestion?>> =
+        suspendCoroutine { cont ->
+            if (options != null) autosuggestHelper.options(options)
+            autosuggestHelper.update(
+                query,
+                {
+                    cont.resume(Either.Right(Pair(it, null)))
+                },
+                {
+                    cont.resume(Either.Left(it))
+                },
+                {
+                    cont.resume(Either.Right(Pair(null, it)))
+                }
+            )
+        }
 
     override suspend fun autosuggest(
         microphone: Microphone,
         options: AutosuggestOptions,
         voiceLanguage: String
-    ): Result<VoiceAutosuggestManager> = suspendCoroutine { cont ->
+    ): Either<APIResponse.What3WordsError, VoiceAutosuggestManager> = suspendCoroutine { cont ->
         val builder = wrapper.autosuggest(microphone, voiceLanguage).apply {
             options.nResults?.let {
                 this.nResults(it)
@@ -63,33 +65,33 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
             }
         }
         val voiceManager = VoiceApiAutosuggestManager(builder)
-        cont.resume(Result(voiceManager))
+        cont.resume(Either.Right(voiceManager))
     }
 
     override suspend fun selected(
         rawQuery: String,
         suggestion: Suggestion
-    ): Result<SuggestionWithCoordinates> = suspendCoroutine { cont ->
+    ): Either<APIResponse.What3WordsError, SuggestionWithCoordinates> = suspendCoroutine { cont ->
         autosuggestHelper.selected(
             rawQuery,
             suggestion
         ) {
-            cont.resume(Result(SuggestionWithCoordinates(it)))
+            cont.resume(Either.Right(SuggestionWithCoordinates(it)))
         }
     }
 
     override suspend fun selectedWithCoordinates(
         rawQuery: String,
         suggestion: Suggestion
-    ): Result<SuggestionWithCoordinates> = suspendCoroutine { cont ->
+    ): Either<APIResponse.What3WordsError, SuggestionWithCoordinates> = suspendCoroutine { cont ->
         autosuggestHelper.selectedWithCoordinates(
             rawQuery,
             suggestion,
             {
-                cont.resume(Result(it))
+                cont.resume(Either.Right(it))
             },
             {
-                cont.resume(Result(it))
+                cont.resume(Either.Left(it))
             }
         )
     }
@@ -97,21 +99,23 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
     override suspend fun multipleWithCoordinates(
         rawQuery: String,
         suggestions: List<Suggestion>
-    ): Result<List<SuggestionWithCoordinates>> = suspendCoroutine { cont ->
-        val list = mutableListOf<SuggestionWithCoordinates>()
-        var allSuccess = true
-        suggestions.forEach {
-            val res = wrapper.convertToCoordinates(it.words).execute()
-            if (res.isSuccessful) {
-                list.add(SuggestionWithCoordinates(it, res.coordinates))
-            } else {
-                allSuccess = false
-                cont.resume(Result(res.error))
-                return@forEach
+    ): Either<APIResponse.What3WordsError, List<SuggestionWithCoordinates>> =
+        suspendCoroutine { cont ->
+            val list = mutableListOf<SuggestionWithCoordinates>()
+            var allSuccess = true
+            suggestions.forEach {
+                val res = wrapper.convertToCoordinates(it.words).execute()
+                if (res.isSuccessful) {
+                    list.add(SuggestionWithCoordinates(it, res.coordinates))
+                } else {
+                    allSuccess = false
+                    cont.resume(Either.Left(res.error))
+                    return@forEach
+                }
             }
+            if (allSuccess) cont.resume(Either.Right(list))
+            else cont.resume(Either.Left(APIResponse.What3WordsError.UNKNOWN_ERROR))
         }
-        if (allSuccess) cont.resume(Result(list))
-    }
 
     override fun isVoiceEnabled(): Boolean {
         return true

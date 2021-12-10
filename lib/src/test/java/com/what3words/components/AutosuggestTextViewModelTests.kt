@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import com.what3words.components.models.AutosuggestApiManager
-import com.what3words.components.models.Result
+import com.what3words.components.models.Either
 import com.what3words.components.vm.AutosuggestTextViewModel
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
@@ -98,7 +98,7 @@ class AutosuggestTextViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                Result(Pair(suggestions, null))
+                Either.Right(Pair(suggestions, null))
             }
 
             viewModel.autosuggest("test")
@@ -118,7 +118,7 @@ class AutosuggestTextViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                Result(
+                Either.Right(
                     Pair(
                         null,
                         suggestions.firstOrNull()
@@ -148,7 +148,7 @@ class AutosuggestTextViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                Result(
+                Either.Left(
                     APIResponse.What3WordsError.INVALID_KEY
                 )
             }
@@ -191,7 +191,7 @@ class AutosuggestTextViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                Result(
+                Either.Right(
                     Pair(
                         suggestions,
                         null
@@ -202,7 +202,7 @@ class AutosuggestTextViewModelTests {
             coEvery {
                 manager.selectedWithCoordinates("test", suggestions.first())
             } answers {
-                Result(
+                Either.Right(
                     suggestionsWithCoordinates.first()
                 )
             }
@@ -246,7 +246,7 @@ class AutosuggestTextViewModelTests {
             coEvery {
                 manager.autosuggest("test", any())
             } answers {
-                Result(
+                Either.Right(
                     Pair(
                         suggestions,
                         null
@@ -257,7 +257,7 @@ class AutosuggestTextViewModelTests {
             coEvery {
                 manager.selected("test", suggestions.first())
             } answers {
-                Result(
+                Either.Right(
                     suggestionsWithCoordinates
                 )
             }

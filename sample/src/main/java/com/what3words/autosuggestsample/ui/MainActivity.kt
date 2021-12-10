@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
+import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.autosuggestsample.R
 import com.what3words.autosuggestsample.databinding.ActivityMainBinding.inflate
 import com.what3words.autosuggestsample.util.addOnTextChangedListener
@@ -21,7 +22,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         binding = inflate(layoutInflater)
-        binding.suggestionEditText.apiKey("YOUR_API_KEY_HERE")
+        binding.suggestionEditText.apiKey("TCRPZKEE")
+            .onDisplaySuggestions {
+
+            }
             .onSelected {
                 if (it != null) {
                     binding.selectedInfo.text =

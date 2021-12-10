@@ -2,6 +2,7 @@ package com.what3words.components.models
 
 import com.what3words.androidwrapper.voice.VoiceBuilder
 import com.what3words.javawrapper.request.AutosuggestOptions
+import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -10,7 +11,7 @@ interface VoiceAutosuggestManager {
     fun isListening(): Boolean
     fun stopListening()
     fun updateOptions(options: AutosuggestOptions)
-    suspend fun startListening(): Result<List<Suggestion>>
+    suspend fun startListening(): Either<APIResponse.What3WordsError, List<Suggestion>>
 }
 
 class VoiceApiAutosuggestManager(private val voiceBuilder: VoiceBuilder) : VoiceAutosuggestManager {
@@ -48,15 +49,16 @@ class VoiceApiAutosuggestManager(private val voiceBuilder: VoiceBuilder) : Voice
         }
     }
 
-    override suspend fun startListening(): Result<List<Suggestion>> = suspendCoroutine { cont ->
-        voiceBuilder.onSuggestions { suggestions ->
-            cont.resume(Result(suggestions))
-        }
+    override suspend fun startListening(): Either<APIResponse.What3WordsError, List<Suggestion>> =
+        suspendCoroutine { cont ->
+            voiceBuilder.onSuggestions { suggestions ->
+                cont.resume(Either.Right(suggestions))
+            }
 
-        voiceBuilder.onError {
-            cont.resume(Result(it))
-        }
+            voiceBuilder.onError {
+                cont.resume(Either.Left(it))
+            }
 
-        voiceBuilder.startListening()
-    }
+            voiceBuilder.startListening()
+        }
 }

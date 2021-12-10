@@ -5,13 +5,14 @@ import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.models.AutosuggestApiManager
-import com.what3words.components.models.Result
+import com.what3words.components.models.Either
 import com.what3words.components.models.VoiceAutosuggestManager
 import com.what3words.components.vm.AutosuggestVoiceViewModel
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.justRun
 import io.mockk.mockk
@@ -72,7 +73,6 @@ class AutosuggestVoiceViewModelTests {
         observerMultiple = mockk()
         viewModel = AutosuggestVoiceViewModel(coroutinesTestRule.testDispatcherProvider)
         viewModel.manager = manager
-        viewModel.microphone = microphone
 
         justRun {
             observerError.onChanged(any())
@@ -81,8 +81,23 @@ class AutosuggestVoiceViewModelTests {
             observerSelected.onChanged(any())
             observerMultiple.onChanged(any())
             voiceManager.updateOptions(any())
+            microphone.onListening(any())
+            microphone.onError(any())
         }
 
+        every {
+            microphone.onListening(any())
+        } answers  {
+            microphone
+        }
+
+        every {
+            microphone.onError(any())
+        } answers  {
+            microphone
+        }
+
+        viewModel.setMicrophone(microphone)
         viewModel.suggestions.observeForever(observerSuggestions)
         viewModel.error.observeForever(observerError)
         viewModel.selectedSuggestion.observeForever(observerSelected)
@@ -103,7 +118,7 @@ class AutosuggestVoiceViewModelTests {
             coEvery {
                 manager.autosuggest(microphone, any(), any())
             } answers {
-                Result(voiceManager)
+                Either.Right(voiceManager)
             }
 
             viewModel.autosuggest("en")
@@ -118,7 +133,7 @@ class AutosuggestVoiceViewModelTests {
             coEvery {
                 manager.autosuggest(microphone, any(), any())
             } answers {
-                Result(
+                Either.Left(
                     APIResponse.What3WordsError.INVALID_KEY
                 )
             }
@@ -159,19 +174,19 @@ class AutosuggestVoiceViewModelTests {
             coEvery {
                 manager.autosuggest(microphone, any(), any())
             } answers {
-                Result(voiceManager)
+                Either.Right(voiceManager)
             }
 
             coEvery {
                 voiceManager.startListening()
             } answers {
-                Result(suggestions)
+                Either.Right(suggestions)
             }
 
             coEvery {
                 manager.selectedWithCoordinates("test", suggestions.first())
             } answers {
-                Result(
+                Either.Right(
                     suggestionsWithCoordinates.first()
                 )
             }
@@ -215,19 +230,19 @@ class AutosuggestVoiceViewModelTests {
             coEvery {
                 manager.autosuggest(microphone, any(), any())
             } answers {
-                Result(voiceManager)
+                Either.Right(voiceManager)
             }
 
             coEvery {
                 voiceManager.startListening()
             } answers {
-                Result(suggestions)
+                Either.Right(suggestions)
             }
 
             coEvery {
                 manager.selected("test", suggestions.first())
             } answers {
-                Result(
+                Either.Right(
                     suggestionsWithCoordinates
                 )
             }
@@ -277,19 +292,19 @@ class AutosuggestVoiceViewModelTests {
             coEvery {
                 manager.autosuggest(microphone, any(), any())
             } answers {
-                Result(voiceManager)
+                Either.Right(voiceManager)
             }
 
             coEvery {
                 voiceManager.startListening()
             } answers {
-                Result(suggestions)
+                Either.Right(suggestions)
             }
 
             coEvery {
                 manager.multipleWithCoordinates("test", suggestions)
             } answers {
-                Result(
+                Either.Right(
                     suggestionsWithCoordinates
                 )
             }
@@ -342,19 +357,19 @@ class AutosuggestVoiceViewModelTests {
             coEvery {
                 manager.autosuggest(microphone, any(), any())
             } answers {
-                Result(voiceManager)
+                Either.Right(voiceManager)
             }
 
             coEvery {
                 voiceManager.startListening()
             } answers {
-                Result(suggestions)
+                Either.Right(suggestions)
             }
 
             coEvery {
                 manager.multipleWithCoordinates("test", suggestions)
             } answers {
-                Result(
+                Either.Right(
                     suggestionsWithCoordinates
                 )
             }
