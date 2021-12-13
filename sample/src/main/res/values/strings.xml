@@ -30,4 +30,5 @@
     <string name="custom_error">use custom error message view</string>
     <string name="custom_correction_picker">use custom correction picker</string>
     <string name="allow_invalid_address">allow invalid 3wa</string>
+    <string name="allow_flexible_delimiters">allow flexible delimiters</string>
 </resources>

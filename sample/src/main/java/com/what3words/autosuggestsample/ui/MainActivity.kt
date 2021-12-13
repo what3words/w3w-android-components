@@ -6,8 +6,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
-import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.autosuggestsample.R
+import com.what3words.autosuggestsample.databinding.ActivityMainBinding
 import com.what3words.autosuggestsample.databinding.ActivityMainBinding.inflate
 import com.what3words.autosuggestsample.util.addOnTextChangedListener
 import com.what3words.components.text.VoiceScreenType
@@ -15,7 +15,7 @@ import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: com.what3words.autosuggestsample.databinding.ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +47,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.checkboxAllowInvalidAddress.setOnCheckedChangeListener { _, b ->
             binding.suggestionEditText.allowInvalid3wa(b)
+        }
+
+        binding.checkboxAllowFlexibleDelimiters.setOnCheckedChangeListener { _, b ->
+            binding.suggestionEditText.allowFlexibleDelimiters(b)
         }
 
         binding.checkboxVoiceFullscreen.setOnCheckedChangeListener { _, b ->

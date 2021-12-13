@@ -10,7 +10,8 @@ interface AutosuggestLogicManager {
 
     suspend fun autosuggest(
         query: String,
-        options: AutosuggestOptions?
+        options: AutosuggestOptions?,
+        allowFlexibleDelimiters: Boolean = false
     ): Either<APIResponse.What3WordsError, Pair<List<Suggestion>?, Suggestion?>>
 
     suspend fun autosuggest(

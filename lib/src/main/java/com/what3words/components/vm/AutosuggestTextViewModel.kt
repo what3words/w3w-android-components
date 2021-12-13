@@ -17,10 +17,10 @@ internal class AutosuggestTextViewModel(
     val didYouMean: LiveData<Suggestion?>
         get() = _didYouMean
 
-    fun autosuggest(searchText: String) {
+    fun autosuggest(searchText: String, allowFlexibleDelimiters: Boolean = false) {
         io(dispatchers) {
             val res = manager.autosuggest(
-                searchText.replace("/", ""), options
+                searchText.replace("/", ""), options, allowFlexibleDelimiters
             )
             main(dispatchers) {
                 when (res) {

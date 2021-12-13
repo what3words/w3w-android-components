@@ -126,7 +126,7 @@ class AutosuggestTextViewModelTests {
                 )
             }
 
-            viewModel.autosuggest("test")
+            viewModel.autosuggest("test", false)
             assertEquals(suggestions.firstOrNull(), viewModel.didYouMean.value)
             assertEquals(null, viewModel.suggestions.value)
             assertEquals(null, viewModel.error.value)
@@ -140,6 +140,41 @@ class AutosuggestTextViewModelTests {
                 observerDidYouMean.onChanged(suggestions.firstOrNull())
             }
         }
+
+    @Test
+    fun `autosuggest returns suggestions with allowFlexibleDelimiter and livedata is populated correctly`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val suggestionsJson =
+                ClassLoader.getSystemResource("suggestions.json").readText()
+            val suggestions =
+                Gson().fromJson(suggestionsJson, Array<Suggestion>::class.java).toList()
+
+            coEvery {
+                manager.autosuggest("test", any(), true)
+            } answers {
+                Either.Right(
+                    Pair(
+                        suggestions,
+                        null
+                    )
+                )
+            }
+
+            viewModel.autosuggest("test", true)
+            assertEquals(null , viewModel.didYouMean.value)
+            assertEquals(suggestions, viewModel.suggestions.value)
+            assertEquals(null, viewModel.error.value)
+            verify(exactly = 0) {
+                observerError.onChanged(any())
+            }
+            verify(exactly = 1) {
+                observerSuggestions.onChanged(suggestions)
+            }
+            verify(exactly = 0) {
+                observerDidYouMean.onChanged(suggestions.firstOrNull())
+            }
+        }
+
 
     @Test
     fun `autosuggest returns an error and livedata is populated correctly`() =

@@ -18,10 +18,12 @@ class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogi
 
     override suspend fun autosuggest(
         query: String,
-        options: AutosuggestOptions?
+        options: AutosuggestOptions?,
+        allowFlexibleDelimiters: Boolean
     ): Either<APIResponse.What3WordsError, Pair<List<Suggestion>?, Suggestion?>> =
         suspendCoroutine { cont ->
             if (options != null) autosuggestHelper.options(options)
+            autosuggestHelper.allowFlexibleDelimiters(allowFlexibleDelimiters)
             autosuggestHelper.update(
                 query,
                 {

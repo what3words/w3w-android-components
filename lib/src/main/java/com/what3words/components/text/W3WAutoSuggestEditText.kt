@@ -13,12 +13,15 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import androidx.lifecycle.Observer
@@ -87,6 +90,7 @@ class W3WAutoSuggestEditText
     internal var voiceEnabled: Boolean = false
     internal var voiceScreenType: VoiceScreenType = VoiceScreenType.Inline
     private var allowInvalid3wa: Boolean = false
+    private var allowFlexibleDelimiters: Boolean = false
     internal var voicePlaceholder: String
     internal var voiceBackgroundColor: Int =
         ContextCompat.getColor(context, R.color.w3wVoiceBackground)
@@ -209,7 +213,7 @@ class W3WAutoSuggestEditText
                 }
 
                 if (searchText.isPossible3wa() || searchText.didYouMean3wa()) {
-                    viewModel.autosuggest(searchText)
+                    viewModel.autosuggest(searchText, allowFlexibleDelimiters)
                 } else {
                     onDisplaySuggestions?.accept(false)
                     getPicker().visibility = GONE
@@ -438,6 +442,9 @@ class W3WAutoSuggestEditText
                 override fun onGlobalLayout() {
                     if (!isRendered && visibility == VISIBLE) {
                         isRendered = true
+                        (parent as? ViewGroup)?.apply {
+                            if(this is LinearLayout || this is LinearLayoutCompat) throw Exception("W3WAutoSuggestEditText is restricted to Relative layout parent groups, i.e: RelativeLayout, ConstraintLayout")
+                        }
                         if (customPicker == null) buildSuggestionList()
                         if (customErrorView == null) buildErrorMessage()
                         if (customCorrectionPicker == null) buildCorrection()
@@ -463,6 +470,11 @@ class W3WAutoSuggestEditText
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        try {
+            viewModel.manager
+        } catch (ex: Exception) {
+            throw Exception("Missing apiKey()/sdk() setup, to fix this issue please check our documentation.")
+        }
         viewModel.suggestions.removeObserver(suggestionsObserver)
         viewModel.error.removeObserver(errorObserver)
         viewModel.didYouMean.removeObserver(didYouMeanObserver)
@@ -1039,13 +1051,27 @@ class W3WAutoSuggestEditText
 
     /**
      * Allow EditText to keep any text user types, default is false, by default EditText will be cleared if not a valid 3 word address, set to true to ignore this default behaviour.
+     * Toggles voice programmatically, this can be useful for cases where it's needed to control the voice using buttons or actions outside [W3WAutoSuggestEditText]
      *
      * @return same [W3WAutoSuggestEditText] instance
      */
-    fun triggerVoice(): W3WAutoSuggestEditText {
+    fun toggleVoice(): W3WAutoSuggestEditText {
         handleVoiceClick()
         return this
     }
+
+    /**
+     * Allow EditText to accept different delimiters than the what3words standard full stop "index.home.raft".
+     * By default [allowFlexibleDelimiters] is false, when you type an existing three word address with a different delimiter (i.e "index home raft") will trigger our Did You Mean feature, but if you set [allowFlexibleDelimiters] (true) "index home raft" will be parsed to "index.home.raft" and will return the [nResults] suggestions for that query.
+     *
+     * @param isAllowed if true [W3WAutoSuggestEditText] will accept flexible delimiters and show suggestions, if false will not accept flexible delimiters but if is that three word address exist will show the did you mean feature.
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun allowFlexibleDelimiters(isAllowed: Boolean): W3WAutoSuggestEditText {
+        this.allowFlexibleDelimiters = isAllowed
+        return this
+    }
+
 //endregion
 }
 
