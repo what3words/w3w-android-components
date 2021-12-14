@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.AppCompatEditText
@@ -63,6 +64,7 @@ class W3WAutoSuggestEditText
     defStyleAttr
 ) {
 
+    private var originalPaddingEnd: Int
     private var drawableStartCallback: (() -> Unit)? = null
     internal var drawableStart: Drawable? = null
     private var oldHint: String = ""
@@ -114,22 +116,26 @@ class W3WAutoSuggestEditText
         }
     }
 
-    internal val tickHolder: Drawable? by lazy {
-        ContextCompat.getDrawable(context, R.drawable.ic_empty).apply {
-            this?.setTint(context.getColor(R.color.transparent))
-            this?.setBounds(
-                0,
-                0,
-                (this@W3WAutoSuggestEditText.textSize * 1.20).toInt() + context.resources.getDimensionPixelSize(
-                    R.dimen.medium_margin
-                ),
-                (this@W3WAutoSuggestEditText.textSize * 1.20).toInt()
-            )
-        }
-    }
+//    internal val tickHolder: Drawable? by lazy {
+//        ContextCompat.getDrawable(context, R.drawable.ic_empty).apply {
+//            this?.setTint(context.getColor(R.color.transparent))
+//            this?.setBounds(
+//                0,
+//                0,
+//                (this@W3WAutoSuggestEditText.textSize * 1.20).toInt() + context.resources.getDimensionPixelSize(
+//                    R.dimen.medium_margin
+//                ),
+//                (this@W3WAutoSuggestEditText.textSize * 1.20).toInt()
+//            )
+//        }
+//    }
 
     internal val viewModel: AutosuggestTextViewModel by lazy {
         AutosuggestTextViewModel()
+    }
+
+    internal val cross: ImageView by lazy {
+        ImageView(context)
     }
 
     internal val defaultPicker: W3WAutoSuggestPicker by lazy {
@@ -181,7 +187,7 @@ class W3WAutoSuggestEditText
 
                 if (fromPaste) {
                     if (searchText.removePrefix(context.getString(R.string.w3w_slashes))
-                            .isPossible3wa()
+                        .isPossible3wa()
                     ) {
                         fromPaste = false
                         setText(searchText.removePrefix(context.getString(R.string.w3w_slashes)))
@@ -354,10 +360,10 @@ class W3WAutoSuggestEditText
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
                 voiceScreenType =
                     VoiceScreenType.values()[
-                            getInt(
-                                R.styleable.W3WAutoSuggestEditText_voiceScreenType,
-                                0
-                            )
+                        getInt(
+                            R.styleable.W3WAutoSuggestEditText_voiceScreenType,
+                            0
+                        )
                     ]
                 voiceLanguage =
                     getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
@@ -366,6 +372,8 @@ class W3WAutoSuggestEditText
                 if (compoundDrawablesRelative.isNotEmpty()) {
                     drawableStart = compoundDrawablesRelative[0]
                 }
+                oldHint = hint.toString()
+                originalPaddingEnd = paddingEnd
             } finally {
                 this@W3WAutoSuggestEditText.textDirection = TEXT_DIRECTION_LOCALE
                 showImages()
@@ -404,10 +412,16 @@ class W3WAutoSuggestEditText
                 }
             }
             if (!isFocused) {
+                cross.visibility = GONE
+                this.hint = oldHint
+                setPaddingRelative(paddingStart, paddingTop, originalPaddingEnd, paddingBottom)
                 val keyboard: InputMethodManager =
                     (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                 keyboard.hideSoftInputFromWindow(windowToken, 0)
             } else {
+                if (voiceEnabled)
+                    setPaddingRelative(paddingStart, paddingTop, height * 2, paddingBottom)
+                else setPaddingRelative(paddingStart, paddingTop, height, paddingBottom)
                 if (this.text.isNullOrEmpty() && !focusFromVoice) {
                     this.setText(
                         context.getString(R.string.w3w_slashes)
@@ -415,6 +429,7 @@ class W3WAutoSuggestEditText
                     this.setSelection(this.length())
                     showKeyboard()
                 }
+                cross.visibility = VISIBLE
                 showImages(false)
             }
             focusFromVoice = false
@@ -443,12 +458,15 @@ class W3WAutoSuggestEditText
                     if (!isRendered && visibility == VISIBLE) {
                         isRendered = true
                         (parent as? ViewGroup)?.apply {
-                            if(this is LinearLayout || this is LinearLayoutCompat) throw Exception("W3WAutoSuggestEditText is restricted to Relative layout parent groups, i.e: RelativeLayout, ConstraintLayout")
+                            if (this is LinearLayout || this is LinearLayoutCompat) throw Exception(
+                                "W3WAutoSuggestEditText is restricted to Relative layout parent groups, i.e: RelativeLayout, ConstraintLayout"
+                            )
                         }
                         if (customPicker == null) buildSuggestionList()
                         if (customErrorView == null) buildErrorMessage()
                         if (customCorrectionPicker == null) buildCorrection()
                         buildVoice()
+                        buildCross()
                         when (voiceScreenType) {
                             VoiceScreenType.Inline -> {
                                 inlineVoicePulseLayout.visibility =
@@ -525,6 +543,7 @@ class W3WAutoSuggestEditText
         focusFromVoice = true
         if (!isShowingTick) {
             hideKeyboard()
+            cross.visibility = GONE
             when (voiceScreenType) {
                 VoiceScreenType.Inline -> {
                     inlineVoicePulseLayout.toggle(
@@ -553,6 +572,7 @@ class W3WAutoSuggestEditText
 
     private fun handleVoiceSuggestions(suggestions: List<Suggestion>) {
         this.hint = oldHint
+        cross.visibility = VISIBLE
         if (suggestions.isEmpty()) {
             getInvalidAddressView().showError(invalidSelectionMessageText)
             onDisplaySuggestions?.accept(false)
@@ -667,7 +687,7 @@ class W3WAutoSuggestEditText
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun microphone(microphone: Microphone): W3WAutoSuggestEditText {
-        //this.microphone = microphone
+        // this.microphone = microphone
         return this
     }
 
@@ -819,6 +839,12 @@ class W3WAutoSuggestEditText
         enabled: Boolean,
         type: VoiceScreenType
     ): W3WAutoSuggestEditText {
+        // re-think this.
+        if (enabled && !this.voiceEnabled) {
+            cross.x = cross.x - this.height * 0.85f
+        } else if (!enabled && this.voiceEnabled) {
+            cross.x = cross.x + this.height * 0.85f
+        }
         this.voiceEnabled = enabled
         this.voiceScreenType = type
         inlineVoicePulseLayout.visibility = if (enabled && !isShowingTick) VISIBLE else GONE

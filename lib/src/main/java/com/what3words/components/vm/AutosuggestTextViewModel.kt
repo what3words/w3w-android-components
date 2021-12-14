@@ -32,7 +32,7 @@ internal class AutosuggestTextViewModel(
                             _suggestions.postValue(it)
                         }
                         res.b.second?.let {
-                            //didn't match regex pattern but did you mean is triggered, i.e: index home raft
+                            // didn't match regex pattern but did you mean is triggered, i.e: index home raft
                             _didYouMean.postValue(it)
                         }
                     }

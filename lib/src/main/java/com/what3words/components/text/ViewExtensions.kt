@@ -3,6 +3,8 @@ package com.what3words.components.text
 import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.icu.text.MeasureFormat
 import android.icu.text.MeasureFormat.FormatWidth
 import android.icu.util.Measure
@@ -12,9 +14,12 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.text.TextUtilsCompat
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -85,6 +90,42 @@ internal fun W3WAutoSuggestEditText.buildVoice() {
     }
     view.addView(inlineVoicePulseLayout)
     (parent as? ViewGroup)?.addView(view)
+}
+
+fun Drawable.resizeTo(context: Context, size: Int) =
+    BitmapDrawable(context.resources, toBitmap(size, size))
+
+internal fun W3WAutoSuggestEditText.buildCross() {
+    cross.layoutParams = ViewGroup.MarginLayoutParams(
+        this.height,
+        this.height
+    )
+    cross.isClickable = true
+    cross.setOnClickListener {
+        this.setText(context.getString(R.string.w3w_slashes))
+        this.setSelection(this.text!!.length)
+    }
+    cross.setImageDrawable(
+        ContextCompat.getDrawable(context, R.drawable.ic_close)
+            ?.resizeTo(context, (this.height * .6).toInt())
+            .apply {
+                this?.setTint(this@buildCross.currentHintTextColor)
+            }
+    )
+    cross.scaleType = ImageView.ScaleType.CENTER
+    cross.apply {
+        val diff: Float = if (voiceEnabled) this@buildCross.height * 0.85f else 0f
+        this.x =
+            (this@buildCross.x + this@buildCross.width - (this@buildCross.height)) - (
+            resources.getDimensionPixelSize(
+                R.dimen.input_border_height
+            )
+            ) - diff
+        this.y =
+            this@buildCross.y
+    }
+    cross.visibility = GONE
+    (parent as? ViewGroup)?.addView(cross)
 }
 
 internal fun W3WAutoSuggestEditText.buildVoiceAnimatedPopup() {
@@ -175,8 +216,6 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
             null,
             if (showTick) {
                 tick
-            } else if (!showTick && voiceEnabled) {
-                tickHolder
             } else {
                 null
             },
@@ -186,8 +225,6 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
         setCompoundDrawablesRelative(
             if (showTick) {
                 tick
-            } else if (!showTick && voiceEnabled) {
-                tickHolder
             } else {
                 null
             },

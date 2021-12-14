@@ -32,8 +32,8 @@ internal class VoicePulseLayout
     private var resultsCallback: Consumer<List<Suggestion>>? = null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? = null
     private var binding: VoicePulseLayoutBinding = VoicePulseLayoutBinding.inflate(
-        LayoutInflater.from(context), this, true)
-
+        LayoutInflater.from(context), this, true
+    )
 
     init {
         binding.icClose.setColorFilter(iconTintColor)

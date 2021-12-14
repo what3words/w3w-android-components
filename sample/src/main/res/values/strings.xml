@@ -19,6 +19,7 @@
     <string name="clip_to_polygon_hint">clip to polygon</string>
     <string name="clip_to_polygon_info">Restrict AutoSuggest results to a polygon, specified by a comma-separated list of lat,lng pairs. The polygon should be closed, i.e. the first element should be repeated as the last element; also the list should contain at least 4 entries. The API is currently limited to accepting up to 25 pairs.</string>
     <string name="voice_enabled">enable voice with inline animation</string>
+    <string name="voice_disabled">disable voice</string>
     <string name="voice_popup_enabled">enable voice with popup animation</string>
     <string name="voice_placeholder_header">voice placeholder</string>
     <string name="voice_language">voice language</string>

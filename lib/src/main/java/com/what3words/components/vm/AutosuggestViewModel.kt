@@ -35,12 +35,12 @@ internal open class AutosuggestViewModel(
     fun onSuggestionClicked(rawQuery: String, suggestion: Suggestion?, returnCoordinates: Boolean) {
         io(dispatchers) {
             if (suggestion == null) {
-                //invalid suggestion picked
+                // invalid suggestion picked
                 main(dispatchers) {
                     _selectedSuggestion.postValue(null)
                 }
             } else if (!returnCoordinates) {
-                //valid suggestion picked with no coordinates
+                // valid suggestion picked with no coordinates
                 val res = manager.selected(rawQuery, suggestion)
                 main(dispatchers) {
                     when (res) {
@@ -53,7 +53,7 @@ internal open class AutosuggestViewModel(
                     }
                 }
             } else {
-                //valid suggestion picked with coordinates
+                // valid suggestion picked with coordinates
                 val res = manager.selectedWithCoordinates(rawQuery, suggestion)
                 main(dispatchers) {
                     when (res) {

@@ -86,11 +86,13 @@ internal class AutosuggestVoiceViewModel(
                 }
             } else {
                 main(dispatchers) {
-                    _multipleSelectedSuggestions.postValue(suggestions.map {
-                        SuggestionWithCoordinates(
-                            it
-                        )
-                    })
+                    _multipleSelectedSuggestions.postValue(
+                        suggestions.map {
+                            SuggestionWithCoordinates(
+                                it
+                            )
+                        }
+                    )
                 }
             }
             main(dispatchers) {
@@ -133,9 +135,11 @@ internal class AutosuggestVoiceViewModel(
     }
 
     fun setPermissionError() {
-        _error.postValue(APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
-            message = "Microphone permission required"
-        })
+        _error.postValue(
+            APIResponse.What3WordsError.UNKNOWN_ERROR.apply {
+                message = "Microphone permission required"
+            }
+        )
     }
 
     fun setCustomAnimationRefreshTime(newTime: Int) {

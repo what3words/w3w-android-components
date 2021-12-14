@@ -102,7 +102,7 @@ internal class SuggestionsAdapter(
                     binding.root.setBackgroundColor(it)
                 }
                 if (query?.replace(binding.root.context.getString(R.string.w3w_slash), "")
-                        .equals(suggestion.words, ignoreCase = true)
+                    .equals(suggestion.words, ignoreCase = true)
                 ) {
                     binding.w3wSuggestionHolder.setBackgroundColor(
                         ContextCompat.getColor(

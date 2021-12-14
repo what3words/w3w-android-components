@@ -161,7 +161,7 @@ class AutosuggestTextViewModelTests {
             }
 
             viewModel.autosuggest("test", true)
-            assertEquals(null , viewModel.didYouMean.value)
+            assertEquals(null, viewModel.didYouMean.value)
             assertEquals(suggestions, viewModel.suggestions.value)
             assertEquals(null, viewModel.error.value)
             verify(exactly = 0) {
@@ -174,7 +174,6 @@ class AutosuggestTextViewModelTests {
                 observerDidYouMean.onChanged(suggestions.firstOrNull())
             }
         }
-
 
     @Test
     fun `autosuggest returns an error and livedata is populated correctly`() =

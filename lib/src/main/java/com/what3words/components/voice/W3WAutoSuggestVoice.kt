@@ -132,14 +132,14 @@ class W3WAutoSuggestVoice
 
         // Add a viewTreeObserver to obtain the initial size of the circle overlays
         binding.voicePulseLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
-            OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                if (binding.innerCircleView.measuredWidth != 0) {
-                    setOverlayBaseSize()
-                    binding.voicePulseLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    if (binding.innerCircleView.measuredWidth != 0) {
+                        setOverlayBaseSize()
+                        binding.voicePulseLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    }
                 }
-            }
-        })
+            })
     }
 
     fun setOverlayBaseSize() {
@@ -211,7 +211,7 @@ class W3WAutoSuggestVoice
                 setIsVoiceRunning(isVoiceRunning = false, withError = false)
             }
             W3WListeningState.Connecting -> {
-                //FUTURE LOADING STATE
+                // FUTURE LOADING STATE
             }
             W3WListeningState.Started -> {
                 setIsVoiceRunning(isVoiceRunning = true, withError = false)

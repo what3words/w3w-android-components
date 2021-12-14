@@ -19,7 +19,8 @@ class W3WAutoSuggestCorrectionPicker
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private var binding: CorrectionLayoutBinding = CorrectionLayoutBinding.inflate(
-        LayoutInflater.from(context), this, true)
+        LayoutInflater.from(context), this, true
+    )
 
     private var suggestion: Suggestion? = null
     private var callback: ((selectedSuggestion: Suggestion) -> Unit)? = null

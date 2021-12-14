@@ -10,7 +10,6 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:inputType">text</item>
         <item name="android:maxLines">1</item>
-        <item name="android:hint"> </item>
         <item name="android:background">#005379</item>
         <item name="voiceBackgroundDrawable">@drawable/bg_gradient</item>
         <item name="voiceIconsColor">@color/white</item>

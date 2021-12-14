@@ -24,7 +24,8 @@ internal class InlineVoicePulseLayout
     private var errorCallback: Consumer<APIResponse.What3WordsError>? = null
 
     private var binding: InlineVoicePulseLayoutBinding = InlineVoicePulseLayoutBinding.inflate(
-        LayoutInflater.from(context), this, true)
+        LayoutInflater.from(context), this, true
+    )
 
     init {
         binding.fakeClick.setOnClickListener {

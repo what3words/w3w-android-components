@@ -3,6 +3,8 @@ package com.what3words.autosuggestsample.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
@@ -53,18 +55,7 @@ class MainActivity : AppCompatActivity() {
             binding.suggestionEditText.allowFlexibleDelimiters(b)
         }
 
-        binding.checkboxVoiceFullscreen.setOnCheckedChangeListener { _, b ->
-            binding.suggestionEditText.voiceEnabled(b, VoiceScreenType.Fullscreen)
-        }
-
-        binding.checkboxVoiceEnabled.setOnCheckedChangeListener { _, b ->
-            binding.suggestionEditText.voiceEnabled(b, VoiceScreenType.Inline)
-        }
-
-        binding.checkboxVoicePopup.setOnCheckedChangeListener { _, b ->
-            binding.suggestionEditText.voiceEnabled(b, VoiceScreenType.AnimatedPopup)
-        }
-
+        binding.checkboxVoiceDisabled.isChecked = true
 
         binding.checkboxCustomPicker.setOnCheckedChangeListener { _, _ ->
             updateOnSelectedAndOnError()
@@ -196,6 +187,25 @@ class MainActivity : AppCompatActivity() {
                 setAction("OK") { dismiss() }
                 show()
             }
+        }
+    }
+
+    fun onRadioButtonClicked(view: View) {
+        // Is the button now checked?
+
+        if (view !is RadioButton) {
+            return
+        }
+
+        binding.suggestionEditText.voiceEnabled(false, VoiceScreenType.Inline)
+        // Check which radio button was clicked
+        when (view.id) {
+            R.id.checkboxVoiceEnabled ->
+                binding.suggestionEditText.voiceEnabled(true, VoiceScreenType.Inline)
+            R.id.checkboxVoicePopup ->
+                binding.suggestionEditText.voiceEnabled(true, VoiceScreenType.AnimatedPopup)
+            R.id.checkboxVoiceFullscreen ->
+                binding.suggestionEditText.voiceEnabled(true, VoiceScreenType.Fullscreen)
         }
     }
 }

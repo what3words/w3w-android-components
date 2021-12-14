@@ -23,7 +23,8 @@ internal class VoicePulseLayoutFullScreen
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
     private var binding: VoicePulseLayoutFullScreenBinding = VoicePulseLayoutFullScreenBinding.inflate(
-        LayoutInflater.from(context), this, true)
+        LayoutInflater.from(context), this, true
+    )
 
     var isVoiceRunning: Boolean = false
     private var resultsCallback: Consumer<List<Suggestion>>? = null

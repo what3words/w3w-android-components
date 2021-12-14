@@ -87,13 +87,13 @@ class AutosuggestVoiceViewModelTests {
 
         every {
             microphone.onListening(any())
-        } answers  {
+        } answers {
             microphone
         }
 
         every {
             microphone.onError(any())
-        } answers  {
+        } answers {
             microphone
         }
 

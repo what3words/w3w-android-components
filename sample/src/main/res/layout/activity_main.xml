@@ -30,9 +30,7 @@
             android:layout_marginEnd="@dimen/main_s"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textHeader"
-            app:voiceEnabled="true"
-            app:voiceScreenType="fullscreen" />
+            app:layout_constraintTop_toBottomOf="@+id/textHeader" />
 
         <com.what3words.components.picker.W3WAutoSuggestPicker
             android:id="@+id/suggestionPicker"
@@ -104,47 +102,44 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textCustomHeader" />
 
-        <CheckBox
-            android:id="@+id/checkboxVoiceEnabled"
+        <RadioGroup
+            android:id="@+id/voiceRadioGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
             android:layout_marginTop="@dimen/main_s"
             android:layout_marginEnd="@dimen/main_s"
-            android:checked="false"
-            android:text="@string/voice_enabled"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates" />
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates">
 
-        <CheckBox
-            android:id="@+id/checkboxVoicePopup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginTop="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:checked="false"
-            android:text="@string/voice_popup_enabled"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxVoiceEnabled" />
+            <RadioButton
+                android:id="@+id/checkboxVoiceDisabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/voice_disabled" />
 
-        <CheckBox
-            android:id="@+id/checkboxVoiceFullscreen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginTop="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:checked="false"
-            android:text="@string/voice_fullscreen"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxVoicePopup" />
+            <RadioButton
+                android:id="@+id/checkboxVoiceEnabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/voice_enabled" />
+
+            <RadioButton
+                android:id="@+id/checkboxVoicePopup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/voice_popup_enabled" />
+
+            <RadioButton
+                android:id="@+id/checkboxVoiceFullscreen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/voice_fullscreen" />
+        </RadioGroup>
 
         <CheckBox
             android:id="@+id/checkboxCustomPicker"
@@ -158,7 +153,7 @@
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxVoiceFullscreen" />
+            app:layout_constraintTop_toBottomOf="@+id/voiceRadioGroup" />
 
         <CheckBox
             android:id="@+id/checkboxCustomError"
@@ -500,8 +495,8 @@
         <Button
             android:id="@+id/closeButton"
             android:layout_width="0dp"
-            android:layout_marginTop="@dimen/main_l"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/main_l"
             android:text="closeView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
