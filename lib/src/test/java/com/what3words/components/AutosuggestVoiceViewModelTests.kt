@@ -1,7 +1,6 @@
 package com.what3words.components
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.models.AutosuggestApiManager
@@ -16,10 +15,10 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.justRun
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -28,8 +27,6 @@ import org.junit.rules.TestRule
 
 @ExperimentalCoroutinesApi
 class AutosuggestVoiceViewModelTests {
-    @MockK
-    private lateinit var observerError: Observer<APIResponse.What3WordsError?>
 
     @MockK
     private lateinit var manager: AutosuggestApiManager
@@ -38,19 +35,7 @@ class AutosuggestVoiceViewModelTests {
     private lateinit var voiceManager: VoiceAutosuggestManager
 
     @MockK
-    private lateinit var observerSuggestions: Observer<List<Suggestion>>
-
-    @MockK
-    private lateinit var observerDidYouMean: Observer<Suggestion?>
-
-    @MockK
-    private lateinit var observerSelected: Observer<SuggestionWithCoordinates>
-
-    @MockK
-    private lateinit var observerMultiple: Observer<List<SuggestionWithCoordinates>>
-
-    @MockK
-    private lateinit var viewModel: AutosuggestVoiceViewModel
+    internal lateinit var viewModel: AutosuggestVoiceViewModel
 
     @MockK
     private lateinit var microphone: Microphone
@@ -65,21 +50,11 @@ class AutosuggestVoiceViewModelTests {
     fun setup() {
         manager = mockk()
         microphone = mockk()
-        observerSuggestions = mockk()
         voiceManager = mockk()
-        observerError = mockk()
-        observerSelected = mockk()
-        observerDidYouMean = mockk()
-        observerMultiple = mockk()
         viewModel = AutosuggestVoiceViewModel(coroutinesTestRule.testDispatcherProvider)
         viewModel.manager = manager
 
         justRun {
-            observerError.onChanged(any())
-            observerDidYouMean.onChanged(any())
-            observerSuggestions.onChanged(any())
-            observerSelected.onChanged(any())
-            observerMultiple.onChanged(any())
             voiceManager.updateOptions(any())
             microphone.onListening(any())
             microphone.onError(any())
@@ -98,37 +73,44 @@ class AutosuggestVoiceViewModelTests {
         }
 
         viewModel.setMicrophone(microphone)
-        viewModel.suggestions.observeForever(observerSuggestions)
-        viewModel.error.observeForever(observerError)
-        viewModel.selectedSuggestion.observeForever(observerSelected)
-        viewModel.multipleSelectedSuggestions.observeForever(observerMultiple)
-    }
-
-    @After
-    fun tearDown() {
-        viewModel.suggestions.removeObserver(observerSuggestions)
-        viewModel.error.removeObserver(observerError)
-        viewModel.selectedSuggestion.removeObserver(observerSelected)
-        viewModel.multipleSelectedSuggestions.removeObserver(observerMultiple)
     }
 
     @Test
-    fun `autosuggest returns manager and livedata is populated correctly`() =
+    fun `autosuggest returns manager and sharedflow is populated correctly`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
+            var errorResult: APIResponse.What3WordsError? = null
+
             coEvery {
                 manager.autosuggest(microphone, any(), any())
             } answers {
                 Either.Right(voiceManager)
             }
 
+            coEvery {
+                voiceManager.startListening()
+            } answers {
+                Either.Right(emptyList())
+            }
+
+            val jobs = launch {
+                launch {
+                    viewModel.error.collect {
+                        errorResult = it
+                    }
+                }
+            }
+
             viewModel.autosuggest("en")
-            Assert.assertEquals(voiceManager, viewModel.voiceManager.value)
-            Assert.assertNull(viewModel.error.value)
+            Assert.assertEquals(voiceManager, viewModel.voiceManager)
+            Assert.assertNull(errorResult)
+            jobs.cancel()
         }
 
     @Test
-    fun `autosuggest returns an error and livedata is populated correctly`() =
+    fun `autosuggest returns an error and sharedflow is populated correctly`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
+            var errorResult: APIResponse.What3WordsError? = null
+            val suggestionsResult: MutableList<Suggestion> = mutableListOf()
 
             coEvery {
                 manager.autosuggest(microphone, any(), any())
@@ -138,25 +120,38 @@ class AutosuggestVoiceViewModelTests {
                 )
             }
 
-            viewModel.suggestions.observeForever(observerSuggestions)
-            viewModel.error.observeForever(observerError)
+            coEvery {
+                voiceManager.startListening()
+            } answers {
+                Either.Right(emptyList())
+            }
+
+            val jobs = launch {
+                launch {
+                    viewModel.error.collect {
+                        errorResult = it
+                    }
+                }
+                launch {
+                    viewModel.suggestions.collect {
+                        suggestionsResult.addAll(it)
+                    }
+                }
+            }
+
             viewModel.autosuggest("en")
-            Assert.assertEquals(APIResponse.What3WordsError.INVALID_KEY, viewModel.error.value)
-            Assert.assertEquals(null, viewModel.suggestions.value)
-            verify(exactly = 1) {
-                observerError.onChanged(APIResponse.What3WordsError.INVALID_KEY)
-            }
-            verify(exactly = 0) {
-                observerSuggestions.onChanged(any())
-            }
-            verify(exactly = 0) {
-                observerDidYouMean.onChanged(any())
-            }
+            Assert.assertEquals(APIResponse.What3WordsError.INVALID_KEY, errorResult)
+            Assert.assertEquals(emptyList<Suggestion>(), suggestionsResult)
+            jobs.cancel()
         }
 
     @Test
     fun `autosuggest selection with coordinates flow`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
+            var errorResult: APIResponse.What3WordsError? = null
+            val suggestionsResult: MutableList<Suggestion> = mutableListOf()
+            var selectedSuggestionResult: SuggestionWithCoordinates? = null
+
             val suggestionsJson =
                 ClassLoader.getSystemResource("suggestions.json").readText()
             val suggestions =
@@ -191,35 +186,44 @@ class AutosuggestVoiceViewModelTests {
                 )
             }
 
+            val jobs = launch {
+                launch {
+                    viewModel.error.collect {
+                        errorResult = it
+                    }
+                }
+                launch {
+                    viewModel.suggestions.collect {
+                        suggestionsResult.addAll(it)
+                    }
+                }
+                launch {
+                    viewModel.selectedSuggestion.collect {
+                        selectedSuggestionResult = it
+                    }
+                }
+            }
+
             viewModel.autosuggest("test")
-            viewModel.startListening()
-            Assert.assertEquals(suggestions, viewModel.suggestions.value)
-            Assert.assertNull(viewModel.error.value)
+            Assert.assertEquals(suggestions, suggestionsResult)
+            Assert.assertNull(errorResult)
 
             viewModel.onSuggestionClicked("test", suggestions.first(), true)
             Assert.assertEquals(
                 suggestionsWithCoordinates.first(),
-                viewModel.selectedSuggestion.value
+                selectedSuggestionResult
             )
-            Assert.assertNotNull(viewModel.selectedSuggestion.value?.coordinates)
-
-            verify(exactly = 0) {
-                observerError.onChanged(any())
-            }
-            verify(exactly = 1) {
-                observerSuggestions.onChanged(suggestions)
-            }
-            verify(exactly = 0) {
-                observerDidYouMean.onChanged(any())
-            }
-            verify(exactly = 1) {
-                observerSelected.onChanged(suggestionsWithCoordinates.first())
-            }
+            Assert.assertNotNull(selectedSuggestionResult?.coordinates)
+            jobs.cancel()
         }
 
     @Test
     fun `autosuggest selection without coordinates flow`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
+            var errorResult: APIResponse.What3WordsError? = null
+            val suggestionsResult: MutableList<Suggestion> = mutableListOf()
+            var selectedSuggestionResult: SuggestionWithCoordinates? = null
+
             val suggestionsJson =
                 ClassLoader.getSystemResource("suggestions.json").readText()
             val suggestions =
@@ -247,35 +251,44 @@ class AutosuggestVoiceViewModelTests {
                 )
             }
 
+            val jobs = launch {
+                launch {
+                    viewModel.error.collect {
+                        errorResult = it
+                    }
+                }
+                launch {
+                    viewModel.suggestions.collect {
+                        suggestionsResult.addAll(it)
+                    }
+                }
+                launch {
+                    viewModel.selectedSuggestion.collect {
+                        selectedSuggestionResult = it
+                    }
+                }
+            }
+
             viewModel.autosuggest("test")
-            viewModel.startListening()
-            Assert.assertEquals(suggestions, viewModel.suggestions.value)
-            Assert.assertNull(viewModel.error.value)
+            Assert.assertEquals(suggestions, suggestionsResult)
+            Assert.assertNull(errorResult)
 
             viewModel.onSuggestionClicked("test", suggestions.first(), false)
             Assert.assertEquals(
                 suggestionsWithCoordinates,
-                viewModel.selectedSuggestion.value
+                selectedSuggestionResult
             )
-            Assert.assertNull(viewModel.selectedSuggestion.value?.coordinates)
-
-            verify(exactly = 0) {
-                observerError.onChanged(any())
-            }
-            verify(exactly = 1) {
-                observerSuggestions.onChanged(suggestions)
-            }
-            verify(exactly = 0) {
-                observerDidYouMean.onChanged(any())
-            }
-            verify(exactly = 1) {
-                observerSelected.onChanged(suggestionsWithCoordinates)
-            }
+            Assert.assertNull(selectedSuggestionResult?.coordinates)
+            jobs.cancel()
         }
 
     @Test
     fun `autosuggest multiple selection with coordinates flow`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
+            var errorResult: APIResponse.What3WordsError? = null
+            val suggestionsResult: MutableList<Suggestion> = mutableListOf()
+            val multipleSuggestionsResult: MutableList<SuggestionWithCoordinates> = mutableListOf()
+
             val suggestionsJson =
                 ClassLoader.getSystemResource("suggestions.json").readText()
             val suggestions =
@@ -309,41 +322,47 @@ class AutosuggestVoiceViewModelTests {
                 )
             }
 
+            val jobs = launch {
+                launch {
+                    viewModel.error.collect {
+                        errorResult = it
+                    }
+                }
+                launch {
+                    viewModel.suggestions.collect {
+                        suggestionsResult.addAll(it)
+                    }
+                }
+                launch {
+                    viewModel.multipleSelectedSuggestions.collect {
+                        multipleSuggestionsResult.addAll(it)
+                    }
+                }
+            }
+
             viewModel.autosuggest("test")
-            viewModel.startListening()
-            Assert.assertEquals(suggestions, viewModel.suggestions.value)
-            Assert.assertNull(viewModel.error.value)
+            Assert.assertEquals(suggestions, suggestionsResult)
+            Assert.assertNull(errorResult)
 
             viewModel.onMultipleSuggestionsSelected("test", suggestions, true)
             Assert.assertEquals(
                 suggestionsWithCoordinates,
-                viewModel.multipleSelectedSuggestions.value
+                multipleSuggestionsResult
             )
 
-            viewModel.multipleSelectedSuggestions.value!!.forEach {
+            multipleSuggestionsResult.forEach {
                 Assert.assertNotNull(it.coordinates)
             }
-
-            verify(exactly = 0) {
-                observerError.onChanged(any())
-            }
-            verify(exactly = 1) {
-                observerSuggestions.onChanged(suggestions)
-            }
-            verify(exactly = 0) {
-                observerDidYouMean.onChanged(any())
-            }
-            verify(exactly = 0) {
-                observerSelected.onChanged(any())
-            }
-            verify(exactly = 1) {
-                observerMultiple.onChanged(any())
-            }
+            jobs.cancel()
         }
 
     @Test
     fun `autosuggest multiple selection without coordinates flow`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
+            var errorResult: APIResponse.What3WordsError? = null
+            val suggestionsResult: MutableList<Suggestion> = mutableListOf()
+            val multipleSuggestionsResult: MutableList<SuggestionWithCoordinates> = mutableListOf()
+
             val suggestionsJson =
                 ClassLoader.getSystemResource("suggestions.json").readText()
             val suggestions =
@@ -374,35 +393,37 @@ class AutosuggestVoiceViewModelTests {
                 )
             }
 
+            val jobs = launch {
+                launch {
+                    viewModel.error.collect {
+                        errorResult = it
+                    }
+                }
+                launch {
+                    viewModel.suggestions.collect {
+                        suggestionsResult.addAll(it)
+                    }
+                }
+                launch {
+                    viewModel.multipleSelectedSuggestions.collect {
+                        multipleSuggestionsResult.addAll(it)
+                    }
+                }
+            }
+
             viewModel.autosuggest("test")
-            viewModel.startListening()
-            Assert.assertEquals(suggestions, viewModel.suggestions.value)
-            Assert.assertNull(viewModel.error.value)
+            Assert.assertEquals(suggestions, suggestionsResult)
+            Assert.assertNull(errorResult)
 
             viewModel.onMultipleSuggestionsSelected("test", suggestions, true)
             Assert.assertEquals(
                 suggestionsWithCoordinates,
-                viewModel.multipleSelectedSuggestions.value
+                multipleSuggestionsResult
             )
 
-            viewModel.multipleSelectedSuggestions.value!!.forEach {
+            multipleSuggestionsResult.forEach {
                 Assert.assertNull(it.coordinates)
             }
-
-            verify(exactly = 0) {
-                observerError.onChanged(any())
-            }
-            verify(exactly = 1) {
-                observerSuggestions.onChanged(suggestions)
-            }
-            verify(exactly = 0) {
-                observerDidYouMean.onChanged(any())
-            }
-            verify(exactly = 0) {
-                observerSelected.onChanged(any())
-            }
-            verify(exactly = 1) {
-                observerMultiple.onChanged(any())
-            }
+            jobs.cancel()
         }
 }

@@ -14,23 +14,23 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
-import androidx.lifecycle.Observer
 import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
+import com.what3words.androidwrapper.helpers.DefaultDispatcherProvider
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.R
 import com.what3words.components.databinding.W3wVoiceOnlyBinding
 import com.what3words.components.models.AutosuggestApiManager
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.models.DisplayUnits
-import com.what3words.components.models.VoiceAutosuggestManager
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.utils.DisplayMetricsConverter.convertPixelsToDp
 import com.what3words.components.utils.PulseAnimator
+import com.what3words.components.utils.main
 import com.what3words.components.vm.AutosuggestVoiceViewModel
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.request.BoundingBox
@@ -38,6 +38,8 @@ import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
 import java.util.Collections
 
 /**
@@ -53,6 +55,13 @@ class W3WAutoSuggestVoice
     attrs,
     defStyleAttr
 ) {
+
+    private var errorJob: Job? = null
+    private var selectedSuggestionJob: Job? = null
+    private var suggestionsJob: Job? = null
+    private var volumeJob: Job? = null
+    private var multipleSelectedSuggestionsJob: Job? = null
+    private var listeningStateJob: Job? = null
 
     private var isVoiceRunning: Boolean = false
     private lateinit var pulseAnimator: PulseAnimator
@@ -140,6 +149,8 @@ class W3WAutoSuggestVoice
                     }
                 }
             })
+
+        viewModel.manager = AutosuggestApiManager(What3WordsV3("", context))
     }
 
     fun setOverlayBaseSize() {
@@ -164,49 +175,69 @@ class W3WAutoSuggestVoice
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        viewModel.voiceManager.observeForever(voiceManagerObserver)
-        viewModel.suggestions.observeForever(suggestionObserver)
-        viewModel.error.observeForever(errorObserver)
-        viewModel.listeningState.observeForever(listeningStateObserver)
-        viewModel.multipleSelectedSuggestions.observeForever(multipleSelectedSuggestionsObserver)
-        viewModel.selectedSuggestion.observeForever(selectedSuggestionObserver)
-        viewModel.volume.observeForever(volumeObserver)
+
+        listeningStateJob = main(DefaultDispatcherProvider()) {
+            viewModel.listeningState.collect {
+                listeningStateObserver(it)
+            }
+        }
+
+        multipleSelectedSuggestionsJob = main(DefaultDispatcherProvider()) {
+            viewModel.multipleSelectedSuggestions.collect {
+                multipleSelectedSuggestionsObserver(it)
+            }
+        }
+
+        volumeJob = main(DefaultDispatcherProvider()) {
+            viewModel.volume.collect {
+                volumeObserver(it)
+            }
+        }
+
+        suggestionsJob = main(DefaultDispatcherProvider()) {
+            viewModel.suggestions.collect {
+                suggestionObserver(it)
+            }
+        }
+
+        selectedSuggestionJob = main(DefaultDispatcherProvider()) {
+            viewModel.selectedSuggestion.collect {
+                selectedSuggestionObserver(it)
+            }
+        }
+
+        errorJob = main(DefaultDispatcherProvider()) {
+            viewModel.error.collect {
+                errorObserver(it)
+            }
+        }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        viewModel.voiceManager.removeObserver(voiceManagerObserver)
-        viewModel.suggestions.removeObserver(suggestionObserver)
-        viewModel.error.removeObserver(errorObserver)
-        viewModel.listeningState.removeObserver(listeningStateObserver)
-        viewModel.multipleSelectedSuggestions.removeObserver(multipleSelectedSuggestionsObserver)
-        viewModel.selectedSuggestion.removeObserver(selectedSuggestionObserver)
-        viewModel.volume.removeObserver(volumeObserver)
+        volumeJob?.cancel()
+        selectedSuggestionJob?.cancel()
+        errorJob?.cancel()
+        suggestionsJob?.cancel()
+        multipleSelectedSuggestionsJob?.cancel()
+        listeningStateJob?.cancel()
     }
 
-    private val voiceManagerObserver: Observer<VoiceAutosuggestManager?> = Observer {
-        if (!isVoiceRunning) {
-            viewModel.startListening()
-        } else {
-            viewModel.stopListening()
-        }
-    }
-
-    private val suggestionObserver: Observer<List<Suggestion>> = Observer { suggestions ->
+    private fun suggestionObserver(suggestions: List<Suggestion>) {
         handleSuggestions(suggestions)
         internalCallback?.accept(suggestions)
     }
 
-    private val errorObserver: Observer<APIResponse.What3WordsError?> = Observer { error ->
+    private fun errorObserver(error: APIResponse.What3WordsError?) {
         if (error != null) {
             errorCallback?.accept(error)
             setIsVoiceRunning(isVoiceRunning = false, withError = true)
         }
     }
 
-    private val listeningStateObserver: Observer<W3WListeningState> = Observer {
-        onListeningCallback?.accept(it)
-        when (it) {
+    private fun listeningStateObserver(state: W3WListeningState) {
+        onListeningCallback?.accept(state)
+        when (state) {
             W3WListeningState.Stopped -> {
                 setIsVoiceRunning(isVoiceRunning = false, withError = false)
             }
@@ -219,17 +250,16 @@ class W3WAutoSuggestVoice
         }
     }
 
-    private val multipleSelectedSuggestionsObserver: Observer<List<SuggestionWithCoordinates>> =
-        Observer {
-            callback?.accept(it)
-        }
-
-    private val selectedSuggestionObserver: Observer<SuggestionWithCoordinates> = Observer {
-        selectedCallback?.accept(it)
+    private fun multipleSelectedSuggestionsObserver(suggestions: List<SuggestionWithCoordinates>) {
+        callback?.accept(suggestions)
     }
 
-    private val volumeObserver: Observer<Float?> = Observer {
-        it?.let { onSignalUpdate(it) }
+    private fun selectedSuggestionObserver(suggestion: SuggestionWithCoordinates?) {
+        selectedCallback?.accept(suggestion)
+    }
+
+    private fun volumeObserver(volume: Float?) {
+        volume?.let { onSignalUpdate(it) }
     }
 
     private fun setVoicePulseListeners() {
@@ -629,22 +659,20 @@ class W3WAutoSuggestVoice
     }
 
     fun start() {
-        if (viewModel.voiceManager.value == null || viewModel.voiceManager.value?.isListening() == false) {
-            val permissionManager: PermissionManager = PermissionManager.getInstance(context)
-            permissionManager.checkPermissions(
-                Collections.singleton(Manifest.permission.RECORD_AUDIO),
-                object : PermissionManager.PermissionRequestListener {
-                    override fun onPermissionGranted() {
-                        viewModel.autosuggest(voiceLanguage)
-                    }
-
-                    override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
-                        viewModel.setPermissionError()
-                    }
+        val permissionManager: PermissionManager = PermissionManager.getInstance(context)
+        permissionManager.checkPermissions(
+            Collections.singleton(Manifest.permission.RECORD_AUDIO),
+            object : PermissionManager.PermissionRequestListener {
+                override fun onPermissionGranted() {
+                    viewModel.autosuggest(voiceLanguage)
                 }
-            )
-            return
-        }
+
+                override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
+                    viewModel.setPermissionError()
+                }
+            }
+        )
+        return
     }
 
     fun stop() {

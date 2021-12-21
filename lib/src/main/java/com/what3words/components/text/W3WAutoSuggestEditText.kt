@@ -25,9 +25,9 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
-import androidx.lifecycle.Observer
 import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.what3words.androidwrapper.What3WordsV3
+import com.what3words.androidwrapper.helpers.DefaultDispatcherProvider
 import com.what3words.androidwrapper.helpers.didYouMean3wa
 import com.what3words.androidwrapper.helpers.isPossible3wa
 import com.what3words.androidwrapper.voice.Microphone
@@ -42,12 +42,15 @@ import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.utils.InlineVoicePulseLayout
 import com.what3words.components.utils.VoicePulseLayout
 import com.what3words.components.utils.VoicePulseLayoutFullScreen
+import com.what3words.components.utils.main
 import com.what3words.components.vm.AutosuggestTextViewModel
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
 
 /**
  * A [AppCompatEditText] to simplify the integration of what3words text and voice auto-suggest API in your app.
@@ -64,6 +67,10 @@ class W3WAutoSuggestEditText
     defStyleAttr
 ) {
 
+    private var suggestionsJob: Job? = null
+    private var didYouMeanJob: Job? = null
+    private var errorJob: Job? = null
+    private var selectedSuggestionJob: Job? = null
     private var originalPaddingEnd: Int
     private var drawableStartCallback: (() -> Unit)? = null
     internal var drawableStart: Drawable? = null
@@ -115,20 +122,6 @@ class W3WAutoSuggestEditText
             )
         }
     }
-
-//    internal val tickHolder: Drawable? by lazy {
-//        ContextCompat.getDrawable(context, R.drawable.ic_empty).apply {
-//            this?.setTint(context.getColor(R.color.transparent))
-//            this?.setBounds(
-//                0,
-//                0,
-//                (this@W3WAutoSuggestEditText.textSize * 1.20).toInt() + context.resources.getDimensionPixelSize(
-//                    R.dimen.medium_margin
-//                ),
-//                (this@W3WAutoSuggestEditText.textSize * 1.20).toInt()
-//            )
-//        }
-//    }
 
     internal val viewModel: AutosuggestTextViewModel by lazy {
         AutosuggestTextViewModel()
@@ -241,8 +234,8 @@ class W3WAutoSuggestEditText
         }
     }
 
-    private val suggestionsObserver: Observer<List<Suggestion>> = Observer { suggestions ->
-        if (suggestions != null && hasFocus()) {
+    private fun suggestionsObserver(suggestions: List<Suggestion>) {
+        if (hasFocus()) {
             lastSuggestions.apply {
                 clear()
                 addAll(suggestions)
@@ -259,7 +252,7 @@ class W3WAutoSuggestEditText
         }
     }
 
-    private val errorObserver: Observer<APIResponse.What3WordsError?> = Observer { error ->
+    private fun errorObserver(error: APIResponse.What3WordsError?) {
         if (error != null) {
             getErrorView().showError(errorMessageText)
             errorCallback?.accept(error) ?: run {
@@ -270,7 +263,7 @@ class W3WAutoSuggestEditText
         }
     }
 
-    private val didYouMeanObserver: Observer<Suggestion?> = Observer { suggestion ->
+    private fun didYouMeanObserver(suggestion: Suggestion?) {
         if (suggestion != null && hasFocus()) {
             getCorrectionPicker().setSuggestion(suggestion)
             getCorrectionPicker().visibility = View.VISIBLE
@@ -280,27 +273,26 @@ class W3WAutoSuggestEditText
         }
     }
 
-    private val selectedSuggestionObserver: Observer<SuggestionWithCoordinates?> =
-        Observer { suggestion ->
-            pickedFromDropDown = true
-            if (getPicker().visibility == VISIBLE && suggestion == null) {
-                getInvalidAddressView().showError(invalidSelectionMessageText)
-            }
-            showImages(suggestion != null)
-            getPicker().refreshSuggestions(emptyList(), null, viewModel.options, returnCoordinates)
-            getPicker().visibility = GONE
-            onDisplaySuggestions?.accept(false)
-            getCorrectionPicker().setSuggestion(null)
-            getCorrectionPicker().visibility = GONE
-            clearFocus()
-            if (suggestion != null) {
-                setText(context.getString(R.string.w3w_slashes_with_address, suggestion.words))
-            } else {
-                text = null
-            }
-
-            callback?.accept(suggestion)
+    private fun selectedSuggestionObserver(suggestion: SuggestionWithCoordinates?) {
+        pickedFromDropDown = true
+        if (getPicker().visibility == VISIBLE && suggestion == null) {
+            getInvalidAddressView().showError(invalidSelectionMessageText)
         }
+        showImages(suggestion != null)
+        getPicker().refreshSuggestions(emptyList(), null, viewModel.options, returnCoordinates)
+        getPicker().visibility = GONE
+        onDisplaySuggestions?.accept(false)
+        getCorrectionPicker().setSuggestion(null)
+        getCorrectionPicker().visibility = GONE
+        clearFocus()
+        if (suggestion != null) {
+            setText(context.getString(R.string.w3w_slashes_with_address, suggestion.words))
+        } else {
+            text = null
+        }
+
+        callback?.accept(suggestion)
+    }
 
     internal fun getPicker(): W3WAutoSuggestPicker {
         return customPicker ?: defaultPicker
@@ -374,6 +366,7 @@ class W3WAutoSuggestEditText
                 }
                 oldHint = hint.toString()
                 originalPaddingEnd = paddingEnd
+                // create empty APIManager, will fail in case dev doesn't call apiKey()
             } finally {
                 this@W3WAutoSuggestEditText.textDirection = TEXT_DIRECTION_LOCALE
                 showImages()
@@ -484,27 +477,40 @@ class W3WAutoSuggestEditText
                     }
                 }
             })
+
+        viewModel.manager = AutosuggestApiManager(What3WordsV3("", context))
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        try {
-            viewModel.manager
-        } catch (ex: Exception) {
-            throw Exception("Missing apiKey()/sdk() setup, to fix this issue please check our documentation.")
-        }
-        viewModel.suggestions.removeObserver(suggestionsObserver)
-        viewModel.error.removeObserver(errorObserver)
-        viewModel.didYouMean.removeObserver(didYouMeanObserver)
-        viewModel.selectedSuggestion.removeObserver(selectedSuggestionObserver)
+        selectedSuggestionJob?.cancel()
+        errorJob?.cancel()
+        didYouMeanJob?.cancel()
+        suggestionsJob?.cancel()
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        viewModel.suggestions.observeForever(suggestionsObserver)
-        viewModel.error.observeForever(errorObserver)
-        viewModel.didYouMean.observeForever(didYouMeanObserver)
-        viewModel.selectedSuggestion.observeForever(selectedSuggestionObserver)
+        suggestionsJob = main(DefaultDispatcherProvider()) {
+            viewModel.suggestions.collect {
+                suggestionsObserver(it)
+            }
+        }
+        didYouMeanJob = main(DefaultDispatcherProvider()) {
+            viewModel.didYouMean.collect {
+                didYouMeanObserver(it)
+            }
+        }
+        selectedSuggestionJob = main(DefaultDispatcherProvider()) {
+            viewModel.selectedSuggestion.collect {
+                selectedSuggestionObserver(it)
+            }
+        }
+        errorJob = main(DefaultDispatcherProvider()) {
+            viewModel.error.collect {
+                errorObserver(it)
+            }
+        }
     }
 
     override fun onTextContextMenuItem(id: Int): Boolean {
