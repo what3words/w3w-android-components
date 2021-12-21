@@ -12,20 +12,22 @@ import com.what3words.components.utils.transform
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 
 internal class AutosuggestVoiceViewModel(
     dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) : AutosuggestViewModel(dispatchers) {
+    private var listeningJob: Job? = null
     private lateinit var microphone: Microphone
 
     internal var voiceManager: VoiceAutosuggestManager? = null
 
     private var _currentState: W3WListeningState? = null
 
-    private val _listeningState = MutableSharedFlow<W3WListeningState>()
-    val listeningState: SharedFlow<W3WListeningState>
+    private val _listeningState = MutableSharedFlow<Pair<W3WListeningState, Boolean>>()
+    val listeningState: SharedFlow<Pair<W3WListeningState, Boolean>>
         get() = _listeningState
 
     private val _multipleSelectedSuggestions = MutableSharedFlow<List<SuggestionWithCoordinates>>()
@@ -91,26 +93,25 @@ internal class AutosuggestVoiceViewModel(
                     }
                 )
             }
-            _currentState = W3WListeningState.Stopped
-            _listeningState.emit(_currentState!!)
         }
     }
 
     fun startListening() {
         voiceManager?.let {
-            io(dispatchers) {
+            listeningJob = io(dispatchers) {
                 _currentState = W3WListeningState.Connecting
-                _listeningState.emit(_currentState!!)
+                _listeningState.emit(Pair(_currentState!!, false))
                 it.updateOptions(options)
-                val res = it.startListening()
-                main(dispatchers) {
-                    when (res) {
-                        is Either.Left -> {
-                            _error.emit(res.a)
-                        }
-                        is Either.Right -> {
-                            _suggestions.emit(res.b)
-                        }
+                when (val res = it.startListening()) {
+                    is Either.Left -> {
+                        _error.emit(res.a)
+                        _currentState = W3WListeningState.Stopped
+                        _listeningState.emit(Pair(_currentState!!, true))
+                    }
+                    is Either.Right -> {
+                        _suggestions.emit(res.b)
+                        _currentState = W3WListeningState.Stopped
+                        _listeningState.emit(Pair(_currentState!!, false))
                     }
                 }
             }
@@ -121,10 +122,10 @@ internal class AutosuggestVoiceViewModel(
         voiceManager?.let {
             if (it.isListening()) {
                 io(dispatchers) {
+                    listeningJob?.cancel()
                     it.stopListening()
-                    microphone.onListening {}
                     _currentState = W3WListeningState.Stopped
-                    _listeningState.emit(_currentState!!)
+                    _listeningState.emit(Pair(_currentState!!, false))
                 }
             }
         }
@@ -152,7 +153,10 @@ internal class AutosuggestVoiceViewModel(
                 if (_currentState != W3WListeningState.Started) {
                     _currentState = W3WListeningState.Started
                     _listeningState.emit(
-                        _currentState!!
+                        Pair(
+                            _currentState!!,
+                            false
+                        )
                     )
                 }
                 if (it != null) {

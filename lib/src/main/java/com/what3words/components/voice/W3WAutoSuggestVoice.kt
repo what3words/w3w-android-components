@@ -231,21 +231,20 @@ class W3WAutoSuggestVoice
     private fun errorObserver(error: APIResponse.What3WordsError?) {
         if (error != null) {
             errorCallback?.accept(error)
-            setIsVoiceRunning(isVoiceRunning = false, withError = true)
         }
     }
 
-    private fun listeningStateObserver(state: W3WListeningState) {
-        onListeningCallback?.accept(state)
-        when (state) {
+    private fun listeningStateObserver(state: Pair<W3WListeningState, Boolean>) {
+        onListeningCallback?.accept(state.first)
+        when (state.first) {
             W3WListeningState.Stopped -> {
-                setIsVoiceRunning(isVoiceRunning = false, withError = false)
+                setIsVoiceRunning(isVoiceRunning = false, withError = state.second)
             }
             W3WListeningState.Connecting -> {
                 // FUTURE LOADING STATE
             }
             W3WListeningState.Started -> {
-                setIsVoiceRunning(isVoiceRunning = true, withError = false)
+                setIsVoiceRunning(isVoiceRunning = true, withError = state.second)
             }
         }
     }
