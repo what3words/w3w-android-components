@@ -33,7 +33,7 @@ class W3WAutoSuggestErrorMessage
     }
 }
 
-internal fun AppCompatTextView.showError(errorMessage: String?) {
+internal fun AppCompatTextView.populateAndShow(errorMessage: String?) {
     text = errorMessage
     visibility = AppCompatTextView.VISIBLE
     Handler(Looper.getMainLooper()).postDelayed(
@@ -42,4 +42,9 @@ internal fun AppCompatTextView.showError(errorMessage: String?) {
         },
         5000
     )
+}
+
+internal fun AppCompatTextView.forceClearAndHide() {
+    text = ""
+    visibility = AppCompatTextView.GONE
 }

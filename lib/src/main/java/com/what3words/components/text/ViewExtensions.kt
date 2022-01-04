@@ -103,7 +103,7 @@ internal fun W3WAutoSuggestEditText.buildCross() {
     cross.isClickable = true
     cross.setOnClickListener {
         this.setText(context.getString(R.string.w3w_slashes))
-        this.setSelection(this.text!!.length)
+        this.setSelection(this.length())
     }
     cross.setImageDrawable(
         ContextCompat.getDrawable(context, R.drawable.ic_close)
@@ -182,9 +182,9 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList() {
         isFocusableInTouchMode = false
         this.x = this@buildSuggestionList.x
         this.y =
-            this@buildSuggestionList.y + this@buildSuggestionList.height + resources.getDimensionPixelSize(
-            R.dimen.input_margin
-        )
+            this@buildSuggestionList.y + this@buildSuggestionList.height - resources.getDimensionPixelSize(
+                R.dimen.tiny_margin
+            )
         layoutParams = params
         val linear = LinearLayoutManager(context)
         background = AppCompatResources.getDrawable(context, R.drawable.bg_white_border_gray)
@@ -243,14 +243,14 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
 
 internal fun W3WAutoSuggestEditText.showKeyboard() {
     this.requestFocus()
-    this.setSelection(this.text!!.length)
+    this.setSelection(this.length())
     val imm: InputMethodManager =
         context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+    imm.showSoftInput(this, 0)
 }
 
 internal fun W3WAutoSuggestEditText.hideKeyboard() {
-    this.requestFocus()
+    this.clearFocus()
     val imm: InputMethodManager =
         context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(windowToken, 0)

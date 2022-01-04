@@ -32,9 +32,10 @@ class W3WAutoSuggestCorrectionPicker
         visibility = GONE
     }
 
-    internal fun setSuggestion(suggestion: Suggestion?) {
+    internal fun populateAndShow(suggestion: Suggestion?) {
         this.suggestion = suggestion
         binding.w3wAddressLabel.text = suggestion?.words
+        visibility = VISIBLE
     }
 
     internal fun internalCallback(callback: (selectedSuggestion: Suggestion) -> Unit): W3WAutoSuggestCorrectionPicker {
@@ -45,5 +46,10 @@ class W3WAutoSuggestCorrectionPicker
     fun setCorrectionMessage(message: String): W3WAutoSuggestCorrectionPicker {
         binding.correctionLabel.text = message
         return this
+    }
+
+    internal fun forceClearAndHide() {
+        populateAndShow(null)
+        visibility = GONE
     }
 }

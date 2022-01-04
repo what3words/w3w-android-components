@@ -5,20 +5,22 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.media.AudioFormat
+import android.media.MediaRecorder
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
+import androidx.core.view.updateLayoutParams
 import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
-import com.what3words.androidwrapper.helpers.DefaultDispatcherProvider
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.R
 import com.what3words.components.databinding.W3wVoiceOnlyBinding
@@ -28,9 +30,8 @@ import com.what3words.components.models.DisplayUnits
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
-import com.what3words.components.utils.DisplayMetricsConverter.convertPixelsToDp
 import com.what3words.components.utils.PulseAnimator
-import com.what3words.components.utils.main
+import com.what3words.components.vm.AutosuggestTextViewModel
 import com.what3words.components.vm.AutosuggestVoiceViewModel
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.request.BoundingBox
@@ -38,9 +39,12 @@ import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
+import java.util.Collections
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
-import java.util.Collections
+import kotlinx.coroutines.launch
 
 /**
  * A [View] to simplify the integration of what3words voice auto-suggest API in your app.
@@ -54,16 +58,12 @@ class W3WAutoSuggestVoice
     ContextThemeWrapper(context, R.style.W3WAutoSuggestVoiceTheme),
     attrs,
     defStyleAttr
-) {
+), OnGlobalLayoutListener {
 
-    private var errorJob: Job? = null
-    private var selectedSuggestionJob: Job? = null
-    private var suggestionsJob: Job? = null
-    private var volumeJob: Job? = null
-    private var multipleSelectedSuggestionsJob: Job? = null
-    private var listeningStateJob: Job? = null
+    private var sharedFlowJobs: Job? = null
 
     private var isVoiceRunning: Boolean = false
+    private var isRendered: Boolean = false
     private lateinit var pulseAnimator: PulseAnimator
 
     private var initialSizeList = arrayListOf<Int>()
@@ -78,8 +78,6 @@ class W3WAutoSuggestVoice
     private var callback: Consumer<List<SuggestionWithCoordinates>>? =
         null
     private var internalCallback: Consumer<List<Suggestion>>? =
-        null
-    private var selectedCallback: Consumer<SuggestionWithCoordinates?>? =
         null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? =
         null
@@ -140,126 +138,150 @@ class W3WAutoSuggestVoice
         }
 
         // Add a viewTreeObserver to obtain the initial size of the circle overlays
-        binding.voicePulseLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
-                OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    if (binding.innerCircleView.measuredWidth != 0) {
-                        setOverlayBaseSize()
-                        binding.voicePulseLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    }
-                }
-            })
-
+        viewTreeObserver.addOnGlobalLayoutListener(this)
         viewModel.manager = AutosuggestApiManager(What3WordsV3("", context))
     }
 
-    fun setOverlayBaseSize() {
-        initialSizeList = arrayListOf(
-            binding.innerCircleView.measuredWidth,
-            binding.midCircleView.measuredWidth,
-            binding.outerCircleView.measuredWidth
-        )
-        pulseAnimator = PulseAnimator(
-            convertPixelsToDp(binding.innerCircleView.measuredWidth * 1.18f),
-            convertPixelsToDp(binding.midCircleView.measuredWidth * 1.32f),
-            convertPixelsToDp(binding.outerCircleView.measuredWidth * 1.48f),
-            binding.innerCircleView,
-            binding.midCircleView,
-            binding.outerCircleView,
-            animatorList,
-            voicePulseEndListener
-        )
-        setIsVoiceRunning(false)
-        pulseAnimator.setInitialSize(initialSizeList)
+    override fun onGlobalLayout() {
+        if (!isRendered && binding.innerCircleView.measuredWidth != 0) {
+            isRendered = true
+            if (this.layoutParams.width == ViewGroup.LayoutParams.WRAP_CONTENT) {
+                //this is used to set our voice component to min width/height in case developer uses WRAP_CONTENT.
+                this.updateLayoutParams {
+                    width = resources.getDimensionPixelSize(R.dimen.voice_button_min_width)
+                    height = resources.getDimensionPixelSize(R.dimen.voice_button_min_width)
+                }
+            }
+            initialSizeList = arrayListOf(
+                binding.innerCircleView.measuredWidth,
+                binding.midCircleView.measuredWidth,
+                binding.outerCircleView.measuredWidth
+            )
+            pulseAnimator = PulseAnimator(
+                binding.innerCircleView.measuredWidth * 1.18f,
+                binding.midCircleView.measuredWidth * 1.32f,
+                binding.outerCircleView.measuredWidth * 1.48f,
+                binding.innerCircleView,
+                binding.midCircleView,
+                binding.outerCircleView,
+                animatorList,
+                voicePulseEndListener
+            )
+            setIsVoiceRunning(false)
+            pulseAnimator.setInitialSize(initialSizeList)
+            viewTreeObserver.removeOnGlobalLayoutListener(this)
+        }
     }
+
+    //region SharedFlow logic
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        listeningStateJob = main(DefaultDispatcherProvider()) {
-            viewModel.listeningState.collect {
-                listeningStateObserver(it)
+        sharedFlowJobs = CoroutineScope(Dispatchers.Main).launch {
+            launch {
+                viewModel.listeningState.collect {
+                    listeningStateObserver(it)
+                }
             }
-        }
-
-        multipleSelectedSuggestionsJob = main(DefaultDispatcherProvider()) {
-            viewModel.multipleSelectedSuggestions.collect {
-                multipleSelectedSuggestionsObserver(it)
+            launch {
+                viewModel.multipleSelectedSuggestions.collect {
+                    multipleSelectedSuggestionsObserver(it)
+                }
             }
-        }
-
-        volumeJob = main(DefaultDispatcherProvider()) {
-            viewModel.volume.collect {
-                volumeObserver(it)
+            launch {
+                viewModel.volume.collect {
+                    volumeObserver(it)
+                }
             }
-        }
-
-        suggestionsJob = main(DefaultDispatcherProvider()) {
-            viewModel.suggestions.collect {
-                suggestionObserver(it)
+            launch {
+                viewModel.suggestions.collect {
+                    suggestionsObserver(it)
+                }
             }
-        }
-
-        selectedSuggestionJob = main(DefaultDispatcherProvider()) {
-            viewModel.selectedSuggestion.collect {
-                selectedSuggestionObserver(it)
-            }
-        }
-
-        errorJob = main(DefaultDispatcherProvider()) {
-            viewModel.error.collect {
-                errorObserver(it)
+            launch {
+                viewModel.error.collect {
+                    errorObserver(it)
+                }
             }
         }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        volumeJob?.cancel()
-        selectedSuggestionJob?.cancel()
-        errorJob?.cancel()
-        suggestionsJob?.cancel()
-        multipleSelectedSuggestionsJob?.cancel()
-        listeningStateJob?.cancel()
+        sharedFlowJobs?.cancel()
     }
 
-    private fun suggestionObserver(suggestions: List<Suggestion>) {
-        handleSuggestions(suggestions)
+    /**
+     * [suggestionsObserver] should be called when [AutosuggestVoiceViewModel.suggestions] is collected.
+     *
+     * 1. calls [AutosuggestVoiceViewModel.onMultipleSuggestionsSelected] which will do [What3WordsV3.convertToCoordinates] for each suggestion with coordinates if [returnCoordinates] = true.
+     * 2. if set will invoke [internalCallback] to allow internal flow with [W3WAutoSuggestEditText].
+     *
+     * @param suggestions [List] of [Suggestion] collected from [AutosuggestTextViewModel.suggestions].
+     */
+    private fun suggestionsObserver(suggestions: List<Suggestion>) {
+        viewModel.onMultipleSuggestionsSelected("", suggestions, returnCoordinates)
         internalCallback?.accept(suggestions)
     }
 
+    /**
+     * [errorObserver] should be called when [AutosuggestVoiceViewModel.error] is collected.
+     *
+     * 1. when [error] is not null and [errorCallback] is set should be invoked with [APIResponse.What3WordsError].
+     *
+     * @param error of type [APIResponse.What3WordsError] collected from [AutosuggestVoiceViewModel.error], this error message should provide developer usable information of why error is happening this is not localised and not shown to end user, just sent to developer via [errorCallback].
+     */
     private fun errorObserver(error: APIResponse.What3WordsError?) {
         if (error != null) {
             errorCallback?.accept(error)
         }
     }
 
+    /**
+     * [listeningStateObserver] should be called when [AutosuggestVoiceViewModel.listeningState] is collected.
+     *
+     * 1. when [state].first is [W3WListeningState.Connecting] this is still yet to be defined, product is working on this.
+     * 2. when [state].first is [W3WListeningState.Started] should call [setIsVoiceRunning] with isVoiceRunning = true, no withError needed since it started correctly so it's always false.
+     * 3. when [state].first is [W3WListeningState.Stopped] should call [setIsVoiceRunning] with isVoiceRunning = false and withError = [state].second in case it stopped with an error.
+     *
+     * @param state of type [Pair] first being [W3WListeningState] with the current state of the voice flow and second with any [APIResponse.What3WordsError] that might occur.
+     */
     private fun listeningStateObserver(state: Pair<W3WListeningState, Boolean>) {
         onListeningCallback?.accept(state.first)
         when (state.first) {
-            W3WListeningState.Stopped -> {
-                setIsVoiceRunning(isVoiceRunning = false, withError = state.second)
-            }
             W3WListeningState.Connecting -> {
                 // FUTURE LOADING STATE
             }
             W3WListeningState.Started -> {
-                setIsVoiceRunning(isVoiceRunning = true, withError = state.second)
+                setIsVoiceRunning(isVoiceRunning = true)
+            }
+            W3WListeningState.Stopped -> {
+                setIsVoiceRunning(isVoiceRunning = false, withError = state.second)
             }
         }
     }
 
+    /**
+     * [multipleSelectedSuggestionsObserver] should be called when [AutosuggestVoiceViewModel.multipleSelectedSuggestions] is collected.
+     *
+     * 1. invoke [callback] if set with the list of [SuggestionWithCoordinates] collected.
+     *
+     * note: [SuggestionWithCoordinates] can have NULL [Coordinates] if [returnCoordinates] = false.
+     *
+     * @param suggestions [List] of [SuggestionWithCoordinates].
+     */
     private fun multipleSelectedSuggestionsObserver(suggestions: List<SuggestionWithCoordinates>) {
         callback?.accept(suggestions)
-    }
-
-    private fun selectedSuggestionObserver(suggestion: SuggestionWithCoordinates?) {
-        selectedCallback?.accept(suggestion)
     }
 
     private fun volumeObserver(volume: Float?) {
         volume?.let { onSignalUpdate(it) }
     }
+
+    //endregion
+
+    //region Voice layout changes and animations
 
     private fun setVoicePulseListeners() {
         innerUpdateListener = ValueAnimator.AnimatorUpdateListener {
@@ -369,12 +391,9 @@ class W3WAutoSuggestVoice
         setLayout(binding.midCircleView, initialSizeList[PulseAnimator.MIDDLE_CIRCLE_INDEX])
         setLayout(binding.outerCircleView, initialSizeList[PulseAnimator.OUTER_CIRCLE_INDEX])
     }
+    //endregion
 
-    private fun handleSuggestions(suggestions: List<Suggestion>) {
-        viewModel.onMultipleSuggestionsSelected("", suggestions, returnCoordinates)
-    }
-
-    //region Properties
+    //region Public custom properties
     /** Set your What3Words API Key which will be used to get suggestions and coordinates (if enabled)
      *
      * @param key your API key from what3words developer dashboard
@@ -392,10 +411,9 @@ class W3WAutoSuggestVoice
         return this
     }
 
-    //region Properties
-    /** Set your What3Words API Key which will be used to get suggestions and coordinates (if enabled)
+    /** Override all [AutosuggestVoiceViewModel.options] with a set of new ones, avoiding setting one by one.
      *
-     * @param key your API key from what3words developer dashboard
+     * @param options updated [AutosuggestOptions] to be applied in all [What3WordsV3.autosuggest] calls
      * @return same [W3WAutoSuggestVoice] instance
      */
     fun options(options: AutosuggestOptions): W3WAutoSuggestVoice {
@@ -440,12 +458,25 @@ class W3WAutoSuggestVoice
         return this
     }
 
+    /** Set your What3Words Manager with your internal instance of the manager (i.e when using [W3WAutoSuggestVoice] inside [W3WAutoSuggestEditText]).
+     *
+     * @param logicManager manager created using SDK instead of API
+     * @return same [W3WAutoSuggestVoice] instance
+     */
+    internal fun manager(
+        logicManager: AutosuggestLogicManager
+    ): W3WAutoSuggestVoice {
+        viewModel.manager = logicManager
+        viewModel.setMicrophone(Microphone())
+        return this
+    }
+
     /** Set a custom Microphone setup i.e: recording rate, encoding, channel in, etc.
      *
      * @param recordingRate your custom recording rate
-     * @param encoding your custom encoding [AudioFormat.ENCODING_]
-     * @param channel your custom channel_in [AudioFormat.CHANNEL_IN_]
-     * @param format your custom channel_in [AudioFormat.CHANNEL_IN_]
+     * @param encoding your custom encoding i.e [AudioFormat.ENCODING_PCM_16BIT]
+     * @param channel your custom channel_in i.e [AudioFormat.CHANNEL_IN_MONO]
+     * @param audioSource your audioSource i.e [MediaRecorder.AudioSource.MIC]
      * @return same [W3WAutoSuggestVoice] instance
      */
     fun microphone(
@@ -688,4 +719,5 @@ class W3WAutoSuggestVoice
         this.onListeningCallback = callback
         return this
     }
+    //endregion
 }

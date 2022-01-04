@@ -5,7 +5,8 @@
     <dimen name="input_border_height">1dp</dimen>
     <dimen name="input_margin">4dp</dimen>
     <dimen name="voice_button_height">56dp</dimen>
-    <dimen name="voice_button_width">128dp</dimen>
+    <dimen name="voice_button_width">120dp</dimen>
+    <dimen name="voice_button_min_width">120dp</dimen>
 
     <dimen name="voice_popup_height">309dp</dimen>
 

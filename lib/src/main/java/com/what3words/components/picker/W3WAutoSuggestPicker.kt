@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.View
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -196,19 +197,20 @@ class W3WAutoSuggestPicker
         this.displayUnits = displayUnits
     }
 
-    internal fun refreshSuggestions(
+    internal fun populateAndSetVisibility(
         suggestions: List<Suggestion>,
         query: String?,
         options: AutosuggestOptions,
         returnCoordinates: Boolean
     ) {
+        this.visibility = if (suggestions.isEmpty()) View.GONE else View.VISIBLE
         suggestionsAdapter.refreshSuggestions(suggestions, query, displayUnits)
         this.returnCoordinates = returnCoordinates
         this.query = query ?: ""
         this.options = options
     }
 
-    internal fun forceClear() {
+    internal fun forceClearAndHide() {
         suggestionsAdapter.refreshSuggestions(emptyList(), "", displayUnits)
         visibility = GONE
     }

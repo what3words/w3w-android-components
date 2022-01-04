@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:importantForAccessibility="noHideDescendants"
-    android:minWidth="98dp"
-    android:minHeight="98dp">
+    android:minWidth="@dimen/voice_button_min_width"
+    android:minHeight="@dimen/voice_button_min_width">
 
     <ImageView
         android:id="@+id/w3wLogo"
