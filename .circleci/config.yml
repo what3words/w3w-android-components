@@ -76,22 +76,6 @@ jobs:
       - run:
           name: Publish to Maven
           command: ./gradlew assemble publish
-#      - run:
-#          name: Assemble sample release build
-#          command: ./gradlew sample:assembleRelease
-#      - run:
-#          name: Assemble java-sample release build
-#          command: ./gradlew sample-java:assembleRelease
-#      - run:
-#          name: Assemble sample-multi-autosuggest release build
-#          command: ./gradlew sample-multi-autosuggest-providers:assembleRelease
-#      - store_artifacts:
-#          path: sample/build/outputs/apk/release
-#      - store_artifacts:
-#          path: sample-java/build/outputs/apk/release
-#      - store_artifacts:
-#          path: sample-multi-autosuggest-providers/build/outputs/apk/release
-
 workflows:
   build-test-sonar:
     jobs:
@@ -102,15 +86,15 @@ workflows:
     jobs:
       - build-test-sonar:
           context: SonarCloud
-#          filters:
-#            branches:
-#              only:
-#                - dev
+          filters:
+            branches:
+              only:
+                - dev
       - deploy-to-sonatype:
           name: Build, run tests, sonar and push to maven staging
           requires:
             - build-test-sonar
-#          filters:
-#            branches:
-#              only:
-#                - dev
+          filters:
+            branches:
+              only:
+                - dev

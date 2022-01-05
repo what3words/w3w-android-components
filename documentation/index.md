@@ -1,14 +1,14 @@
-[lib](./index.md)
+//[lib](index.md)
 
-### Packages
+# lib
 
-| Name | Summary |
-|---|---|
-| [com.what3words.autosuggest.error](com.what3words.autosuggest.error/index.md) |  |
-| [com.what3words.autosuggest.picker](com.what3words.autosuggest.picker/index.md) |  |
-| [com.what3words.autosuggest.text](com.what3words.autosuggest.text/index.md) |  |
-| [com.what3words.autosuggest.voice](com.what3words.autosuggest.voice/index.md) |  |
+## Packages
 
-### Index
-
-[All Types](alltypes/index.md)
+| Name |
+|---|
+| [com.what3words.components.error](lib/com.what3words.components.error/index.md) |
+| [com.what3words.components.models](lib/com.what3words.components.models/index.md) |
+| [com.what3words.components.picker](lib/com.what3words.components.picker/index.md) |
+| [com.what3words.components.text](lib/com.what3words.components.text/index.md) |
+| [com.what3words.components.utils](lib/com.what3words.components.utils/index.md) |
+| [com.what3words.components.voice](lib/com.what3words.components.voice/index.md) |
