@@ -1073,7 +1073,7 @@ class W3WAutoSuggestEditText
     }
 
     /**
-     * Callback to update view when suggestion picker is being displayed or not, i.e: show tips when false hide tips when true
+     * Callback to update view when suggestion picker is being displayed or not, example, show tips when false hide tips when true
      *
      * @param displaySuggestionsCallback Boolean callback with the picker visibility status (true visible, false gone)
      * @return same [W3WAutoSuggestEditText] instance
@@ -1147,8 +1147,7 @@ class W3WAutoSuggestEditText
     }
 
     /**
-     * Allow EditText to keep any text user types, default is false, by default EditText will be cleared if not a valid 3 word address, set to true to ignore this default behaviour.
-     * Toggles voice programmatically, this can be useful for cases where it's needed to control the voice using buttons or actions outside [W3WAutoSuggestEditText]
+     * This function will trigger the voice programmatically, in some cases developer wants to start listening without user touching the screen.
      *
      * @return same [W3WAutoSuggestEditText] instance
      */
