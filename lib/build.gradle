@@ -50,6 +50,7 @@ android {
     }
 
     tasks.dokkaGfm.configure {
+        suppressObviousFunctions.set(true)
         suppressInheritedMembers.set(true)
     }
 }
