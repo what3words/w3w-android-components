@@ -28,8 +28,23 @@ jobs:
       - run:
           name: Run Tests
           command: ./gradlew lib:testDebugUnitTest jacocoTestReport sonarqube
+      - run:
+          name: Assemble sample release build
+          command: ./gradlew sample:assembleRelease
+      - run:
+          name: Assemble sample-voice release build
+          command: ./gradlew sample-voice:assembleRelease
+      - run:
+          name: Assemble advanced-sample release build
+          command: ./gradlew advanced-sample:assembleRelease
       - store_test_results:
           path: lib/build/test-results/testDebugUnitTest
+      - store_artifacts:
+          path: sample/build/outputs/apk/release
+      - store_artifacts:
+          path: sample-voice/build/outputs/apk/release
+      - store_artifacts:
+          path: advanced-sample/build/outputs/apk/release
   deploy-to-sonatype:
     docker:
       - image: circleci/android:api-30

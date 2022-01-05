@@ -8,6 +8,7 @@ import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
+import com.what3words.autosuggestsample.BuildConfig
 import com.what3words.autosuggestsample.R
 import com.what3words.autosuggestsample.databinding.ActivityMainBinding
 import com.what3words.autosuggestsample.databinding.ActivityMainBinding.inflate
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         binding = inflate(layoutInflater)
-        binding.suggestionEditText.apiKey("TCRPZKEE")
+        binding.suggestionEditText.apiKey(BuildConfig.W3W_API_KEY)
             .onDisplaySuggestions {
 
             }

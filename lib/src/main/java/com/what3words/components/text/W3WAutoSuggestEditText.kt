@@ -291,7 +291,9 @@ class W3WAutoSuggestEditText
                 ) -> {
                     viewModel.onSuggestionClicked(text.toString(), null, returnCoordinates)
                 }
-                else -> {
+                allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
+                    text.toString()
+                )  -> {
                     getPicker().forceClearAndHide()
                 }
             }
