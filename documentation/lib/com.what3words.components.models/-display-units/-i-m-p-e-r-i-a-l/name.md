@@ -1,6 +1,0 @@
-//[lib](../../../../index.md)/[com.what3words.components.models](../../index.md)/[DisplayUnits](../index.md)/[IMPERIAL](index.md)/[name](name.md)
-
-# name
-
-[androidJvm]\
-val [name](name.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)

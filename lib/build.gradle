@@ -26,7 +26,6 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 31
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -48,6 +47,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    tasks.dokkaGfm.configure {
+        suppressInheritedMembers.set(true)
     }
 }
 
