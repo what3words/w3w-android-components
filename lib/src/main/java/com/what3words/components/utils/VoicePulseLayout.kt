@@ -37,7 +37,7 @@ import com.what3words.javawrapper.response.Suggestion
 internal class VoicePulseLayout
 @JvmOverloads constructor(
     context: Context,
-    placeholder: String,
+    private val placeholder: String,
     backgroundColor: Int,
     backgroundDrawable: Drawable?,
     iconTintColor: Int,
@@ -57,7 +57,6 @@ internal class VoicePulseLayout
     )
 
     init {
-        binding.icClose.setColorFilter(iconTintColor)
         binding.icLogo.setColorFilter(iconTintColor)
         binding.voicePlaceholder.setTextColor(iconTintColor)
         if (backgroundDrawable != null) {
@@ -71,7 +70,12 @@ internal class VoicePulseLayout
             errorCallback?.accept(null)
         }
 
-        binding.voicePlaceholder.text = placeholder
+        binding.voiceHolderFullscreen.setOnClickListener {
+            binding.autosuggestVoice.stop()
+            setIsVoiceRunning(isVoiceRunning = false, shouldAnimate = true)
+            errorCallback?.accept(null)
+        }
+        binding.voicePlaceholder.text = context.getString(R.string.loading)
     }
 
     fun onResultsCallback(callback: Consumer<List<Suggestion>>) {
@@ -127,10 +131,16 @@ internal class VoicePulseLayout
             .onInternalResults {
                 resultsCallback?.accept(it)
             }.onListeningStateChanged {
-                if (it == W3WListeningState.Stopped) setIsVoiceRunning(
-                    isVoiceRunning = false,
-                    shouldAnimate = true
-                )
+                if (it == null) return@onListeningStateChanged
+                when (it) {
+                    W3WListeningState.Connecting -> binding.voicePlaceholder.text =
+                        context.getString(R.string.loading)
+                    W3WListeningState.Started -> binding.voicePlaceholder.text = placeholder
+                    W3WListeningState.Stopped -> setIsVoiceRunning(
+                        isVoiceRunning = false,
+                        shouldAnimate = true
+                    )
+                }
             }.onError {
                 errorCallback?.accept(it)
             }

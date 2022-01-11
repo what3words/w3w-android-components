@@ -251,7 +251,8 @@ class W3WAutoSuggestVoice
         onListeningCallback?.accept(state.first)
         when (state.first) {
             W3WListeningState.Connecting -> {
-                // FUTURE LOADING STATE
+                binding.w3wLogo.visibility = INVISIBLE
+                binding.animationView.visibility = VISIBLE
             }
             W3WListeningState.Started -> {
                 setIsVoiceRunning(isVoiceRunning = true)
@@ -354,6 +355,8 @@ class W3WAutoSuggestVoice
 
     private fun setIsVoiceRunning(isVoiceRunning: Boolean, withError: Boolean = false) {
         this.isVoiceRunning = isVoiceRunning
+        binding.w3wLogo.visibility = VISIBLE
+        binding.animationView.visibility = INVISIBLE
         if (isVoiceRunning) {
             handler?.removeCallbacks(changeBackIcon)
             binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_active)
@@ -382,7 +385,9 @@ class W3WAutoSuggestVoice
     }
 
     private fun onSignalUpdate(signalStrength: Float) {
-        pulseAnimator.runAnim(signalStrength)
+        if (isRendered) {
+            pulseAnimator.runAnim(signalStrength)
+        }
     }
 
     private fun resetLayout() {

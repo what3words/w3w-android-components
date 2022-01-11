@@ -7,6 +7,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
+import androidx.core.view.updateLayoutParams
+import com.what3words.components.R
 import com.what3words.components.databinding.VoicePulseLayoutFullScreenBinding
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.models.W3WListeningState
@@ -36,7 +38,7 @@ import com.what3words.javawrapper.response.Suggestion
 internal class VoicePulseLayoutFullScreen
 @JvmOverloads constructor(
     context: Context,
-    placeholder: String,
+    private val placeholder: String,
     backgroundColor: Int,
     backgroundDrawable: Drawable?,
     iconTintColor: Int,
@@ -68,7 +70,7 @@ internal class VoicePulseLayoutFullScreen
             errorCallback?.accept(null)
         }
 
-        binding.voicePlaceholder.text = placeholder
+        binding.voicePlaceholder.text = context.getString(R.string.loading)
     }
 
     fun onResultsCallback(callback: Consumer<List<Suggestion>>) {
@@ -100,7 +102,14 @@ internal class VoicePulseLayoutFullScreen
             .onInternalResults {
                 resultsCallback?.accept(it)
             }.onListeningStateChanged {
-                if (it == W3WListeningState.Stopped) setIsVoiceRunning(false)
+                when (it) {
+                    W3WListeningState.Connecting -> binding.voicePlaceholder.text =
+                        context.getString(R.string.loading)
+                    W3WListeningState.Started -> binding.voicePlaceholder.text = placeholder
+                    W3WListeningState.Stopped -> setIsVoiceRunning(
+                        isVoiceRunning = false
+                    )
+                }
             }.onError {
                 errorCallback?.accept(it)
             }
@@ -122,6 +131,13 @@ internal class VoicePulseLayoutFullScreen
         } else {
             setIsVoiceRunning(false)
             binding.autosuggestVoice.stop()
+        }
+    }
+
+    fun applySize(width: Int) {
+        binding.autosuggestVoice.updateLayoutParams {
+            this.width = (width / 1.6).toInt()
+            this.height = (width / 1.6).toInt()
         }
     }
 }

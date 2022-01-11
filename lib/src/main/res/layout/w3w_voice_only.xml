@@ -58,4 +58,19 @@
         app:layout_constraintTop_toTopOf="@id/w3wLogo"
         app:layout_constraintWidth_percent="0.52" />
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:elevation="1dp"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="@id/w3wLogo"
+        app:layout_constraintEnd_toEndOf="@id/w3wLogo"
+        app:layout_constraintStart_toStartOf="@id/w3wLogo"
+        app:layout_constraintTop_toTopOf="@id/w3wLogo"
+        app:layout_constraintWidth_percent="0.4"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_url="https://assets8.lottiefiles.com/private_files/lf30_vqaveyio.json" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

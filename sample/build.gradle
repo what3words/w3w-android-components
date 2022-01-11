@@ -21,7 +21,7 @@ android {
         versionCode 18
         versionName "1.17"
         multiDexEnabled true
-        buildConfigField 'String', 'W3W_API_KEY', findProperty('W3W_API_KEY') ? "\"${findProperty('W3W_API_KEY')}\"" : "\"YOUR_API_KEY_HERE\""
+        buildConfigField 'String', 'W3W_API_KEY', findProperty('W3W_API_KEY') ? "\"${findProperty('W3W_API_KEY')}\"" : "\"TCRPZKEE\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

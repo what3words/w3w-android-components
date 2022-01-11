@@ -78,4 +78,5 @@ dependencies {
     implementation 'com.google.guava:guava:27.0.1-android'
     implementation 'com.intentfilter:android-permissions:2.0.54'
     api 'androidx.constraintlayout:constraintlayout:2.1.2'
+    implementation "com.airbnb.android:lottie:3.4.0"
 }

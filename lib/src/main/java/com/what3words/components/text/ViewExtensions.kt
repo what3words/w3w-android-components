@@ -30,6 +30,7 @@ import com.what3words.components.utils.VoicePulseLayout
 import com.what3words.components.utils.VoicePulseLayoutFullScreen
 import java.text.NumberFormat
 import java.util.Locale
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 internal fun W3WAutoSuggestEditText.buildErrorMessage() {
@@ -167,6 +168,7 @@ internal fun W3WAutoSuggestEditText.buildVoiceFullscreen() {
     voicePulseLayoutFullScreen!!.apply {
         visibility = GONE
         layoutParams = params
+        this.applySize(min(context.resources.displayMetrics.widthPixels, context.resources.displayMetrics.heightPixels))
         setIsVoiceRunning(false)
     }
     ((parent as? ViewGroup)?.rootView as? ViewGroup)?.addView(voicePulseLayoutFullScreen)

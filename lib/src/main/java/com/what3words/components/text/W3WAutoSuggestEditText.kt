@@ -36,6 +36,7 @@ import com.what3words.components.error.populateAndShow
 import com.what3words.components.models.AutosuggestApiManager
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.models.DisplayUnits
+import com.what3words.components.models.W3WListeningState
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.utils.InlineVoicePulseLayout
@@ -97,7 +98,7 @@ class W3WAutoSuggestEditText
     internal var voiceScreenType: VoiceScreenType = VoiceScreenType.Inline
     private var allowInvalid3wa: Boolean = false
     private var allowFlexibleDelimiters: Boolean = false
-    internal var voicePlaceholder: String
+    internal var voicePlaceholder: String = ""
     internal var voiceBackgroundColor: Int =
         ContextCompat.getColor(context, R.color.w3wVoiceBackground)
     internal var voiceBackgroundDrawable: Drawable? = null
@@ -154,12 +155,26 @@ class W3WAutoSuggestEditText
     }
 
     internal val inlineVoicePulseLayout: InlineVoicePulseLayout by lazy {
-        InlineVoicePulseLayout(context).apply {
+        InlineVoicePulseLayout(context, this.currentTextColor).apply {
             this.onResultsCallback {
                 handleVoiceSuggestions(it)
             }
             this.onErrorCallback {
                 handleVoiceError(it)
+            }
+            this.onListeningStateChanged {
+                if (it == null) return@onListeningStateChanged
+                hint = when (it) {
+                    W3WListeningState.Connecting -> {
+                        context.getString(R.string.loading)
+                    }
+                    W3WListeningState.Started -> {
+                        voicePlaceholder
+                    }
+                    W3WListeningState.Stopped -> {
+                        oldHint
+                    }
+                }
             }
         }
     }
@@ -293,13 +308,12 @@ class W3WAutoSuggestEditText
                 }
                 allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
                     text.toString()
-                )  -> {
+                ) -> {
                     getPicker().forceClearAndHide()
                 }
             }
             if (!isFocused) {
                 cross.visibility = GONE
-                this.hint = oldHint
                 setPaddingRelative(paddingStart, paddingTop, originalPaddingEnd, paddingBottom)
                 hideKeyboard()
             } else {
@@ -588,7 +602,6 @@ class W3WAutoSuggestEditText
                 Log.e("W3WAutoSuggestEditText", error.message)
             }
         }
-        hint = oldHint
         showKeyboard()
     }
 
@@ -657,7 +670,6 @@ class W3WAutoSuggestEditText
      * @param suggestions returned by any of [voiceScreenType].
      */
     private fun handleVoiceSuggestions(suggestions: List<Suggestion>) {
-        this.hint = oldHint
         if (suggestions.isEmpty()) {
             getInvalidAddressView().populateAndShow(invalidSelectionMessageText)
             onDisplaySuggestions?.accept(false)

@@ -5,11 +5,14 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
+import androidx.core.view.updateLayoutParams
+import com.what3words.components.R
 import com.what3words.components.databinding.InlineVoicePulseLayoutBinding
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.text.VoiceScreenType
 import com.what3words.components.text.W3WAutoSuggestEditText
+import com.what3words.components.text.buildCross
 import com.what3words.components.voice.W3WAutoSuggestVoice
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.APIResponse
@@ -29,12 +32,14 @@ import com.what3words.javawrapper.response.Suggestion
 internal class InlineVoicePulseLayout
 @JvmOverloads constructor(
     context: Context,
+    iconColor: Int,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private var isVoiceRunning: Boolean = false
     private var startVoiceClick: (() -> Unit)? = null
+    private var listeningStateCallback: Consumer<W3WListeningState>? = null
     private var resultsCallback: Consumer<List<Suggestion>>? = null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? = null
 
@@ -46,10 +51,15 @@ internal class InlineVoicePulseLayout
         binding.fakeClick.setOnClickListener {
             startVoiceClick?.invoke()
         }
+        binding.icMic.setColorFilter(iconColor)
     }
 
     fun onStartVoiceClick(callback: () -> Unit) {
         this.startVoiceClick = callback
+    }
+
+    fun onListeningStateChanged(callback: Consumer<W3WListeningState>) {
+        this.listeningStateCallback = callback
     }
 
     fun onResultsCallback(callback: Consumer<List<Suggestion>>) {
@@ -75,7 +85,23 @@ internal class InlineVoicePulseLayout
             .onInternalResults {
                 resultsCallback?.accept(it)
             }.onListeningStateChanged {
-                if (it == W3WListeningState.Stopped) setIsVoiceRunning(false)
+                if (it == null) return@onListeningStateChanged
+                listeningStateCallback?.accept(it)
+                when (it) {
+                    W3WListeningState.Connecting -> {
+                        binding.autosuggestVoice.visibility = VISIBLE
+                        binding.icMic.visibility = GONE
+                    }
+                    W3WListeningState.Started -> {
+                        binding.autosuggestVoice.visibility = VISIBLE
+                        binding.icMic.visibility = GONE
+                    }
+                    W3WListeningState.Stopped -> {
+                        binding.autosuggestVoice.visibility = INVISIBLE
+                        binding.icMic.visibility = VISIBLE
+                        setIsVoiceRunning(false)
+                    }
+                }
             }.onError {
                 errorCallback?.accept(it)
             }
