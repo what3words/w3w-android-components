@@ -8,9 +8,9 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 
 internal class PulseAnimator(
-    private var innerMaxSizePixel: Float,
-    private var midMaxSizePixel: Float,
-    private var outerMaxSizePixel: Float,
+    innerMaxSizePixel: Float,
+    midMaxSizePixel: Float,
+    outerMaxSizePixel: Float,
     private var innerCircleView: ImageView,
     private var middleCircleView: ImageView,
     private var outerCircleView: ImageView,

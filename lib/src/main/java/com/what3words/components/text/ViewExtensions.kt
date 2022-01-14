@@ -216,7 +216,7 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
         setCompoundDrawablesRelative(
             drawableStart,
             null,
-            if (showTick) {
+            if (showTick && !hideSelectedIcon) {
                 tick
             } else {
                 null
@@ -225,7 +225,7 @@ internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
         )
     } else {
         setCompoundDrawablesRelative(
-            if (showTick) {
+            if (showTick && !hideSelectedIcon) {
                 tick
             } else {
                 null

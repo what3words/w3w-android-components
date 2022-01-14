@@ -14,7 +14,7 @@ interface VoiceAutosuggestManager {
     suspend fun startListening(): Either<APIResponse.What3WordsError, List<Suggestion>>
 }
 
-class VoiceApiAutosuggestManager(private val voiceBuilder: VoiceBuilder) : VoiceAutosuggestManager {
+internal class VoiceApiAutosuggestManager(private val voiceBuilder: VoiceBuilder) : VoiceAutosuggestManager {
     override fun isListening(): Boolean {
         return voiceBuilder.isListening()
     }

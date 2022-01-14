@@ -26,7 +26,7 @@ import org.junit.Test
 import org.junit.rules.TestRule
 
 @ExperimentalCoroutinesApi
-class AutosuggestVoiceViewModelTests {
+internal class AutosuggestVoiceViewModelTests {
 
     @MockK
     private lateinit var manager: AutosuggestApiManager

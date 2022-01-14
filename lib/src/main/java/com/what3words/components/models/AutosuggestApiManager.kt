@@ -10,7 +10,7 @@ import com.what3words.javawrapper.response.SuggestionWithCoordinates
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogicManager {
+internal class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogicManager {
 
     private val autosuggestHelper by lazy {
         AutosuggestHelper(wrapper)

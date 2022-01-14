@@ -98,6 +98,7 @@ class W3WAutoSuggestEditText
     internal var voiceScreenType: VoiceScreenType = VoiceScreenType.Inline
     private var allowInvalid3wa: Boolean = false
     private var allowFlexibleDelimiters: Boolean = false
+    internal var hideSelectedIcon: Boolean = false
     internal var voicePlaceholder: String = ""
     internal var voiceBackgroundColor: Int =
         ContextCompat.getColor(context, R.color.w3wVoiceBackground)
@@ -1177,6 +1178,11 @@ class W3WAutoSuggestEditText
      */
     fun allowFlexibleDelimiters(isAllowed: Boolean): W3WAutoSuggestEditText {
         this.allowFlexibleDelimiters = isAllowed
+        return this
+    }
+
+    fun hideSelectedIcon(b: Boolean) : W3WAutoSuggestEditText {
+        this.hideSelectedIcon = b
         return this
     }
 

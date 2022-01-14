@@ -24,7 +24,7 @@ import org.junit.Test
 import org.junit.rules.TestRule
 
 @ExperimentalCoroutinesApi
-class AutosuggestTextViewModelTests {
+internal class AutosuggestTextViewModelTests {
     @MockK
     private lateinit var manager: AutosuggestApiManager
 
