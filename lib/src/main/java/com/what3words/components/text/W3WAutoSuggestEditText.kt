@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -68,7 +70,8 @@ class W3WAutoSuggestEditText
     ContextThemeWrapper(context, R.style.W3WAutoSuggestEditTextTheme),
     attrs,
     defStyleAttr
-), OnGlobalLayoutListener {
+),
+    OnGlobalLayoutListener {
 
     private var sharedFlowJobs: Job? = null
     private var originalPaddingEnd: Int
@@ -254,10 +257,10 @@ class W3WAutoSuggestEditText
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
                 voiceScreenType =
                     VoiceScreenType.values()[
-                            getInt(
-                                R.styleable.W3WAutoSuggestEditText_voiceScreenType,
-                                0
-                            )
+                        getInt(
+                            R.styleable.W3WAutoSuggestEditText_voiceScreenType,
+                            0
+                        )
                     ]
                 voiceLanguage =
                     getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
@@ -275,7 +278,7 @@ class W3WAutoSuggestEditText
             }
         }
 
-        //all listeners needed below
+        // all listeners needed below
         inlineVoicePulseLayout.onStartVoiceClick {
             handleVoiceClick()
         }
@@ -397,7 +400,7 @@ class W3WAutoSuggestEditText
     private fun onTextChanged(searchText: String) {
         if (fromPaste) {
             if (searchText.removePrefix(context.getString(R.string.w3w_slashes))
-                    .isPossible3wa()
+                .isPossible3wa()
             ) {
                 fromPaste = false
                 setText(searchText.removePrefix(context.getString(R.string.w3w_slashes)))
@@ -695,29 +698,39 @@ class W3WAutoSuggestEditText
     }
 
     private fun setupFullScreenVoice() {
-        buildVoiceFullscreen()
-        voicePulseLayoutFullScreen?.let { fullScreenVoice ->
-            fullScreenVoice.setup(viewModel.manager)
-            fullScreenVoice.onResultsCallback {
-                handleVoiceSuggestions(it)
-            }
-            fullScreenVoice.onErrorCallback {
-                handleVoiceError(it)
-            }
-        }
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                buildVoiceFullscreen()
+                voicePulseLayoutFullScreen?.let { fullScreenVoice ->
+                    fullScreenVoice.setup(viewModel.manager)
+                    fullScreenVoice.onResultsCallback {
+                        handleVoiceSuggestions(it)
+                    }
+                    fullScreenVoice.onErrorCallback {
+                        handleVoiceError(it)
+                    }
+                }
+            },
+            100
+        )
     }
 
     private fun setupAnimatedPopupVoice() {
-        buildVoiceAnimatedPopup()
-        voiceAnimatedPopup?.let { voiceAnimatedPopup ->
-            voiceAnimatedPopup.setup(viewModel.manager)
-            voiceAnimatedPopup.onResultsCallback {
-                handleVoiceSuggestions(it)
-            }
-            voiceAnimatedPopup.onErrorCallback {
-                handleVoiceError(it)
-            }
-        }
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                buildVoiceAnimatedPopup()
+                voiceAnimatedPopup?.let { voiceAnimatedPopup ->
+                    voiceAnimatedPopup.setup(viewModel.manager)
+                    voiceAnimatedPopup.onResultsCallback {
+                        handleVoiceSuggestions(it)
+                    }
+                    voiceAnimatedPopup.onErrorCallback {
+                        handleVoiceError(it)
+                    }
+                }
+            },
+            100
+        )
     }
 
     //endregion
@@ -937,6 +950,7 @@ class W3WAutoSuggestEditText
         enabled: Boolean
     ): W3WAutoSuggestEditText {
         this.voiceEnabled = enabled
+        voiceScreenType = VoiceScreenType.Inline
         inlineVoicePulseLayout.setup(viewModel.manager)
         inlineVoicePulseLayout.visibility = if (enabled && !isShowingTick) VISIBLE else GONE
         return this
@@ -950,7 +964,8 @@ class W3WAutoSuggestEditText
      */
     fun voiceEnabled(
         enabled: Boolean,
-        type: VoiceScreenType
+        type: VoiceScreenType,
+        micIcon: Drawable? = null
     ): W3WAutoSuggestEditText {
         // re-think this.
         if (enabled && !this.voiceEnabled) {
@@ -961,6 +976,9 @@ class W3WAutoSuggestEditText
         this.voiceEnabled = enabled
         this.voiceScreenType = type
         inlineVoicePulseLayout.visibility = if (enabled && !isShowingTick) VISIBLE else GONE
+        if (micIcon != null) {
+            inlineVoicePulseLayout.setCustomIcon(micIcon)
+        }
         when (type) {
             VoiceScreenType.Inline -> {
                 inlineVoicePulseLayout.setup(viewModel.manager)
@@ -985,7 +1003,7 @@ class W3WAutoSuggestEditText
      * @param enabled if voice fullscreen should be enabled
      * @return same [W3WAutoSuggestEditText] instance
      */
-    @Deprecated("Use enabledVoice(boolean, screenType)")
+    @Deprecated("Use enabledVoice(boolean, screenType, optionalIcon)")
     fun voiceFullscreen(
         enabled: Boolean
     ): W3WAutoSuggestEditText {
@@ -1181,7 +1199,7 @@ class W3WAutoSuggestEditText
         return this
     }
 
-    fun hideSelectedIcon(b: Boolean) : W3WAutoSuggestEditText {
+    fun hideSelectedIcon(b: Boolean): W3WAutoSuggestEditText {
         this.hideSelectedIcon = b
         return this
     }

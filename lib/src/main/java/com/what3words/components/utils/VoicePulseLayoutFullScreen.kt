@@ -103,8 +103,9 @@ internal class VoicePulseLayoutFullScreen
                 resultsCallback?.accept(it)
             }.onListeningStateChanged {
                 when (it) {
-                    W3WListeningState.Connecting -> binding.voicePlaceholder.text =
-                        context.getString(R.string.loading)
+                    W3WListeningState.Connecting ->
+                        binding.voicePlaceholder.text =
+                            context.getString(R.string.loading)
                     W3WListeningState.Started -> binding.voicePlaceholder.text = placeholder
                     W3WListeningState.Stopped -> setIsVoiceRunning(
                         isVoiceRunning = false

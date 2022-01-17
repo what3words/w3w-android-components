@@ -39,12 +39,12 @@ import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
-import java.util.Collections
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.Collections
 
 /**
  * A [View] to simplify the integration of what3words voice auto-suggest API in your app.
@@ -58,7 +58,8 @@ class W3WAutoSuggestVoice
     ContextThemeWrapper(context, R.style.W3WAutoSuggestVoiceTheme),
     attrs,
     defStyleAttr
-), OnGlobalLayoutListener {
+),
+    OnGlobalLayoutListener {
 
     private var sharedFlowJobs: Job? = null
 
@@ -146,7 +147,7 @@ class W3WAutoSuggestVoice
         if (!isRendered && binding.innerCircleView.measuredWidth != 0) {
             isRendered = true
             if (this.layoutParams.width == ViewGroup.LayoutParams.WRAP_CONTENT) {
-                //this is used to set our voice component to min width/height in case developer uses WRAP_CONTENT.
+                // this is used to set our voice component to min width/height in case developer uses WRAP_CONTENT.
                 this.updateLayoutParams {
                     width = resources.getDimensionPixelSize(R.dimen.voice_button_min_width)
                     height = resources.getDimensionPixelSize(R.dimen.voice_button_min_width)

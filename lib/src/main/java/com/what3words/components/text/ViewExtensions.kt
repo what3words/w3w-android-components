@@ -9,6 +9,7 @@ import android.icu.text.MeasureFormat
 import android.icu.text.MeasureFormat.FormatWidth
 import android.icu.util.Measure
 import android.icu.util.MeasureUnit
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
@@ -130,48 +131,71 @@ internal fun W3WAutoSuggestEditText.buildCross() {
 }
 
 internal fun W3WAutoSuggestEditText.buildVoiceAnimatedPopup() {
-    voiceAnimatedPopup = VoicePulseLayout(
-        context,
-        voicePlaceholder,
-        voiceBackgroundColor,
-        voiceBackgroundDrawable,
-        voiceIconsColor
-    )
-    val params = ViewGroup.MarginLayoutParams(
-        (parent as? ViewGroup)?.rootView?.width ?: 0,
-        (parent as? ViewGroup)?.rootView?.height ?: 0
-    )
-    voiceAnimatedPopup!!.apply {
-        visibility = GONE
-        layoutParams = params
-        setIsVoiceRunning(false, shouldAnimate = false)
+    try {
+        voiceAnimatedPopup = VoicePulseLayout(
+            context,
+            voicePlaceholder,
+            voiceBackgroundColor,
+            voiceBackgroundDrawable,
+            voiceIconsColor
+        )
+        val params = ViewGroup.MarginLayoutParams(
+            (parent as? ViewGroup)?.rootView?.width ?: 0,
+            (parent as? ViewGroup)?.rootView?.height ?: 0
+        )
+        voiceAnimatedPopup!!.apply {
+            visibility = GONE
+            layoutParams = params
+            setIsVoiceRunning(false, shouldAnimate = false)
+        }
+        val parent = ((this.parent as? ViewGroup)?.rootView as? ViewGroup)
+        parent?.addView(voiceAnimatedPopup)
+    } catch (e: Exception) {
+        Log.e(
+            "W3WAutoSuggestEditText",
+            e.message.plus(", fallback to inline voice") ?: "Issue adding to rootView, check if parent allows multiple children"
+        )
+        voiceEnabled(true)
     }
-    ((parent as? ViewGroup)?.rootView as? ViewGroup)?.addView(voiceAnimatedPopup)
 }
 
 internal fun W3WAutoSuggestEditText.buildVoiceFullscreen() {
-    voicePulseLayoutFullScreen = VoicePulseLayoutFullScreen(
-        context,
-        voicePlaceholder,
-        voiceBackgroundColor,
-        voiceBackgroundDrawable,
-        voiceIconsColor
-    )
-    val displayFrame = Rect()
-    (parent as? ViewGroup)?.rootView?.getWindowVisibleDisplayFrame(displayFrame)
-    val params = ViewGroup.MarginLayoutParams(
-        displayFrame.width(),
-        displayFrame.height()
-    )
-    params.topMargin = displayFrame.top
-    params.bottomMargin = displayFrame.bottom
-    voicePulseLayoutFullScreen!!.apply {
-        visibility = GONE
-        layoutParams = params
-        this.applySize(min(context.resources.displayMetrics.widthPixels, context.resources.displayMetrics.heightPixels))
-        setIsVoiceRunning(false)
+    try {
+        voicePulseLayoutFullScreen = VoicePulseLayoutFullScreen(
+            context,
+            voicePlaceholder,
+            voiceBackgroundColor,
+            voiceBackgroundDrawable,
+            voiceIconsColor
+        )
+        val displayFrame = Rect()
+        (parent as? ViewGroup)?.rootView?.getWindowVisibleDisplayFrame(displayFrame)
+        val params = ViewGroup.MarginLayoutParams(
+            displayFrame.width(),
+            displayFrame.height()
+        )
+        params.topMargin = displayFrame.top
+        params.bottomMargin = displayFrame.bottom
+        voicePulseLayoutFullScreen!!.apply {
+            visibility = GONE
+            layoutParams = params
+            this.applySize(
+                min(
+                    context.resources.displayMetrics.widthPixels,
+                    context.resources.displayMetrics.heightPixels
+                )
+            )
+            setIsVoiceRunning(false)
+        }
+        val parent = ((parent as? ViewGroup)?.rootView as? ViewGroup)
+        parent?.addView(voicePulseLayoutFullScreen)
+    } catch (e: Exception) {
+        Log.e(
+            "W3WAutoSuggestEditText",
+            e.message.plus(", fallback to inline voice") ?: "Issue adding to rootView, check if parent allows multiple children"
+        )
+        voiceEnabled(true)
     }
-    ((parent as? ViewGroup)?.rootView as? ViewGroup)?.addView(voicePulseLayoutFullScreen)
 }
 
 internal fun W3WAutoSuggestEditText.buildSuggestionList() {
@@ -185,8 +209,8 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList() {
         this.x = this@buildSuggestionList.x
         this.y =
             this@buildSuggestionList.y + this@buildSuggestionList.height - resources.getDimensionPixelSize(
-                R.dimen.tiny_margin
-            )
+            R.dimen.tiny_margin
+        )
         layoutParams = params
         val linear = LinearLayoutManager(context)
         background = AppCompatResources.getDrawable(context, R.drawable.bg_white_border_gray)

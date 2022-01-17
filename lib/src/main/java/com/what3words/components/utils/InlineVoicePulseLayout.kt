@@ -1,18 +1,16 @@
 package com.what3words.components.utils
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
-import androidx.core.view.updateLayoutParams
-import com.what3words.components.R
 import com.what3words.components.databinding.InlineVoicePulseLayoutBinding
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.text.VoiceScreenType
 import com.what3words.components.text.W3WAutoSuggestEditText
-import com.what3words.components.text.buildCross
 import com.what3words.components.voice.W3WAutoSuggestVoice
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.APIResponse
@@ -124,5 +122,9 @@ internal class InlineVoicePulseLayout
             setIsVoiceRunning(false)
             binding.autosuggestVoice.stop()
         }
+    }
+
+    fun setCustomIcon(icon: Drawable) {
+        binding.icMic.setImageDrawable(icon)
     }
 }
