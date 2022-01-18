@@ -10,14 +10,6 @@ $dokka.location:com.what3words.components.models//getOrElse/com.what3words.compo
 $dokka.location:com.what3words.components.models//map/com.what3words.components.models.Either[TypeParam(bounds=[kotlin.Any?]),TypeParam(bounds=[kotlin.Any?])]#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/lib/com.what3words.components.models/map.md
 $dokka.location:com.what3words.components.models//onFailure/com.what3words.components.models.Either[TypeParam(bounds=[kotlin.Any?]),TypeParam(bounds=[kotlin.Any?])]#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),kotlin.Unit]/PointingToDeclaration/lib/com.what3words.components.models/on-failure.md
 $dokka.location:com.what3words.components.models//onSuccess/com.what3words.components.models.Either[TypeParam(bounds=[kotlin.Any?]),TypeParam(bounds=[kotlin.Any?])]#kotlin.Function1[TypeParam(bounds=[kotlin.Any?]),kotlin.Unit]/PointingToDeclaration/lib/com.what3words.components.models/on-success.md
-$dokka.location:com.what3words.components.models/AutosuggestApiManager///PointingToDeclaration/lib/com.what3words.components.models/-autosuggest-api-manager/index.md
-$dokka.location:com.what3words.components.models/AutosuggestApiManager/AutosuggestApiManager/#com.what3words.androidwrapper.What3WordsV3/PointingToDeclaration/lib/com.what3words.components.models/-autosuggest-api-manager/-autosuggest-api-manager.md
-$dokka.location:com.what3words.components.models/AutosuggestApiManager/autosuggest/#com.what3words.androidwrapper.voice.Microphone#com.what3words.javawrapper.request.AutosuggestOptions#kotlin.String/PointingToDeclaration/lib/com.what3words.components.models/-autosuggest-api-manager/autosuggest.md
-$dokka.location:com.what3words.components.models/AutosuggestApiManager/autosuggest/#kotlin.String#com.what3words.javawrapper.request.AutosuggestOptions?#kotlin.Boolean/PointingToDeclaration/lib/com.what3words.components.models/-autosuggest-api-manager/autosuggest.md
-$dokka.location:com.what3words.components.models/AutosuggestApiManager/isVoiceEnabled/#/PointingToDeclaration/lib/com.what3words.components.models/-autosuggest-api-manager/is-voice-enabled.md
-$dokka.location:com.what3words.components.models/AutosuggestApiManager/multipleWithCoordinates/#kotlin.String#kotlin.collections.List[com.what3words.javawrapper.response.Suggestion]/PointingToDeclaration/lib/com.what3words.components.models/-autosuggest-api-manager/multiple-with-coordinates.md
-$dokka.location:com.what3words.components.models/AutosuggestApiManager/selected/#kotlin.String#com.what3words.javawrapper.response.Suggestion/PointingToDeclaration/lib/com.what3words.components.models/-autosuggest-api-manager/selected.md
-$dokka.location:com.what3words.components.models/AutosuggestApiManager/selectedWithCoordinates/#kotlin.String#com.what3words.javawrapper.response.Suggestion/PointingToDeclaration/lib/com.what3words.components.models/-autosuggest-api-manager/selected-with-coordinates.md
 $dokka.location:com.what3words.components.models/AutosuggestLogicManager///PointingToDeclaration/lib/com.what3words.components.models/-autosuggest-logic-manager/index.md
 $dokka.location:com.what3words.components.models/AutosuggestLogicManager/autosuggest/#com.what3words.androidwrapper.voice.Microphone#com.what3words.javawrapper.request.AutosuggestOptions#kotlin.String/PointingToDeclaration/lib/com.what3words.components.models/-autosuggest-logic-manager/autosuggest.md
 $dokka.location:com.what3words.components.models/AutosuggestLogicManager/autosuggest/#kotlin.String#com.what3words.javawrapper.request.AutosuggestOptions?#kotlin.Boolean/PointingToDeclaration/lib/com.what3words.components.models/-autosuggest-logic-manager/autosuggest.md
@@ -41,12 +33,6 @@ $dokka.location:com.what3words.components.models/Either/isLeft/#/PointingToDecla
 $dokka.location:com.what3words.components.models/Either/isRight/#/PointingToDeclaration/lib/com.what3words.components.models/-either/is-right.md
 $dokka.location:com.what3words.components.models/Either/left/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/lib/com.what3words.components.models/-either/left.md
 $dokka.location:com.what3words.components.models/Either/right/#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/lib/com.what3words.components.models/-either/right.md
-$dokka.location:com.what3words.components.models/VoiceApiAutosuggestManager///PointingToDeclaration/lib/com.what3words.components.models/-voice-api-autosuggest-manager/index.md
-$dokka.location:com.what3words.components.models/VoiceApiAutosuggestManager/VoiceApiAutosuggestManager/#com.what3words.androidwrapper.voice.VoiceBuilder/PointingToDeclaration/lib/com.what3words.components.models/-voice-api-autosuggest-manager/-voice-api-autosuggest-manager.md
-$dokka.location:com.what3words.components.models/VoiceApiAutosuggestManager/isListening/#/PointingToDeclaration/lib/com.what3words.components.models/-voice-api-autosuggest-manager/is-listening.md
-$dokka.location:com.what3words.components.models/VoiceApiAutosuggestManager/startListening/#/PointingToDeclaration/lib/com.what3words.components.models/-voice-api-autosuggest-manager/start-listening.md
-$dokka.location:com.what3words.components.models/VoiceApiAutosuggestManager/stopListening/#/PointingToDeclaration/lib/com.what3words.components.models/-voice-api-autosuggest-manager/stop-listening.md
-$dokka.location:com.what3words.components.models/VoiceApiAutosuggestManager/updateOptions/#com.what3words.javawrapper.request.AutosuggestOptions/PointingToDeclaration/lib/com.what3words.components.models/-voice-api-autosuggest-manager/update-options.md
 $dokka.location:com.what3words.components.models/VoiceAutosuggestManager///PointingToDeclaration/lib/com.what3words.components.models/-voice-autosuggest-manager/index.md
 $dokka.location:com.what3words.components.models/VoiceAutosuggestManager/isListening/#/PointingToDeclaration/lib/com.what3words.components.models/-voice-autosuggest-manager/is-listening.md
 $dokka.location:com.what3words.components.models/VoiceAutosuggestManager/startListening/#/PointingToDeclaration/lib/com.what3words.components.models/-voice-autosuggest-manager/start-listening.md
@@ -84,6 +70,7 @@ $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/customCorr
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/displayUnit/#com.what3words.components.models.DisplayUnits/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/display-unit.md
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/errorMessage/#kotlin.String/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/error-message.md
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/focus/#com.what3words.javawrapper.request.Coordinates?/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/focus.md
+$dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/hideSelectedIcon/#kotlin.Boolean/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/hide-selected-icon.md
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/invalidSelectionMessage/#kotlin.String/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/invalid-selection-message.md
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/language/#kotlin.String/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/language.md
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/microphone/#com.what3words.androidwrapper.voice.Microphone/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/microphone.md
@@ -98,14 +85,11 @@ $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/onTextCont
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/returnCoordinates/#kotlin.Boolean/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/return-coordinates.md
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/sdk/#com.what3words.components.models.AutosuggestLogicManager/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/sdk.md
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/toggleVoice/#/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/toggle-voice.md
-$dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/voiceEnabled/#kotlin.Boolean#com.what3words.components.text.VoiceScreenType/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/voice-enabled.md
+$dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/voiceEnabled/#kotlin.Boolean#com.what3words.components.text.VoiceScreenType#android.graphics.drawable.Drawable?/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/voice-enabled.md
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/voiceEnabled/#kotlin.Boolean/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/voice-enabled.md
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/voiceFullscreen/#kotlin.Boolean/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/voice-fullscreen.md
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/voiceLanguage/#kotlin.String/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/voice-language.md
 $dokka.location:com.what3words.components.text/W3WAutoSuggestEditText/voicePlaceholder/#kotlin.String/PointingToDeclaration/lib/com.what3words.components.text/-w3-w-auto-suggest-edit-text/voice-placeholder.md
-$dokka.location:com.what3words.components.utils////PointingToDeclaration/lib/com.what3words.components.utils/index.md
-$dokka.location:com.what3words.components.utils//io/#com.what3words.androidwrapper.helpers.DispatcherProvider#kotlin.coroutines.SuspendFunction0[kotlin.Unit]/PointingToDeclaration/lib/com.what3words.components.utils/io.md
-$dokka.location:com.what3words.components.utils//main/#com.what3words.androidwrapper.helpers.DispatcherProvider#kotlin.coroutines.SuspendFunction0[kotlin.Unit]/PointingToDeclaration/lib/com.what3words.components.utils/main.md
 $dokka.location:com.what3words.components.voice////PointingToDeclaration/lib/com.what3words.components.voice/index.md
 $dokka.location:com.what3words.components.voice/W3WAutoSuggestVoice///PointingToDeclaration/lib/com.what3words.components.voice/-w3-w-auto-suggest-voice/index.md
 $dokka.location:com.what3words.components.voice/W3WAutoSuggestVoice/W3WAutoSuggestVoice/#android.content.Context#android.util.AttributeSet?#kotlin.Int/PointingToDeclaration/lib/com.what3words.components.voice/-w3-w-auto-suggest-voice/-w3-w-auto-suggest-voice.md
@@ -135,6 +119,5 @@ com.what3words.components.error
 com.what3words.components.models
 com.what3words.components.picker
 com.what3words.components.text
-com.what3words.components.utils
 com.what3words.components.voice
 

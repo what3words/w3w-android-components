@@ -6,11 +6,9 @@
 
 | Name | Summary |
 |---|---|
-| [AutosuggestApiManager](-autosuggest-api-manager/index.md) | [androidJvm]<br>class [AutosuggestApiManager](-autosuggest-api-manager/index.md)(**wrapper**: What3WordsV3) : [AutosuggestLogicManager](-autosuggest-logic-manager/index.md) |
 | [AutosuggestLogicManager](-autosuggest-logic-manager/index.md) | [androidJvm]<br>interface [AutosuggestLogicManager](-autosuggest-logic-manager/index.md) |
 | [DisplayUnits](-display-units/index.md) | [androidJvm]<br>enum [DisplayUnits](-display-units/index.md) : [Enum](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html)<[DisplayUnits](-display-units/index.md)> |
 | [Either](-either/index.md) | [androidJvm]<br>sealed class [Either](-either/index.md)<out [L](-either/index.md), out [R](-either/index.md)> |
-| [VoiceApiAutosuggestManager](-voice-api-autosuggest-manager/index.md) | [androidJvm]<br>class [VoiceApiAutosuggestManager](-voice-api-autosuggest-manager/index.md)(**voiceBuilder**: VoiceBuilder) : [VoiceAutosuggestManager](-voice-autosuggest-manager/index.md) |
 | [VoiceAutosuggestManager](-voice-autosuggest-manager/index.md) | [androidJvm]<br>interface [VoiceAutosuggestManager](-voice-autosuggest-manager/index.md) |
 | [W3WListeningState](-w3-w-listening-state/index.md) | [androidJvm]<br>enum [W3WListeningState](-w3-w-listening-state/index.md) : [Enum](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html)<[W3WListeningState](-w3-w-listening-state/index.md)> |
 

@@ -13,9 +13,3 @@ interface [VoiceAutosuggestManager](index.md)
 | [startListening](start-listening.md) | [androidJvm]<br>abstract suspend fun [startListening](start-listening.md)(): [Either](../-either/index.md)<APIResponse.What3WordsError, [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)<Suggestion>> |
 | [stopListening](stop-listening.md) | [androidJvm]<br>abstract fun [stopListening](stop-listening.md)() |
 | [updateOptions](update-options.md) | [androidJvm]<br>abstract fun [updateOptions](update-options.md)(options: AutosuggestOptions) |
-
-## Inheritors
-
-| Name |
-|---|
-| [VoiceApiAutosuggestManager](../-voice-api-autosuggest-manager/index.md) |

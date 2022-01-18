@@ -14,9 +14,3 @@ interface [AutosuggestLogicManager](index.md)
 | [multipleWithCoordinates](multiple-with-coordinates.md) | [androidJvm]<br>abstract suspend fun [multipleWithCoordinates](multiple-with-coordinates.md)(rawQuery: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), suggestions: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)<Suggestion>): [Either](../-either/index.md)<APIResponse.What3WordsError, [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)<SuggestionWithCoordinates>> |
 | [selected](selected.md) | [androidJvm]<br>abstract suspend fun [selected](selected.md)(rawQuery: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), suggestion: Suggestion): [Either](../-either/index.md)<APIResponse.What3WordsError, SuggestionWithCoordinates> |
 | [selectedWithCoordinates](selected-with-coordinates.md) | [androidJvm]<br>abstract suspend fun [selectedWithCoordinates](selected-with-coordinates.md)(rawQuery: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), suggestion: Suggestion): [Either](../-either/index.md)<APIResponse.What3WordsError, SuggestionWithCoordinates> |
-
-## Inheritors
-
-| Name |
-|---|
-| [AutosuggestApiManager](../-autosuggest-api-manager/index.md) |
