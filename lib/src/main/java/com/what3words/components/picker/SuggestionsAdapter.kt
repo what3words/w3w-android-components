@@ -148,6 +148,7 @@ internal class SuggestionsAdapter(
             )
             binding.w3wAddressLabel.text = suggestion.words
             binding.w3wNearestPlaceLabel.setTextColor(subtitleTextColor)
+            binding.w3wSlashesLabel.setTextColor(binding.w3wSlashesLabel.context.getColor(R.color.slashesColor))
             binding.w3wNearestPlaceLabel.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX, subtitleTextSize.toFloat()
             )
