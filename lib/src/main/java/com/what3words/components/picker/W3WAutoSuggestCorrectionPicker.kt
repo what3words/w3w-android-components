@@ -110,7 +110,6 @@ class W3WAutoSuggestCorrectionPicker
                     binding.correctionLabel.typeface =
                         ResourcesCompat.getFont(context, subtitleFontFamilyId)
                 }
-
             } finally {
                 recycle()
             }

@@ -5,8 +5,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.ContextCompat
-import com.what3words.components.R
 
 /**
  * A [AppCompatTextView] styled and ready to show error messages.

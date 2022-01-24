@@ -58,7 +58,6 @@ internal class VoicePulseLayout
 
     init {
         binding.icLogo.setColorFilter(iconTintColor)
-        binding.voicePlaceholder.setTextColor(iconTintColor)
         if (backgroundDrawable != null) {
             binding.voiceHolder.background = backgroundDrawable
         } else {

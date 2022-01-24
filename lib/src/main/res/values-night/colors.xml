@@ -9,4 +9,5 @@
     <color name="errorBorderColor">#F26C50</color>
     <color name="errorBackgroundColor">#F26C50</color>
     <color name="errorTextColor">#0A3049</color>
+    <color name="w3wVoiceBackground">#0A3049</color>
 </resources>

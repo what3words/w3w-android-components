@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:fontFamily="sans-serif-light"
-            android:textColor="@color/black"
+            android:textColor="@color/subtextColor"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

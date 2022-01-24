@@ -27,7 +27,6 @@
             android:layout_marginEnd="@dimen/xlarge_margin"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_close"
-            android:tint="@color/w3wGray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -38,7 +37,7 @@
             android:layout_marginTop="24dp"
             tools:text="Say a 3 word address"
             android:fontFamily="sans-serif-light"
-            android:textColor="@color/black"
+            android:textColor="@color/subtextColor"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

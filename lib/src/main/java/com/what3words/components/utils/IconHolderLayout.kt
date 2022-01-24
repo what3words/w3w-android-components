@@ -155,7 +155,7 @@ internal class IconHolderLayout
 
     override fun onGlobalLayout() {
         if (binding.voicePulseLayout.height != 0) {
-            autosuggestVoice.layoutParams =  MarginLayoutParams(
+            autosuggestVoice.layoutParams = MarginLayoutParams(
                 (binding.voicePulseLayout.height * 2),
                 (binding.voicePulseLayout.height)
             )
