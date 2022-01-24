@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
-import android.provider.Settings.System.getConfiguration
 import android.util.Log
 import android.view.View
 import android.widget.RadioButton
@@ -24,7 +23,6 @@ import com.what3words.autosuggestsample.util.addOnTextChangedListener
 import com.what3words.components.text.VoiceScreenType
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
-import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

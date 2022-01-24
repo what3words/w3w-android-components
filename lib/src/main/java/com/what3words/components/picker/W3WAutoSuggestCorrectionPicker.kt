@@ -110,6 +110,7 @@ class W3WAutoSuggestCorrectionPicker
                     binding.correctionLabel.typeface =
                         ResourcesCompat.getFont(context, subtitleFontFamilyId)
                 }
+                binding.w3wSlashesLabel.setTextColor(binding.w3wSlashesLabel.context.getColor(R.color.slashesColor))
             } finally {
                 recycle()
             }

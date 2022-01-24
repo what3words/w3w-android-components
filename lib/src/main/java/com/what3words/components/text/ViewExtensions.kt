@@ -32,8 +32,8 @@ internal fun W3WAutoSuggestEditText.buildErrorMessage() {
         this.x = this@buildErrorMessage.x
         this.y =
             this@buildErrorMessage.y + this@buildErrorMessage.height - resources.getDimensionPixelSize(
-            R.dimen.tiny_margin
-        )
+                R.dimen.tiny_margin
+            )
         layoutParams = params
         translationZ = context.resources.getDimension(R.dimen.overlay_z)
         outlineProvider = null
@@ -50,8 +50,8 @@ internal fun W3WAutoSuggestEditText.buildCorrection() {
         this.x = this@buildCorrection.x
         this.y =
             this@buildCorrection.y + this@buildCorrection.height - resources.getDimensionPixelSize(
-            R.dimen.tiny_margin
-        )
+                R.dimen.tiny_margin
+            )
         layoutParams = params
         translationZ = context.resources.getDimension(R.dimen.overlay_z)
         outlineProvider = null
@@ -66,7 +66,8 @@ internal fun W3WAutoSuggestEditText.buildIconHolderLayout() {
     )
     iconHolderLayout.apply {
         this.x = this@buildIconHolderLayout.x
-        this.y = this@buildIconHolderLayout.y + resources.getDimensionPixelSize(R.dimen.input_border_height)
+        this.y =
+            this@buildIconHolderLayout.y + resources.getDimensionPixelSize(R.dimen.input_border_height)
     }
     (parent as? ViewGroup)?.addView(iconHolderLayout)
 }
@@ -156,8 +157,8 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList() {
         this.x = this@buildSuggestionList.x
         this.y =
             this@buildSuggestionList.y + this@buildSuggestionList.height - resources.getDimensionPixelSize(
-            R.dimen.tiny_margin
-        )
+                R.dimen.tiny_margin
+            )
         layoutParams = params
         resources.getDimensionPixelSize(R.dimen.tiny_margin).let {
             setPadding(it, it, it, it)
@@ -208,9 +209,9 @@ internal fun W3WAutoSuggestEditText.hideKeyboard() {
 internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: Context): String {
     if (distanceKm == 0 ||
         (
-            displayUnits == DisplayUnits.SYSTEM && !Locale.getDefault()
-                .isMetric() && (distanceKm / 1.609) < 1
-            ) ||
+                displayUnits == DisplayUnits.SYSTEM && !Locale.getDefault()
+                    .isMetric() && (distanceKm / 1.609) < 1
+                ) ||
         (displayUnits == DisplayUnits.IMPERIAL && (distanceKm / 1.609) < 1)
     ) {
         if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault().isMetric()) ||
@@ -236,9 +237,9 @@ internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: C
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             val fmtFr = MeasureFormat.getInstance(Locale.getDefault(), FormatWidth.SHORT)
             return if ((
-                displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
-                    .isMetric()
-                ) || displayUnits == DisplayUnits.METRIC
+                        displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
+                            .isMetric()
+                        ) || displayUnits == DisplayUnits.METRIC
             ) {
                 val measureF = Measure(distanceKm, MeasureUnit.KILOMETER)
                 fmtFr.format(measureF)
@@ -249,9 +250,9 @@ internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: C
         } else {
             val nFormat = NumberFormat.getNumberInstance(Locale.getDefault())
             return if ((
-                displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
-                    .isMetric()
-                ) || displayUnits == DisplayUnits.METRIC
+                        displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
+                            .isMetric()
+                        ) || displayUnits == DisplayUnits.METRIC
             ) {
                 context.getString(R.string.distance_metric, nFormat.format(distanceKm))
             } else {

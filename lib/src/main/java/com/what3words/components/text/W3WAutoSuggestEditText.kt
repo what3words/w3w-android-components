@@ -301,10 +301,10 @@ class W3WAutoSuggestEditText
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
                 voiceScreenType =
                     VoiceScreenType.values()[
-                        getInt(
-                            R.styleable.W3WAutoSuggestEditText_voiceScreenType,
-                            0
-                        )
+                            getInt(
+                                R.styleable.W3WAutoSuggestEditText_voiceScreenType,
+                                0
+                            )
                     ]
                 voiceLanguage =
                     getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
@@ -329,11 +329,7 @@ class W3WAutoSuggestEditText
 
         setOnEditorActionListener { _, i, event ->
             if (i == EditorInfo.IME_ACTION_DONE || (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER))) {
-                viewModel.onSuggestionClicked(
-                    text.toString(),
-                    lastSuggestions.firstOrNull { it.words == text.toString() },
-                    returnCoordinates
-                )
+                clearFocus()
                 true
             } else {
                 false
@@ -362,7 +358,12 @@ class W3WAutoSuggestEditText
             }
             if (!isFocused) {
                 iconHolderLayout.setClearVisibility(GONE)
-                setPaddingRelative(paddingStart, paddingTop, originalPaddingEnd, paddingBottom)
+                setPaddingRelative(
+                    paddingStart,
+                    paddingTop,
+                    originalPaddingEnd,
+                    paddingBottom
+                )
                 hideKeyboard()
             } else {
                 if (voiceEnabled)
@@ -444,7 +445,7 @@ class W3WAutoSuggestEditText
     private fun onTextChanged(searchText: String) {
         if (fromPaste) {
             if (searchText.removePrefix(context.getString(R.string.w3w_slashes))
-                .isPossible3wa()
+                    .isPossible3wa()
             ) {
                 fromPaste = false
                 setText(searchText.removePrefix(context.getString(R.string.w3w_slashes)))

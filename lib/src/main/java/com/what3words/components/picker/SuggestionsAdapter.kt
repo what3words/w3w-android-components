@@ -167,6 +167,7 @@ internal class SuggestionsAdapter(
                 binding.w3wAddressFlagIcon.visibility = VISIBLE
                 FlagResourceTranslatorImpl(binding.w3wAddressFlagIcon.context).let {
                     binding.w3wAddressFlagIcon.setImageResource(it.translate(suggestion.country))
+                    binding.w3wAddressFlagIcon.setColorFilter(titleTextColor)
                 }
             } else {
                 binding.w3wAddressFlagIcon.visibility = GONE
