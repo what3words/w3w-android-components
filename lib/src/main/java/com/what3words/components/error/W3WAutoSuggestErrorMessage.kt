@@ -19,16 +19,6 @@ class W3WAutoSuggestErrorMessage
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
 
     init {
-        isFocusable = false
-        isFocusableInTouchMode = false
-        setPadding(
-            resources.getDimensionPixelSize(R.dimen.xlarge_margin),
-            resources.getDimensionPixelSize(R.dimen.medium_margin),
-            resources.getDimensionPixelSize(R.dimen.xlarge_margin),
-            resources.getDimensionPixelSize(R.dimen.medium_margin)
-        )
-        setBackgroundResource(R.drawable.bg_item)
-        setTextColor(ContextCompat.getColor(context, R.color.w3wError))
         visibility = GONE
     }
 }

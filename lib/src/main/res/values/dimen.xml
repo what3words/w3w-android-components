@@ -19,6 +19,7 @@
     <dimen name="medium_margin">8dp</dimen>
     <dimen name="large_margin">12dp</dimen>
     <dimen name="xlarge_margin">16dp</dimen>
+    <dimen name="overlay_z">10dp</dimen>
 
     <!-- text -->
     <dimen name="default_text">18sp</dimen>

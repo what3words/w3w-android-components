@@ -25,6 +25,7 @@ internal class SuggestionsAdapter(
     private val titleTextColor: Int,
     private val subtitleTextSize: Int,
     private val subtitleTextColor: Int,
+    private val itemHighlightBackground: Int,
     private val titleFontFamily: Typeface?,
     private val subtitleFontFamily: Typeface?,
     private val itemPadding: Int
@@ -60,6 +61,7 @@ internal class SuggestionsAdapter(
             titleTextColor,
             subtitleTextSize,
             subtitleTextColor,
+            itemHighlightBackground,
             titleFontFamily,
             subtitleFontFamily,
             itemPadding
@@ -85,6 +87,7 @@ internal class SuggestionsAdapter(
         private val titleTextColor: Int,
         private val subtitleTextSize: Int,
         private val subtitleTextColor: Int,
+        private val itemHighlightBackground: Int,
         private val titleFontFamily: Typeface?,
         private val subtitleFontFamily: Typeface?,
         private val itemPadding: Int
@@ -102,21 +105,20 @@ internal class SuggestionsAdapter(
                     binding.root.setBackgroundColor(it)
                 }
                 if (query?.replace(binding.root.context.getString(R.string.w3w_slash), "")
-                    .equals(suggestion.words, ignoreCase = true)
+                        .equals(suggestion.words, ignoreCase = true)
                 ) {
                     binding.w3wSuggestionHolder.setBackgroundColor(
-                        ContextCompat.getColor(
-                            binding.root.context,
-                            R.color.w3wHover
-                        )
+                        itemHighlightBackground
                     )
                 } else {
-                    binding.w3wSuggestionHolder.setBackgroundColor(
+                    backgroundColor?.let {
+                        binding.root.setBackgroundColor(it)
+                    } ?: kotlin.run {
                         ContextCompat.getColor(
                             binding.root.context,
-                            R.color.white
+                            R.color.background
                         )
-                    )
+                    }
                 }
             }
 

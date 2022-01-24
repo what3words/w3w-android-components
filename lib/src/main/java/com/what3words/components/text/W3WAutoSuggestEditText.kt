@@ -18,7 +18,6 @@ import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.inputmethod.EditorInfo
-import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.AppCompatEditText
@@ -26,11 +25,11 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
-import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.helpers.didYouMean3wa
 import com.what3words.androidwrapper.helpers.isPossible3wa
 import com.what3words.androidwrapper.voice.Microphone
+import com.what3words.components.BuildConfig
 import com.what3words.components.R
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
 import com.what3words.components.error.forceClearAndHide
@@ -41,7 +40,7 @@ import com.what3words.components.models.DisplayUnits
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.picker.W3WAutoSuggestPicker
-import com.what3words.components.utils.InlineVoicePulseLayout
+import com.what3words.components.utils.IconHolderLayout
 import com.what3words.components.utils.VoicePulseLayout
 import com.what3words.components.utils.VoicePulseLayoutFullScreen
 import com.what3words.components.vm.AutosuggestTextViewModel
@@ -82,7 +81,6 @@ class W3WAutoSuggestEditText
     private var isRendered: Boolean = false
     private var pickedFromVoice: Boolean = false
     private var pickedFromDropDown: Boolean = false
-    private var slashesColor: Int = ContextCompat.getColor(context, R.color.w3wRed)
     private var fromPaste: Boolean = false
     internal var isShowingTick: Boolean = false
     private var errorMessageText: String? = null
@@ -97,6 +95,7 @@ class W3WAutoSuggestEditText
     private var onDisplaySuggestions: Consumer<Boolean>? =
         null
     internal var returnCoordinates: Boolean = false
+    internal var isDayNightEnabled: Boolean = false
     internal var voiceEnabled: Boolean = false
     internal var voiceScreenType: VoiceScreenType = VoiceScreenType.Inline
     private var allowInvalid3wa: Boolean = false
@@ -107,7 +106,7 @@ class W3WAutoSuggestEditText
         ContextCompat.getColor(context, R.color.w3wVoiceBackground)
     internal var voiceBackgroundDrawable: Drawable? = null
     internal var voiceIconsColor: Int =
-        ContextCompat.getColor(context, R.color.w3wGray)
+        ContextCompat.getColor(context, R.color.subtextColor)
     internal var voiceLanguage: String
     internal var customPicker: W3WAutoSuggestPicker? = null
     internal var customErrorView: AppCompatTextView? = null
@@ -129,18 +128,28 @@ class W3WAutoSuggestEditText
         AutosuggestTextViewModel()
     }
 
-    internal val cross: ImageView by lazy {
-        ImageView(context)
-    }
+//    internal val cross: ImageView by lazy {
+//        ImageView(context)
+//    }
 
     internal val defaultPicker: W3WAutoSuggestPicker by lazy {
-        W3WAutoSuggestPicker(ContextThemeWrapper(context, R.style.W3WAutoSuggestPicker)).apply {
+        W3WAutoSuggestPicker(
+            ContextThemeWrapper(
+                context,
+                if (isDayNightEnabled) R.style.W3WAutoSuggestPickerDayNight else R.style.W3WAutoSuggestPicker
+            )
+        ).apply {
             setup(viewModel, displayUnits)
         }
     }
 
     internal val defaultCorrectionPicker: W3WAutoSuggestCorrectionPicker by lazy {
-        W3WAutoSuggestCorrectionPicker(context).apply {
+        W3WAutoSuggestCorrectionPicker(
+            ContextThemeWrapper(
+                context,
+                if (isDayNightEnabled) R.style.W3WAutoSuggestCorrectionPickerDayNight else R.style.W3WAutoSuggestCorrectionPicker
+            )
+        ).apply {
             setCorrectionMessage(correctionMessage).internalCallback { selectedSuggestion ->
                 setText(
                     context.getString(
@@ -155,11 +164,41 @@ class W3WAutoSuggestEditText
     }
 
     internal val defaultInvalidAddressMessageView: W3WAutoSuggestErrorMessage by lazy {
-        W3WAutoSuggestErrorMessage(context)
+        W3WAutoSuggestErrorMessage(
+            ContextThemeWrapper(
+                context,
+                if (isDayNightEnabled) R.style.W3WAutoSuggestErrorMessageDayNight else R.style.W3WAutoSuggestErrorMessage
+            )
+        )
     }
 
-    internal val inlineVoicePulseLayout: InlineVoicePulseLayout by lazy {
-        InlineVoicePulseLayout(context, this.currentTextColor).apply {
+//    internal val inlineVoicePulseLayout: InlineVoicePulseLayout by lazy {
+//        InlineVoicePulseLayout(context, this.currentTextColor).apply {
+//            this.onResultsCallback {
+//                handleVoiceSuggestions(it)
+//            }
+//            this.onErrorCallback {
+//                handleVoiceError(it)
+//            }
+//            this.onListeningStateChanged {
+//                if (it == null) return@onListeningStateChanged
+//                hint = when (it) {
+//                    W3WListeningState.Connecting -> {
+//                        context.getString(R.string.loading)
+//                    }
+//                    W3WListeningState.Started -> {
+//                        voicePlaceholder
+//                    }
+//                    W3WListeningState.Stopped -> {
+//                        oldHint
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+    internal val iconHolderLayout: IconHolderLayout by lazy {
+        IconHolderLayout(context, this.currentTextColor, this.currentHintTextColor).apply {
             this.onResultsCallback {
                 handleVoiceSuggestions(it)
             }
@@ -170,15 +209,22 @@ class W3WAutoSuggestEditText
                 if (it == null) return@onListeningStateChanged
                 hint = when (it) {
                     W3WListeningState.Connecting -> {
+                        this@W3WAutoSuggestEditText.isFocusableInTouchMode = false
                         context.getString(R.string.loading)
                     }
                     W3WListeningState.Started -> {
+                        this@W3WAutoSuggestEditText.isFocusableInTouchMode = false
                         voicePlaceholder
                     }
                     W3WListeningState.Stopped -> {
+                        this@W3WAutoSuggestEditText.isFocusableInTouchMode = true
                         oldHint
                     }
                 }
+            }
+            this.onClearTextClick {
+                this@W3WAutoSuggestEditText.setText(context.getString(R.string.w3w_slashes))
+                this@W3WAutoSuggestEditText.setSelection(this@W3WAutoSuggestEditText.length())
             }
         }
     }
@@ -233,10 +279,6 @@ class W3WAutoSuggestEditText
                 ) ?: resources.getString(R.string.correction_message)
                 voicePlaceholder = getString(R.styleable.W3WAutoSuggestEditText_voicePlaceholder)
                     ?: resources.getString(R.string.voice_placeholder)
-                slashesColor = getColor(
-                    R.styleable.W3WAutoSuggestEditText_imageTintColor,
-                    ContextCompat.getColor(context, R.color.w3wRed)
-                )
                 voiceBackgroundColor = getColor(
                     R.styleable.W3WAutoSuggestEditText_voiceBackgroundColor,
                     ContextCompat.getColor(context, R.color.w3wVoiceBackground)
@@ -249,18 +291,20 @@ class W3WAutoSuggestEditText
                     if (drawableId != -1) ContextCompat.getDrawable(context, drawableId) else null
                 voiceIconsColor = getColor(
                     R.styleable.W3WAutoSuggestEditText_voiceIconsColor,
-                    ContextCompat.getColor(context, R.color.w3wGray)
+                    ContextCompat.getColor(context, R.color.subtextColor)
                 )
+                isDayNightEnabled =
+                    getBoolean(R.styleable.W3WAutoSuggestEditText_isDayNightEnabled, false)
                 returnCoordinates =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_returnCoordinates, false)
                 voiceEnabled =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
                 voiceScreenType =
                     VoiceScreenType.values()[
-                        getInt(
-                            R.styleable.W3WAutoSuggestEditText_voiceScreenType,
-                            0
-                        )
+                            getInt(
+                                R.styleable.W3WAutoSuggestEditText_voiceScreenType,
+                                0
+                            )
                     ]
                 voiceLanguage =
                     getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
@@ -279,7 +323,7 @@ class W3WAutoSuggestEditText
         }
 
         // all listeners needed below
-        inlineVoicePulseLayout.onStartVoiceClick {
+        iconHolderLayout.onStartVoiceClick {
             handleVoiceClick()
         }
 
@@ -317,7 +361,7 @@ class W3WAutoSuggestEditText
                 }
             }
             if (!isFocused) {
-                cross.visibility = GONE
+                iconHolderLayout.setClearVisibility(GONE)
                 setPaddingRelative(paddingStart, paddingTop, originalPaddingEnd, paddingBottom)
                 hideKeyboard()
             } else {
@@ -330,7 +374,7 @@ class W3WAutoSuggestEditText
                     )
                 }
                 showKeyboard()
-                cross.visibility = VISIBLE
+                iconHolderLayout.setClearVisibility(VISIBLE)
                 showImages(false)
             }
             focusFromVoice = false
@@ -376,13 +420,13 @@ class W3WAutoSuggestEditText
             if (customPicker == null) buildSuggestionList()
             if (customErrorView == null) buildErrorMessage()
             if (customCorrectionPicker == null) buildCorrection()
-            buildVoice()
-            buildCross()
+            //  buildVoice()
+            //    buildCross()
+            buildIconHolderLayout()
             when (voiceScreenType) {
                 VoiceScreenType.Inline -> {
-                    inlineVoicePulseLayout.visibility =
-                        if (voiceEnabled && !isShowingTick) VISIBLE else GONE
-                    inlineVoicePulseLayout.setup(viewModel.manager)
+                    iconHolderLayout.setVoiceVisibility(if (voiceEnabled && !isShowingTick) VISIBLE else INVISIBLE)
+                    iconHolderLayout.setup(viewModel.manager)
                 }
                 VoiceScreenType.AnimatedPopup -> {
                     setupAnimatedPopupVoice()
@@ -400,7 +444,7 @@ class W3WAutoSuggestEditText
     private fun onTextChanged(searchText: String) {
         if (fromPaste) {
             if (searchText.removePrefix(context.getString(R.string.w3w_slashes))
-                .isPossible3wa()
+                    .isPossible3wa()
             ) {
                 fromPaste = false
                 setText(searchText.removePrefix(context.getString(R.string.w3w_slashes)))
@@ -631,7 +675,7 @@ class W3WAutoSuggestEditText
             getPicker().forceClearAndHide()
             when (voiceScreenType) {
                 VoiceScreenType.Inline -> {
-                    inlineVoicePulseLayout.toggle(
+                    iconHolderLayout.toggle(
                         viewModel.options,
                         returnCoordinates,
                         voiceLanguage
@@ -674,6 +718,7 @@ class W3WAutoSuggestEditText
      * @param suggestions returned by any of [voiceScreenType].
      */
     private fun handleVoiceSuggestions(suggestions: List<Suggestion>) {
+        this@W3WAutoSuggestEditText.isFocusableInTouchMode = true
         if (suggestions.isEmpty()) {
             getInvalidAddressView().populateAndShow(invalidSelectionMessageText)
             onDisplaySuggestions?.accept(false)
@@ -748,7 +793,7 @@ class W3WAutoSuggestEditText
                 What3WordsV3(
                     key,
                     context,
-                    mapOf("X-W3W-AS-Component" to "what3words-Android/$VERSION_NAME (Android ${Build.VERSION.RELEASE})")
+                    mapOf("X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})")
                 )
             )
         // viewModel.microphone = Microphone()
@@ -951,8 +996,8 @@ class W3WAutoSuggestEditText
     ): W3WAutoSuggestEditText {
         this.voiceEnabled = enabled
         voiceScreenType = VoiceScreenType.Inline
-        inlineVoicePulseLayout.setup(viewModel.manager)
-        inlineVoicePulseLayout.visibility = if (enabled && !isShowingTick) VISIBLE else GONE
+        iconHolderLayout.setup(viewModel.manager)
+        iconHolderLayout.setVoiceVisibility(if (voiceEnabled && !isShowingTick) VISIBLE else INVISIBLE)
         return this
     }
 
@@ -967,21 +1012,15 @@ class W3WAutoSuggestEditText
         type: VoiceScreenType,
         micIcon: Drawable? = null
     ): W3WAutoSuggestEditText {
-        // re-think this.
-        if (enabled && !this.voiceEnabled) {
-            cross.x = cross.x - this.height * 0.85f
-        } else if (!enabled && this.voiceEnabled) {
-            cross.x = cross.x + this.height * 0.85f
-        }
         this.voiceEnabled = enabled
         this.voiceScreenType = type
-        inlineVoicePulseLayout.visibility = if (enabled && !isShowingTick) VISIBLE else GONE
+        iconHolderLayout.setVoiceVisibility(if (voiceEnabled && !isShowingTick) VISIBLE else INVISIBLE)
         if (micIcon != null) {
-            inlineVoicePulseLayout.setCustomIcon(micIcon)
+            iconHolderLayout.setCustomIcon(micIcon)
         }
         when (type) {
             VoiceScreenType.Inline -> {
-                inlineVoicePulseLayout.setup(viewModel.manager)
+                iconHolderLayout.setup(viewModel.manager)
             }
             VoiceScreenType.AnimatedPopup -> {
                 if (enabled && voiceAnimatedPopup == null) {
@@ -1203,6 +1242,5 @@ class W3WAutoSuggestEditText
         this.hideSelectedIcon = b
         return this
     }
-
     //endregion
 }

@@ -1,11 +1,19 @@
 package com.what3words.autosuggestsample.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.res.Configuration
+import android.content.res.Configuration.UI_MODE_NIGHT_MASK
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
+import android.provider.Settings.System.getConfiguration
 import android.util.Log
 import android.view.View
 import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
 import com.what3words.autosuggestsample.BuildConfig
@@ -16,6 +24,7 @@ import com.what3words.autosuggestsample.util.addOnTextChangedListener
 import com.what3words.components.text.VoiceScreenType
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -167,6 +176,30 @@ class MainActivity : AppCompatActivity() {
                 listCoordinates
             )
         }
+
+
+        when (resources.configuration.uiMode.and(UI_MODE_NIGHT_MASK)) {
+            UI_MODE_NIGHT_YES -> {
+                binding.switchDayNight.text = "switch to day mode"
+            }
+            Configuration.UI_MODE_NIGHT_NO -> {
+                binding.switchDayNight.text = "switch to night mode"
+            }
+        }
+
+        binding.switchDayNight.setOnClickListener {
+            when (resources.configuration.uiMode.and(UI_MODE_NIGHT_MASK)) {
+                UI_MODE_NIGHT_YES -> {
+                    AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
+                    startActivity(Intent.makeRestartActivityTask(this.intent?.component))
+                }
+                Configuration.UI_MODE_NIGHT_NO -> {
+                    AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
+                    startActivity(Intent.makeRestartActivityTask(this.intent?.component))
+                }
+            }
+        }
+
         setContentView(binding.root)
     }
 

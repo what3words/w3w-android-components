@@ -24,6 +24,7 @@
 
         <com.what3words.components.text.W3WAutoSuggestEditText
             android:id="@+id/suggestionEditText"
+            style="@style/Widget.AppCompat.W3WAutoSuggestEditTextDayNight"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
@@ -78,6 +79,27 @@
             app:layout_constraintTop_toBottomOf="@id/suggestionEditText" />
 
         <TextView
+            android:id="@+id/textCustomDeviceSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_xxl"
+            android:text="@string/customise_device_settings"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/selectedInfo" />
+
+        <Button
+            android:id="@+id/switchDayNight"
+            android:layout_width="wrap_content"
+            android:elevation="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_s"
+            android:text="day night switch"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textCustomDeviceSettings" />
+
+        <TextView
             android:id="@+id/textCustomHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -86,7 +108,7 @@
             android:text="@string/customise_the_autosuggest_component"
             android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/selectedInfo" />
+            app:layout_constraintTop_toBottomOf="@id/switchDayNight" />
 
         <CheckBox
             android:id="@+id/checkboxCoordinates"

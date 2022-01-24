@@ -4,11 +4,9 @@ import android.content.Context
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.View
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.content.res.ResourcesCompat.getFont
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -38,6 +36,7 @@ class W3WAutoSuggestPicker
     private var subtitleFontFamily: Typeface? = null
     private var subtitleTextColor: Int
     private var titleTextColor: Int
+    private var itemHighlightBackground: Int
     private var subtitleTextSize: Int
     private var titleTextSize: Int
     private var options: AutosuggestOptions = AutosuggestOptions()
@@ -90,9 +89,10 @@ class W3WAutoSuggestPicker
                     background =
                         ContextCompat.getDrawable(context, backgroundDrawableId)
                 }
+
                 val dividerDrawableId = getResourceId(
                     R.styleable.W3WAutoSuggestPicker_pickerDivider,
-                    R.drawable.divider
+                    -1
                 )
 
                 val itemSpacing = getDimension(
@@ -115,24 +115,29 @@ class W3WAutoSuggestPicker
                     getDimensionPixelSize(
                         R.styleable.W3WAutoSuggestPicker_pickerItemSubtitleTextSize,
                         context.resources.getDimensionPixelSize(R.dimen.secondary_text)
-
                     )
 
                 titleTextColor =
                     getColor(
                         R.styleable.W3WAutoSuggestPicker_pickerItemTitleTextColor,
-                        context.getColor(R.color.w3wRed)
+                        context.getColor(R.color.textColor)
+                    )
+
+                itemHighlightBackground =
+                    getColor(
+                        R.styleable.W3WAutoSuggestPicker_pickerItemHighlightBackground,
+                        context.getColor(R.color.hoverColor)
                     )
 
                 subtitleTextColor =
                     getColor(
                         R.styleable.W3WAutoSuggestPicker_pickerItemSubtitleTextColor,
-                        context.getColor(R.color.w3wGray)
+                        context.getColor(R.color.subtextColor)
                     )
 
                 itemBackgroundColor = getColor(
                     R.styleable.W3WAutoSuggestPicker_pickerItemBackground,
-                    ContextCompat.getColor(context, R.color.white)
+                    ContextCompat.getColor(context, R.color.background)
                 )
 
                 val dividerVisible = getBoolean(
@@ -157,15 +162,18 @@ class W3WAutoSuggestPicker
                     subtitleFontFamily = getFont(context, subtitleFontFamilyId)
                 }
 
-                ResourcesCompat.getDrawable(resources, dividerDrawableId, null)?.let {
-                    addItemDecoration(
-                        MyDividerItemDecorator(
-                            if (dividerVisible) it else null,
-                            itemSpacing,
-                            (layoutManager as LinearLayoutManager).reverseLayout
+                if (dividerDrawableId != -1) {
+                    ContextCompat.getDrawable(context, dividerDrawableId)?.let {
+                        addItemDecoration(
+                            MyDividerItemDecorator(
+                                if (dividerVisible) it else null,
+                                itemSpacing,
+                                (layoutManager as LinearLayoutManager).reverseLayout
+                            )
                         )
-                    )
+                    }
                 }
+
                 suggestionsAdapter = SuggestionsAdapter(
                     itemBackgroundDrawable,
                     itemBackgroundColor,
@@ -176,6 +184,7 @@ class W3WAutoSuggestPicker
                     titleTextColor,
                     subtitleTextSize,
                     subtitleTextColor,
+                    itemHighlightBackground,
                     titleFontFamily,
                     subtitleFontFamily,
                     itemPadding
@@ -215,6 +224,3 @@ class W3WAutoSuggestPicker
         visibility = GONE
     }
 }
-
-fun Context.dipToPixels(dipValue: Float) =
-    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, resources.displayMetrics)

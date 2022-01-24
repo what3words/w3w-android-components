@@ -4,6 +4,7 @@
     <string name="welcome_to_autosuggest">Welcome to Autosuggest sample</string>
     <string name="selected_info">Selected info</string>
     <string name="customise_the_autosuggest_component">Customise the AutoSuggest Component</string>
+    <string name="customise_device_settings">Customise device settings</string>
     <string name="return_coordinates">return coordinates</string>
     <string name="placeholder">placeholder</string>
     <string name="language">language</string>
