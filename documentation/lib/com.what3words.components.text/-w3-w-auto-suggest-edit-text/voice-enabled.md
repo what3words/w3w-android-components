@@ -20,7 +20,7 @@ androidJvm
 | enabled | if voice should be enabled |
 
 [androidJvm]\
-fun [voiceEnabled](voice-enabled.md)(enabled: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html), type: [VoiceScreenType](../-voice-screen-type/index.md), micIcon: [Drawable](https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html)? = null): [W3WAutoSuggestEditText](index.md)
+fun [voiceEnabled](voice-enabled.md)(enabled: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html), type: [VoiceScreenType](../../com.what3words.components.models/-voice-screen-type/index.md), micIcon: [Drawable](https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html)? = null): [W3WAutoSuggestEditText](index.md)
 
 Enable voice for autosuggest component with custom voice view
 

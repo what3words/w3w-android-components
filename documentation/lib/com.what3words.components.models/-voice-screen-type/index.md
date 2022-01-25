@@ -1,4 +1,4 @@
-//[lib](../../../index.md)/[com.what3words.components.text](../index.md)/[VoiceScreenType](index.md)
+//[lib](../../../index.md)/[com.what3words.components.models](../index.md)/[VoiceScreenType](index.md)
 
 # VoiceScreenType
 

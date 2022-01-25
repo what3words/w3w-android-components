@@ -28,7 +28,6 @@ import androidx.core.util.Consumer
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.helpers.didYouMean3wa
 import com.what3words.androidwrapper.helpers.isPossible3wa
-import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.BuildConfig
 import com.what3words.components.R
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
@@ -37,6 +36,7 @@ import com.what3words.components.error.populateAndShow
 import com.what3words.components.models.AutosuggestApiManager
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.models.DisplayUnits
+import com.what3words.components.models.VoiceScreenType
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.picker.W3WAutoSuggestPicker
@@ -95,7 +95,7 @@ class W3WAutoSuggestEditText
     private var onDisplaySuggestions: Consumer<Boolean>? =
         null
     internal var returnCoordinates: Boolean = false
-    internal var isDayNightEnabled: Boolean = false
+    private var isDayNightEnabled: Boolean = false
     internal var voiceEnabled: Boolean = false
     internal var voiceScreenType: VoiceScreenType = VoiceScreenType.Inline
     private var allowInvalid3wa: Boolean = false
@@ -108,9 +108,9 @@ class W3WAutoSuggestEditText
     internal var voiceIconsColor: Int =
         ContextCompat.getColor(context, R.color.subtextColor)
     internal var voiceLanguage: String
-    internal var customPicker: W3WAutoSuggestPicker? = null
-    internal var customErrorView: AppCompatTextView? = null
-    internal var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? = null
+    private var customPicker: W3WAutoSuggestPicker? = null
+    private var customErrorView: AppCompatTextView? = null
+    private var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? = null
     private var customInvalidAddressMessageView: AppCompatTextView? = null
 
     internal val tick: Drawable? by lazy {
@@ -127,10 +127,6 @@ class W3WAutoSuggestEditText
     private val viewModel: AutosuggestTextViewModel by lazy {
         AutosuggestTextViewModel()
     }
-
-//    internal val cross: ImageView by lazy {
-//        ImageView(context)
-//    }
 
     internal val defaultPicker: W3WAutoSuggestPicker by lazy {
         W3WAutoSuggestPicker(
@@ -171,31 +167,6 @@ class W3WAutoSuggestEditText
             )
         )
     }
-
-//    internal val inlineVoicePulseLayout: InlineVoicePulseLayout by lazy {
-//        InlineVoicePulseLayout(context, this.currentTextColor).apply {
-//            this.onResultsCallback {
-//                handleVoiceSuggestions(it)
-//            }
-//            this.onErrorCallback {
-//                handleVoiceError(it)
-//            }
-//            this.onListeningStateChanged {
-//                if (it == null) return@onListeningStateChanged
-//                hint = when (it) {
-//                    W3WListeningState.Connecting -> {
-//                        context.getString(R.string.loading)
-//                    }
-//                    W3WListeningState.Started -> {
-//                        voicePlaceholder
-//                    }
-//                    W3WListeningState.Stopped -> {
-//                        oldHint
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     internal val iconHolderLayout: IconHolderLayout by lazy {
         IconHolderLayout(context, this.currentTextColor, this.currentHintTextColor).apply {
@@ -301,10 +272,10 @@ class W3WAutoSuggestEditText
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
                 voiceScreenType =
                     VoiceScreenType.values()[
-                            getInt(
-                                R.styleable.W3WAutoSuggestEditText_voiceScreenType,
-                                0
-                            )
+                        getInt(
+                            R.styleable.W3WAutoSuggestEditText_voiceScreenType,
+                            0
+                        )
                     ]
                 voiceLanguage =
                     getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
@@ -421,8 +392,6 @@ class W3WAutoSuggestEditText
             if (customPicker == null) buildSuggestionList()
             if (customErrorView == null) buildErrorMessage()
             if (customCorrectionPicker == null) buildCorrection()
-            //  buildVoice()
-            //    buildCross()
             buildIconHolderLayout()
             when (voiceScreenType) {
                 VoiceScreenType.Inline -> {
@@ -445,7 +414,7 @@ class W3WAutoSuggestEditText
     private fun onTextChanged(searchText: String) {
         if (fromPaste) {
             if (searchText.removePrefix(context.getString(R.string.w3w_slashes))
-                    .isPossible3wa()
+                .isPossible3wa()
             ) {
                 fromPaste = false
                 setText(searchText.removePrefix(context.getString(R.string.w3w_slashes)))
@@ -475,6 +444,9 @@ class W3WAutoSuggestEditText
             pickedFromVoice = false
             return
         }
+
+        // remove this when AutosuggestHelper did you mean issue is fixed.
+        getCorrectionPicker().forceClearAndHide()
 
         if (searchText.isPossible3wa() || searchText.didYouMean3wa()) {
             viewModel.autosuggest(searchText, allowFlexibleDelimiters)
@@ -797,7 +769,6 @@ class W3WAutoSuggestEditText
                     mapOf("X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})")
                 )
             )
-        // viewModel.microphone = Microphone()
         return this
     }
 
@@ -822,7 +793,6 @@ class W3WAutoSuggestEditText
                     headers
                 )
             )
-        // viewModel.microphone = Microphone()
         return this
     }
 
@@ -835,7 +805,6 @@ class W3WAutoSuggestEditText
         logicManager: AutosuggestLogicManager
     ): W3WAutoSuggestEditText {
         viewModel.manager = logicManager
-        // viewModel.microphone = Microphone()
         return this
     }
 
@@ -849,17 +818,6 @@ class W3WAutoSuggestEditText
      */
     fun language(language: String): W3WAutoSuggestEditText {
         viewModel.options.language = language
-        return this
-    }
-
-    /**
-     * Set different [Microphone] setup
-     *
-     * @param microphone custom microphone setup
-     * @return same [W3WAutoSuggestEditText] instance
-     */
-    fun microphone(microphone: Microphone): W3WAutoSuggestEditText {
-        // this.microphone = microphone
         return this
     }
 

@@ -20,7 +20,7 @@ import com.what3words.autosuggestsample.R
 import com.what3words.autosuggestsample.databinding.ActivityMainBinding
 import com.what3words.autosuggestsample.databinding.ActivityMainBinding.inflate
 import com.what3words.autosuggestsample.util.addOnTextChangedListener
-import com.what3words.components.text.VoiceScreenType
+import com.what3words.components.models.VoiceScreenType
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 

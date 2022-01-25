@@ -11,7 +11,7 @@ import com.what3words.components.R
 import com.what3words.components.databinding.VoicePulseLayoutBinding
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.models.W3WListeningState
-import com.what3words.components.text.VoiceScreenType
+import com.what3words.components.models.VoiceScreenType
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.voice.W3WAutoSuggestVoice
 import com.what3words.javawrapper.request.AutosuggestOptions

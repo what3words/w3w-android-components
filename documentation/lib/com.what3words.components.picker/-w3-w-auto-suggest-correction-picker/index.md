@@ -11,7 +11,7 @@ A [View](https://developer.android.com/reference/kotlin/android/view/View.html) 
 
 | | |
 |---|---|
-| [W3WAutoSuggestCorrectionPicker](-w3-w-auto-suggest-correction-picker.md) | [androidJvm]<br>@[JvmOverloads](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html)()<br>fun [W3WAutoSuggestCorrectionPicker](-w3-w-auto-suggest-correction-picker.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), attrs: [AttributeSet](https://developer.android.com/reference/kotlin/android/util/AttributeSet.html)? = null, defStyleAttr: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0) |
+| [W3WAutoSuggestCorrectionPicker](-w3-w-auto-suggest-correction-picker.md) | [androidJvm]<br>@[JvmOverloads](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html)()<br>fun [W3WAutoSuggestCorrectionPicker](-w3-w-auto-suggest-correction-picker.md)(context: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), attrs: [AttributeSet](https://developer.android.com/reference/kotlin/android/util/AttributeSet.html)? = null, defStyleAttr: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = R.attr.customW3WAutoSuggestCorrectionPickerStyle) |
 
 ## Functions
 
