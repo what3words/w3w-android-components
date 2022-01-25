@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         binding = inflate(layoutInflater)
         binding.suggestionEditText.apiKey(BuildConfig.W3W_API_KEY)
             .onDisplaySuggestions {
@@ -175,30 +174,12 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-
-        when (resources.configuration.uiMode.and(UI_MODE_NIGHT_MASK)) {
-            UI_MODE_NIGHT_YES -> {
-                binding.switchDayNight.text = "switch to day mode"
-            }
-            Configuration.UI_MODE_NIGHT_NO -> {
-                binding.switchDayNight.text = "switch to night mode"
-            }
-        }
-
-        binding.switchDayNight.setOnClickListener {
-            when (resources.configuration.uiMode.and(UI_MODE_NIGHT_MASK)) {
-                UI_MODE_NIGHT_YES -> {
-                    AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
-                    startActivity(Intent.makeRestartActivityTask(this.intent?.component))
-                }
-                Configuration.UI_MODE_NIGHT_NO -> {
-                    AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
-                    startActivity(Intent.makeRestartActivityTask(this.intent?.component))
-                }
-            }
-        }
-
         setContentView(binding.root)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        startActivity(Intent.makeRestartActivityTask(this.intent?.component))
     }
 
     //example of how to use a custom suggestion picker and custom error message on your view instead of using the default provided below the W3WAutoSuggestEditText
