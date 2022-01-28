@@ -46,12 +46,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         client = LocationServices.getFusedLocationProviderClient(this)
         binding = inflate(layoutInflater)
 
-        //TODO: REPLACE GOOGLE MAPS API KEY ANDROIDMANIFEST
+        // TODO: REPLACE GOOGLE MAPS API KEY ANDROIDMANIFEST
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        //autosuggest using custom picker and custom error/invalid message
+        // autosuggest using custom picker and custom error/invalid message
         binding.autosuggest.apiKey(BuildConfig.W3W_API_KEY)
             .voiceEnabled(true)
             .returnCoordinates(true)
@@ -82,7 +82,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        //request location permission
+        // request location permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
         ) {
@@ -115,7 +115,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             )
             binding.autosuggest.hint = getString(R.string.drop_off_hint)
             binding.autosuggest.setText("")
-            //reset focus to pick-up point
+            // reset focus to pick-up point
             binding.autosuggest.focus(
                 Coordinates(
                     suggestion.coordinates!!.lat,
@@ -141,7 +141,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun moveInitialCamera() {
         mMap.isMyLocationEnabled = true
         requestMyGpsLocation {
-            //set focus to user current location
+            // set focus to user current location
             binding.autosuggest.focus(
                 Coordinates(
                     it.latitude,
@@ -199,13 +199,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Manifest.permission.ACCESS_FINE_LOCATION
         )
         if (permission == PackageManager.PERMISSION_GRANTED) {
-            client.requestLocationUpdates(request, object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult?) {
-                    val location = locationResult?.lastLocation
-                    if (location != null)
-                        callback.invoke(location)
-                }
-            }, null)
+            client.requestLocationUpdates(
+                request,
+                object : LocationCallback() {
+                    override fun onLocationResult(locationResult: LocationResult?) {
+                        val location = locationResult?.lastLocation
+                        if (location != null)
+                            callback.invoke(location)
+                    }
+                },
+                null
+            )
         }
     }
     //endregion

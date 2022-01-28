@@ -3,16 +3,11 @@ package com.what3words.autosuggestsample.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
-import android.content.res.Configuration.UI_MODE_NIGHT_MASK
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
-import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
 import com.what3words.autosuggestsample.BuildConfig
@@ -33,16 +28,16 @@ class MainActivity : AppCompatActivity() {
         binding = inflate(layoutInflater)
         binding.suggestionEditText.apiKey(BuildConfig.W3W_API_KEY)
             .onDisplaySuggestions {
-
             }
-            .onSelected {
+            .onSuggestionSelected {
                 if (it != null) {
                     binding.selectedInfo.text =
                         "words: ${it.words}\ncountry: ${it.country}\nnear: ${it.nearestPlace}\ndistance: ${if (it.distanceToFocusKm == null) "N/A" else it.distanceToFocusKm.toString() + "km"}\nlatitude: ${it.coordinates?.lat}\nlongitude: ${it.coordinates?.lng}"
                 } else {
                     binding.selectedInfo.text = ""
                 }
-            }.onError {
+            }
+            .onError {
                 Log.e("MainActivity", "${it.key} - ${it.message}")
                 Snackbar.make(binding.main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
                     setAction("OK") { dismiss() }
@@ -86,18 +81,18 @@ class MainActivity : AppCompatActivity() {
             binding.suggestionEditText.voicePlaceholder(it)
         }
 
-        //how to change fallback text language
+        // how to change fallback text language
         binding.textLanguage.addOnTextChangedListener {
             binding.suggestionEditText.language(it)
         }
 
-        //how to change voicelanguage
+        // how to change voicelanguage
         binding.textVoiceLanguage.setText("en")
         binding.textVoiceLanguage.addOnTextChangedListener {
             binding.suggestionEditText.voiceLanguage(it)
         }
 
-        //how to clipToCountry
+        // how to clipToCountry
         binding.textClipToCountry.addOnTextChangedListener { input ->
             val test = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             binding.suggestionEditText.clipToCountry(test)
@@ -107,7 +102,7 @@ class MainActivity : AppCompatActivity() {
             binding.suggestionEditText.setText("")
         }
 
-        //how to apply focus
+        // how to apply focus
         binding.textFocus.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val lat = latLong.getOrNull(0)?.toDoubleOrNull()
@@ -119,7 +114,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //how to clipToCircle
+        // how to clipToCircle
         binding.textClipToCircle.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val lat = latLong.getOrNull(0)?.toDoubleOrNull()
@@ -132,7 +127,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //how to clipToBoundingBox
+        // how to clipToBoundingBox
         binding.textClipToBoundingBox.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val swLat = latLong.getOrNull(0)?.toDoubleOrNull()
@@ -151,7 +146,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //how to clipToPolygon
+        // how to clipToPolygon
         binding.textClipToPolygon.addOnTextChangedListener { input ->
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val listCoordinates = mutableListOf<Coordinates>()
@@ -182,9 +177,9 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent.makeRestartActivityTask(this.intent?.component))
     }
 
-    //example of how to use a custom suggestion picker and custom error message on your view instead of using the default provided below the W3WAutoSuggestEditText
+    // example of how to use a custom suggestion picker and custom error message on your view instead of using the default provided below the W3WAutoSuggestEditText
     private fun updateOnSelectedAndOnError() {
-        binding.suggestionEditText.onSelected(
+        binding.suggestionEditText.onSuggestionSelected(
             if (binding.checkboxCustomPicker.isChecked) binding.suggestionPicker else null,
             if (binding.checkboxCustomError.isChecked) binding.suggestionError else null
         ) {

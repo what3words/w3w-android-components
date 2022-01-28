@@ -146,7 +146,7 @@ internal fun W3WAutoSuggestEditText.buildVoiceFullscreen() {
     }
 }
 
-internal fun W3WAutoSuggestEditText.buildSuggestionList() {
+internal fun W3WAutoSuggestEditText.buildSuggestionList(isRelative: Boolean = true) {
     val params = ViewGroup.MarginLayoutParams(
         width,
         WRAP_CONTENT
@@ -154,11 +154,13 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList() {
     defaultPicker.apply {
         isFocusable = false
         isFocusableInTouchMode = false
-        this.x = this@buildSuggestionList.x
-        this.y =
-            this@buildSuggestionList.y + this@buildSuggestionList.height - resources.getDimensionPixelSize(
-            R.dimen.tiny_margin
-        )
+        if (isRelative) {
+            this.x = this@buildSuggestionList.x
+            this.y =
+                this@buildSuggestionList.y + this@buildSuggestionList.height - resources.getDimensionPixelSize(
+                R.dimen.tiny_margin
+            )
+        }
         layoutParams = params
         resources.getDimensionPixelSize(R.dimen.tiny_margin).let {
             setPadding(it, it, it, it)

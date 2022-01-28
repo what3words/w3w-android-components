@@ -43,6 +43,8 @@ import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.utils.IconHolderLayout
 import com.what3words.components.utils.VoicePulseLayout
 import com.what3words.components.utils.VoicePulseLayoutFullScreen
+import com.what3words.components.utils.W3WSuggestion
+import com.what3words.components.utils.backwardCompatible
 import com.what3words.components.vm.AutosuggestTextViewModel
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
@@ -88,6 +90,10 @@ class W3WAutoSuggestEditText
     private var correctionMessage: String = context.getString(R.string.correction_message)
     private var invalidSelectionMessageText: String? = null
     internal var lastSuggestions: MutableList<Suggestion> = mutableListOf()
+
+    @Deprecated("", ReplaceWith("callback"))
+    private var oldCallback: Consumer<W3WSuggestion?>? =
+        null
     private var callback: Consumer<SuggestionWithCoordinates?>? =
         null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? =
@@ -385,9 +391,14 @@ class W3WAutoSuggestEditText
         if (!isRendered && visibility == VISIBLE) {
             isRendered = true
             (parent as? ViewGroup)?.apply {
-                if (this is LinearLayout || this is LinearLayoutCompat) throw Exception(
-                    "W3WAutoSuggestEditText is restricted to Relative layout parent groups, i.e: RelativeLayout, ConstraintLayout"
-                )
+                if (this is LinearLayout || this is LinearLayoutCompat) {
+                    Log.e(
+                        "W3WAutoSuggestEditText", "Running a feature reduced W3WAutoSuggestEditText, for full support use relative layouts as parent view, i.e. ConstraintLayout/RelativeLayout."
+                    )
+                    if (customPicker == null) buildSuggestionList(false)
+                    viewTreeObserver.removeOnGlobalLayoutListener(this@W3WAutoSuggestEditText)
+                    return
+                }
             }
             if (customPicker == null) buildSuggestionList()
             if (customErrorView == null) buildErrorMessage()
@@ -601,6 +612,7 @@ class W3WAutoSuggestEditText
         } else {
             text = null
         }
+        oldCallback?.accept(suggestion?.backwardCompatible())
         callback?.accept(suggestion)
     }
     //endregion
@@ -1057,12 +1069,28 @@ class W3WAutoSuggestEditText
      * @param callback will return the [SuggestionWithCoordinates] picked by the end-user, coordinates will be null if returnCoordinates = false.
      * @return same [W3WAutoSuggestEditText] instance
      */
-    fun onSelected(
+    fun onSuggestionSelected(
         picker: W3WAutoSuggestPicker? = null,
         invalidAddressMessageView: AppCompatTextView? = null,
         callback: Consumer<SuggestionWithCoordinates?>,
     ): W3WAutoSuggestEditText {
         this.callback = callback
+        if (picker != null) {
+            picker.setup(viewModel, displayUnits)
+            defaultPicker.forceClearAndHide()
+        } else customPicker?.forceClearAndHide()
+        this.customInvalidAddressMessageView = invalidAddressMessageView
+        this.customPicker = picker
+        return this
+    }
+
+    @Deprecated("", ReplaceWith("onSuggestionSelected { }"))
+    fun onSelected(
+        picker: W3WAutoSuggestPicker? = null,
+        invalidAddressMessageView: AppCompatTextView? = null,
+        callback: Consumer<W3WSuggestion?>,
+    ): W3WAutoSuggestEditText {
+        this.oldCallback = callback
         if (picker != null) {
             picker.setup(viewModel, displayUnits)
             defaultPicker.forceClearAndHide()
