@@ -56,7 +56,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .voiceEnabled(true)
             .returnCoordinates(true)
             .customCorrectionPicker(binding.correctionPicker)
-            .onSelected(binding.picker, binding.message) { suggestion ->
+            .onSuggestionSelected(binding.picker, binding.message) { suggestion ->
                 if (suggestion != null) populateMarker(suggestion)
             }.onError(binding.message) {
                 Log.e("autosuggest", it.message)
