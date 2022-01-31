@@ -18,5 +18,6 @@
     <color name="errorTextColor">#B24000</color>
     <color name="hoverColor">#DBEFFA</color>
     <color name="w3wVoiceBackground">#F2F4F5</color>
+    <color name="w3wVoiceBackgroundForceDay">#F2F4F5</color>
     <color name="transparent">#00000000</color>
 </resources>

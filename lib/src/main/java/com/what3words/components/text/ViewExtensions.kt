@@ -77,6 +77,7 @@ internal fun W3WAutoSuggestEditText.buildVoiceAnimatedPopup() {
         voiceAnimatedPopup = VoicePulseLayout(
             context,
             voicePlaceholder,
+            currentTextColor,
             voiceBackgroundColor,
             voiceBackgroundDrawable,
             voiceIconsColor
@@ -109,6 +110,7 @@ internal fun W3WAutoSuggestEditText.buildVoiceFullscreen() {
         voicePulseLayoutFullScreen = VoicePulseLayoutFullScreen(
             context,
             voicePlaceholder,
+            currentTextColor,
             voiceBackgroundColor,
             voiceBackgroundDrawable,
             voiceIconsColor

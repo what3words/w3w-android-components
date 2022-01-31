@@ -245,6 +245,8 @@ class W3WAutoSuggestEditText
             defStyleAttr, R.style.W3WAutoSuggestEditTextTheme
         ).apply {
             try {
+                isDayNightEnabled =
+                    getBoolean(R.styleable.W3WAutoSuggestEditText_isDayNightEnabled, false)
                 errorMessageText = getString(
                     R.styleable.W3WAutoSuggestEditText_errorMessage
                 ) ?: resources.getString(R.string.error_message)
@@ -258,7 +260,10 @@ class W3WAutoSuggestEditText
                     ?: resources.getString(R.string.voice_placeholder)
                 voiceBackgroundColor = getColor(
                     R.styleable.W3WAutoSuggestEditText_voiceBackgroundColor,
-                    ContextCompat.getColor(context, R.color.w3wVoiceBackground)
+                    ContextCompat.getColor(
+                        context,
+                        if (isDayNightEnabled) R.color.w3wVoiceBackground else R.color.w3wVoiceBackgroundForceDay
+                    )
                 )
                 val drawableId = getResourceId(
                     R.styleable.W3WAutoSuggestEditText_voiceBackgroundDrawable,
@@ -268,10 +273,9 @@ class W3WAutoSuggestEditText
                     if (drawableId != -1) ContextCompat.getDrawable(context, drawableId) else null
                 voiceIconsColor = getColor(
                     R.styleable.W3WAutoSuggestEditText_voiceIconsColor,
-                    ContextCompat.getColor(context, R.color.subtextColor)
+                    ContextCompat.getColor(context, if (isDayNightEnabled) R.color.subtextColor else R.color.subtextColorForceDay)
                 )
-                isDayNightEnabled =
-                    getBoolean(R.styleable.W3WAutoSuggestEditText_isDayNightEnabled, false)
+
                 returnCoordinates =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_returnCoordinates, false)
                 voiceEnabled =
@@ -393,7 +397,8 @@ class W3WAutoSuggestEditText
             (parent as? ViewGroup)?.apply {
                 if (this is LinearLayout || this is LinearLayoutCompat) {
                     Log.e(
-                        "W3WAutoSuggestEditText", "Running a feature reduced W3WAutoSuggestEditText, for full support use relative layouts as parent view, i.e. ConstraintLayout/RelativeLayout."
+                        "W3WAutoSuggestEditText",
+                        "Running a feature reduced W3WAutoSuggestEditText, for full support use relative layouts as parent view, i.e. ConstraintLayout/RelativeLayout."
                     )
                     if (customPicker == null) buildSuggestionList(false)
                     viewTreeObserver.removeOnGlobalLayoutListener(this@W3WAutoSuggestEditText)
@@ -1178,7 +1183,6 @@ class W3WAutoSuggestEditText
         this.correctionMessage = message
         return this
     }
-
 
     /**
      * DEPRECATED

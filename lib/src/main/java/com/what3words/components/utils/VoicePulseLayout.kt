@@ -38,6 +38,7 @@ internal class VoicePulseLayout
 @JvmOverloads constructor(
     context: Context,
     private val placeholder: String,
+    placeholderTextColor: Int,
     backgroundColor: Int,
     backgroundDrawable: Drawable?,
     iconTintColor: Int,
@@ -75,6 +76,7 @@ internal class VoicePulseLayout
             errorCallback?.accept(null)
         }
         binding.voicePlaceholder.text = context.getString(R.string.loading)
+        binding.voicePlaceholder.setTextColor(placeholderTextColor)
     }
 
     fun onResultsCallback(callback: Consumer<List<Suggestion>>) {
