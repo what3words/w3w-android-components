@@ -5,10 +5,10 @@ dependencyResolutionManagement {
         mavenCentral()
         jcenter()
         maven {
-            url "https://oss.sonatype.org/content/repositories/comwhat3words-1173"
+            url "https://oss.sonatype.org/content/repositories/comwhat3words-1176"
         }
         maven {
-            url "https://oss.sonatype.org/content/repositories/comwhat3words-1174"
+            url "https://oss.sonatype.org/content/repositories/comwhat3words-1177"
         }
     }
 }
