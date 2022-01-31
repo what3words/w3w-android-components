@@ -1179,6 +1179,18 @@ class W3WAutoSuggestEditText
         return this
     }
 
+
+    /**
+     * DEPRECATED
+     */
+    @Deprecated("", ReplaceWith("displayUnit(com.what3words.components.models.DisplayUnits)"))
+    fun displayUnit(
+        units: com.what3words.components.utils.DisplayUnits
+    ): W3WAutoSuggestEditText {
+        this.displayUnits = units.backwardCompatible()
+        return this
+    }
+
     /**
      * Set end-user display unit, [DisplayUnits.SYSTEM], [DisplayUnits.METRIC], [DisplayUnits.IMPERIAL]
      *
