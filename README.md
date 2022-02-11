@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
 
 	suggestionEditText.apiKey("YOUR_API_KEY_HERE")
             .returnCoordinates(false)
-            .onSelected { suggestion ->
+            .onSuggestionSelected { suggestion ->
                 if (suggestion != null) {
                     Log.i( "MainActivity","words: ${suggestion.words}, country: ${suggestion.country}, distance: ${suggestion.distanceToFocusKm}, near: ${suggestion.nearestPlace}, latitude: ${suggestion.coordinates?.lat}, longitude: ${suggestion.coordinates?.lng}")
                 } else {
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         W3WAutoSuggestEditText autoSuggestEditText = findViewById(R.id.suggestionEditText);
         autoSuggestEditText.apiKey("YOUR_API_KEY_HERE")
                 .returnCoordinates(false)
-                .onSelected(null, null, (SuggestionWithCoordinates suggestion) -> {
+                .onSuggestionSelected(null, null, (SuggestionWithCoordinates suggestion) -> {
                     if (suggestion != null) {
                         Log.i("MainActivity", String.format("words: %s, country: %s, near: %s", suggestion.getWords(), suggestion.getCountry(), suggestion.getNearestPlace()));
                     } else {

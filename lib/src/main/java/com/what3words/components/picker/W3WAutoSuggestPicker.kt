@@ -171,7 +171,23 @@ class W3WAutoSuggestPicker
                                 (layoutManager as LinearLayoutManager).reverseLayout
                             )
                         )
+                    } ?: kotlin.run {
+                        addItemDecoration(
+                            MyDividerItemDecorator(
+                                null,
+                                itemSpacing,
+                                (layoutManager as LinearLayoutManager).reverseLayout
+                            )
+                        )
                     }
+                } else {
+                    addItemDecoration(
+                        MyDividerItemDecorator(
+                            null,
+                            itemSpacing,
+                            (layoutManager as LinearLayoutManager).reverseLayout
+                        )
+                    )
                 }
 
                 suggestionsAdapter = SuggestionsAdapter(
