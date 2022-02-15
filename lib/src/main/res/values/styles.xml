@@ -1,12 +1,12 @@
 <resources>
 
-    <style name="Widget.AppCompat.W3WAutoSuggestEditText" parent="Widget.AppCompat.EditText">
-        <item name="imageTintColor">@color/w3wRed</item>
-        <item name="android:textColor">@color/w3wBlue</item>
+    <style name="Widget.AppCompat.W3WAutoSuggestEditTextDayNight" parent="Widget.AppCompat.EditText">
+        <item name="isDayNightEnabled">true</item>
+        <item name="android:textColor">@color/textColor</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/bg_white_border_gray</item>
-        <item name="android:textColorHint">@color/w3wLightGray</item>
+        <item name="android:background">@drawable/bg_with_border</item>
+        <item name="android:textColorHint">@color/hintColor</item>
         <item name="android:hint">@string/input_hint</item>
         <item name="android:minHeight">@dimen/input_height</item>
         <item name="android:paddingRight">@dimen/xlarge_margin</item>
@@ -16,7 +16,98 @@
         <item name="android:inputType">textNoSuggestions</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:maxLines">1</item>
+        <item name="android:imeOptions">flagNoExtractUi|flagNoFullscreen|actionDone</item>
+        <item name="android:textCursorDrawable">@drawable/cursor</item>
         <item name="android:textAppearance">@style/W3WAutoSuggestEditTextTextAppearance</item>
+    </style>
+
+    <style name="Widget.AppCompat.W3WAutoSuggestEditText" parent="Widget.AppCompat.EditText">
+        <item name="isDayNightEnabled">false</item>
+        <item name="android:textColor">#0A3049</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_with_border_force_day</item>
+        <item name="android:textColorHint">#A3A3A3</item>
+        <item name="android:hint">@string/input_hint</item>
+        <item name="android:minHeight">@dimen/input_height</item>
+        <item name="android:paddingRight">@dimen/xlarge_margin</item>
+        <item name="android:paddingLeft">@dimen/xlarge_margin</item>
+        <item name="android:paddingTop">@dimen/large_margin</item>
+        <item name="android:paddingBottom">@dimen/large_margin</item>
+        <item name="android:inputType">textNoSuggestions</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:imeOptions">flagNoExtractUi|flagNoFullscreen|actionDone</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textCursorDrawable">@drawable/cursor_force_day</item>
+        <item name="android:textAppearance">@style/W3WAutoSuggestEditTextTextAppearance</item>
+    </style>
+
+    <style name="W3WAutoSuggestPicker">
+        <item name="pickerItemBackground">#fff</item>
+        <item name="pickerItemSpacing">0dp</item>
+        <item name="pickerBackgroundDrawable">@drawable/bg_with_border_force_day</item>
+        <item name="pickerDivider">@drawable/divider_force_day</item>
+        <item name="pickerItemHighlightBackground">#DBEFFA</item>
+        <item name="pickerDividerVisible">true</item>
+        <item name="pickerItemTitleTextSize">@dimen/default_text</item>
+        <item name="pickerItemSubtitleTextSize">@dimen/secondary_text</item>
+        <item name="pickerItemTitleTextColor">#0A3049</item>
+        <item name="pickerItemSubtitleTextColor">#525252</item>
+    </style>
+
+    <style name="W3WAutoSuggestPickerDayNight">
+        <item name="pickerItemBackground">@color/background</item>
+        <item name="pickerItemSpacing">0dp</item>
+        <item name="pickerBackgroundDrawable">@drawable/bg_with_border</item>
+        <item name="pickerDivider">@drawable/divider</item>
+        <item name="pickerItemHighlightBackground">@color/hoverColor</item>
+        <item name="pickerDividerVisible">true</item>
+        <item name="pickerItemTitleTextSize">@dimen/default_text</item>
+        <item name="pickerItemSubtitleTextSize">@dimen/secondary_text</item>
+        <item name="pickerItemTitleTextColor">@color/textColor</item>
+        <item name="pickerItemSubtitleTextColor">@color/subtextColor</item>
+    </style>
+
+    <style name="W3WAutoSuggestCorrectionPicker">
+        <item name="correctionBackgroundDrawable">@drawable/bg_with_border_force_day</item>
+        <item name="correctionTitleTextSize">@dimen/default_text</item>
+        <item name="correctionSubtitleTextSize">@dimen/secondary_text</item>
+        <item name="correctionTitleTextColor">#0A3049</item>
+        <item name="correctionSubtitleTextColor">#525252</item>
+        <item name="correctionTitleFontFamily">sans-serif</item>
+        <item name="correctionSubtitleFontFamily">sans-serif</item>
+    </style>
+
+    <style name="W3WAutoSuggestCorrectionPickerDayNight" >
+        <item name="correctionBackgroundDrawable">@drawable/bg_with_border</item>
+        <item name="correctionTitleTextSize">@dimen/default_text</item>
+        <item name="correctionSubtitleTextSize">@dimen/secondary_text</item>
+        <item name="correctionTitleTextColor">@color/textColor</item>
+        <item name="correctionSubtitleTextColor">@color/subtextColor</item>
+        <item name="correctionTitleFontFamily">sans-serif</item>
+        <item name="correctionSubtitleFontFamily">sans-serif</item>
+    </style>
+
+    <style name="W3WAutoSuggestErrorMessage" parent="Widget.AppCompat.TextView">
+        <item name="android:paddingStart">@dimen/xlarge_margin</item>
+        <item name="android:paddingEnd">@dimen/xlarge_margin</item>
+        <item name="android:paddingTop">@dimen/medium_margin</item>
+        <item name="android:paddingBottom">@dimen/medium_margin</item>
+        <item name="android:background">@drawable/bg_item_day</item>
+        <item name="android:textColor">#B24000</item>
+        <item name="android:focusable">false</item>
+        <item name="android:clickable">false</item>
+    </style>
+
+    <style name="W3WAutoSuggestErrorMessageDayNight" parent="Widget.AppCompat.TextView">
+        <item name="android:paddingStart">@dimen/xlarge_margin</item>
+        <item name="android:paddingEnd">@dimen/xlarge_margin</item>
+        <item name="android:paddingTop">@dimen/medium_margin</item>
+        <item name="android:paddingBottom">@dimen/medium_margin</item>
+        <item name="android:background">@drawable/bg_item_day</item>
+        <item name="android:textColor">@color/errorTextColor</item>
+        <item name="android:focusable">false</item>
+        <item name="android:clickable">false</item>
     </style>
 
     <style name="W3WAutoSuggestEditTextTextAppearance" parent="TextAppearance.AppCompat">

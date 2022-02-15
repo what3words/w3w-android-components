@@ -1,0 +1,6 @@
+{
+  "message": "Error",
+  "code": 101,
+  "type": "invalid_message",
+  "reason": "reason why"
+}

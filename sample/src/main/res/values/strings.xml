@@ -4,6 +4,7 @@
     <string name="welcome_to_autosuggest">Welcome to Autosuggest sample</string>
     <string name="selected_info">Selected info</string>
     <string name="customise_the_autosuggest_component">Customise the AutoSuggest Component</string>
+    <string name="customise_device_settings">Customise device settings</string>
     <string name="return_coordinates">return coordinates</string>
     <string name="placeholder">placeholder</string>
     <string name="language">language</string>
@@ -18,15 +19,18 @@
     <string name="clip_to_box_info">Confine results to a bounding box specified using co-ordinates. Example value: 51.521,-0.343,52.6,2.3324</string>
     <string name="clip_to_polygon_hint">clip to polygon</string>
     <string name="clip_to_polygon_info">Restrict AutoSuggest results to a polygon, specified by a comma-separated list of lat,lng pairs. The polygon should be closed, i.e. the first element should be repeated as the last element; also the list should contain at least 4 entries. The API is currently limited to accepting up to 25 pairs.</string>
-    <string name="voice_enabled">voice enabled</string>
+    <string name="voice_enabled">enable voice with inline animation</string>
+    <string name="voice_disabled">disable voice</string>
+    <string name="voice_popup_enabled">enable voice with popup animation</string>
     <string name="voice_placeholder_header">voice placeholder</string>
     <string name="voice_language">voice language</string>
     <string name="voice_language_info">The voice language request parameter is defaulted to "en". The language code provided is used to configure both the Speechmatics ASR, and the what3words AutoSuggest algorithm.</string>
-    <string name="voice_fullscreen">voice fullscreen</string>
+    <string name="voice_fullscreen">enable voice with fullscreen</string>
     <string name="voice_fullscreen_info">The speech recognition start inline by default but use this property to change to a full screen.</string>
     <string name="suggestion_list_below">Suggestion list below</string>
     <string name="custom_picker">use custom picker</string>
     <string name="custom_error">use custom error message view</string>
     <string name="custom_correction_picker">use custom correction picker</string>
     <string name="allow_invalid_address">allow invalid 3wa</string>
+    <string name="allow_flexible_delimiters">allow flexible delimiters</string>
 </resources>

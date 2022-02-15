@@ -1,0 +1,7 @@
+{
+  "message": "W3WError",
+  "error": {
+    "code": "BadFocus",
+    "message": "lat must be \u003e\u003d -90 and \u003c\u003d90"
+  }
+}

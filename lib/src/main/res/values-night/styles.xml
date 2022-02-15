@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="W3WAutoSuggestCorrectionPickerDayNight">
+        <item name="correctionBackgroundDrawable">@drawable/bg_with_border</item>
+        <item name="correctionTitleTextSize">@dimen/default_text</item>
+        <item name="correctionSubtitleTextSize">@dimen/secondary_text</item>
+        <item name="correctionTitleTextColor">@color/textColor</item>
+        <item name="correctionSubtitleTextColor">@color/subtextColor</item>
+        <item name="correctionTitleFontFamily">sans-serif</item>
+        <item name="correctionSubtitleFontFamily">sans-serif</item>
+    </style>
+
+    <style name="W3WAutoSuggestErrorMessageDayNight" parent="Widget.AppCompat.TextView">
+        <item name="android:paddingStart">@dimen/xlarge_margin</item>
+        <item name="android:paddingEnd">@dimen/xlarge_margin</item>
+        <item name="android:paddingTop">@dimen/medium_margin</item>
+        <item name="android:paddingBottom">@dimen/medium_margin</item>
+        <item name="android:background">@drawable/bg_item_night</item>
+        <item name="android:textSize">@dimen/secondary_text</item>
+        <item name="android:textColor">@color/errorTextColor</item>
+        <item name="android:focusable">false</item>
+        <item name="android:clickable">false</item>
+    </style>
+
+    <style name="W3WAutoSuggestEditTextTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="W3WAutoSuggestVoice">
+        <item name="android:layout_width">92dp</item>
+        <item name="android:layout_height">92dp</item>
+        <item name="voicePlaceholder">Test</item>
+        <item name="voiceLanguage">en</item>
+        <item name="nResults">3</item>
+    </style>
+</resources>

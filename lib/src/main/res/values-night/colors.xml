@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="hoverColor">#0A3049</color>
+    <color name="background">#001626</color>
+    <color name="borderColor">#7A7A7A</color>
+    <color name="textColor">#FFFFFF</color>
+    <color name="subtextColor">#C2C2C2</color>
+    <color name="hintColor">#C2C2C2</color>
+    <color name="errorBorderColor">#F26C50</color>
+    <color name="errorBackgroundColor">#F26C50</color>
+    <color name="errorTextColor">#0A3049</color>
+    <color name="w3wVoiceBackground">#0A3049</color>
+</resources>

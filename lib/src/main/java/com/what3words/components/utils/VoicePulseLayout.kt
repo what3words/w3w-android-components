@@ -1,158 +1,90 @@
 package com.what3words.components.utils
 
-import android.animation.Animator
-import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
-import android.view.View
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.what3words.androidwrapper.voice.VoiceBuilder
+import androidx.core.util.Consumer
 import com.what3words.components.R
-import kotlinx.android.synthetic.main.voice_pulse_layout.view.*
+import com.what3words.components.databinding.VoicePulseLayoutBinding
+import com.what3words.components.models.AutosuggestLogicManager
+import com.what3words.components.models.VoiceScreenType
+import com.what3words.components.models.W3WListeningState
+import com.what3words.components.text.W3WAutoSuggestEditText
+import com.what3words.components.voice.W3WAutoSuggestVoice
+import com.what3words.javawrapper.request.AutosuggestOptions
+import com.what3words.javawrapper.response.APIResponse
+import com.what3words.javawrapper.response.Suggestion
 
+/**
+ * [W3WAutoSuggestEditText.voiceScreenType] [VoiceScreenType.AnimatedPopup] voice layout.
+ *
+ * This view will animate from bottom to top with a shadow background, contains the [W3WAutoSuggestVoice] and a close button.
+ *
+ * @param context view context.
+ * @param placeholder the tip text placeholder, this can be changed using attribute [W3WAutoSuggestEditText.voicePlaceholder].
+ * @param backgroundColor the fullscreen background color, this can be changed using attribute [W3WAutoSuggestEditText.voiceBackgroundColor].
+ * @param backgroundDrawable the fullscreen background drawable, i.e: gradients, etc, this can be changed using attribute [W3WAutoSuggestEditText.voiceBackgroundDrawable].
+ * @param iconTintColor the icons and text color, this can be changed using attribute [W3WAutoSuggestEditText] voiceIconsColor.
+ * @property isVoiceRunning keeps the state of the voice component, if listening or not, this logic might need a refactor to properly use [W3WAutoSuggestVoice.onListeningStateChanged].
+ * @property resultsCallback a callback to subscribe on [W3WAutoSuggestEditText] for when [W3WAutoSuggestVoice] returns suggestions.
+ * @property errorCallback a callback to subscribe on [W3WAutoSuggestEditText] for when [W3WAutoSuggestVoice] returns an error.
+ * @constructor Creates a new view [VoicePulseLayout] programmatically.
+ */
+@SuppressLint("ViewConstructor")
 internal class VoicePulseLayout
 @JvmOverloads constructor(
     context: Context,
-    placeholder: String,
+    private val placeholder: String,
+    placeholderTextColor: Int,
+    backgroundColor: Int,
+    backgroundDrawable: Drawable?,
+    iconTintColor: Int,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     companion object {
-        private const val INNER_MAX_SIZE_DP = 104F
-        private const val MID_MAX_SIZE_DP = 152F
-        private const val OUTER_MAX_SIZE_DP = 216F
         private const val ANIMATION_TIME = 250L
     }
 
-    var isVoiceRunning: Boolean = false
-    private var pulseAnimator: PulseAnimator
-
-    private var initialSizeList = arrayListOf<Int>()
-    private var animatorList = arrayListOf<ValueAnimator.AnimatorUpdateListener>()
-
-    private lateinit var innerUpdateListener: ValueAnimator.AnimatorUpdateListener
-    private lateinit var middleUpdateListener: ValueAnimator.AnimatorUpdateListener
-    private lateinit var outerUpdateListener: ValueAnimator.AnimatorUpdateListener
-    private lateinit var voicePulseEndListener: Animator.AnimatorListener
-    private var closeCallback: (() -> Unit)? = null
-    private var onToggle: (() -> Unit)? = null
+    private var isVoiceRunning: Boolean = false
+    private var resultsCallback: Consumer<List<Suggestion>>? = null
+    private var errorCallback: Consumer<APIResponse.What3WordsError?>? = null
+    private var binding: VoicePulseLayoutBinding = VoicePulseLayoutBinding.inflate(
+        LayoutInflater.from(context), this, true
+    )
 
     init {
-        View.inflate(context, R.layout.voice_pulse_layout, this)
-        setVoicePulseListeners()
-
-        pulseAnimator = PulseAnimator(
-            INNER_MAX_SIZE_DP,
-            MID_MAX_SIZE_DP,
-            OUTER_MAX_SIZE_DP,
-            innerCircleView,
-            midCircleView,
-            outerCircleView,
-            animatorList,
-            voicePulseEndListener
-        )
-
-        // Add a viewTreeObserver to obtain the initial size of the circle overlays
-        voicePulseLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
-            OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                setOverlayBaseSize()
-                voicePulseLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
-
-        icClose.setOnClickListener {
-            closeCallback?.invoke()
+        binding.icLogo.setColorFilter(iconTintColor)
+        if (backgroundDrawable != null) {
+            binding.voiceHolder.background = backgroundDrawable
+        } else {
+            binding.voiceHolder.setBackgroundColor(backgroundColor)
+        }
+        binding.icClose.setOnClickListener {
+            binding.autosuggestVoice.stop()
+            setIsVoiceRunning(isVoiceRunning = false, shouldAnimate = true)
+            errorCallback?.accept(null)
         }
 
-        voiceHolderFullscreen.setOnClickListener {
-            closeCallback?.invoke()
+        binding.voiceHolderFullscreen.setOnClickListener {
+            binding.autosuggestVoice.stop()
+            setIsVoiceRunning(isVoiceRunning = false, shouldAnimate = true)
+            errorCallback?.accept(null)
         }
-
-        w3wLogo.setOnClickListener {
-            onToggle?.invoke()
-        }
-
-        voicePlaceholder.text = placeholder
+        binding.voicePlaceholder.text = context.getString(R.string.loading)
+        binding.voicePlaceholder.setTextColor(placeholderTextColor)
     }
 
-    fun setOverlayBaseSize() {
-        initialSizeList = arrayListOf(
-            innerCircleView.drawable.intrinsicHeight,
-            midCircleView.drawable.intrinsicHeight,
-            outerCircleView.drawable.intrinsicHeight
-        )
-        pulseAnimator.setInitialSize(initialSizeList)
+    fun onResultsCallback(callback: Consumer<List<Suggestion>>) {
+        this.resultsCallback = callback
     }
 
-    private fun setVoicePulseListeners() {
-        innerUpdateListener = ValueAnimator.AnimatorUpdateListener {
-            val animValue = it.animatedValue as Int
-            setLayout(innerCircleView, animValue)
-        }
-        middleUpdateListener = ValueAnimator.AnimatorUpdateListener {
-            val animValue = it.animatedValue as Int
-            setLayout(midCircleView, animValue)
-        }
-        outerUpdateListener = ValueAnimator.AnimatorUpdateListener {
-            val animValue = it.animatedValue as Int
-            setLayout(outerCircleView, animValue)
-        }
-        animatorList.apply {
-            add(innerUpdateListener)
-            add(middleUpdateListener)
-            add(outerUpdateListener)
-        }
-        voicePulseEndListener = object : Animator.AnimatorListener {
-
-            override fun onAnimationEnd(animation: Animator?, isReverse: Boolean) {
-                Log.d("ANIM_END", "VOICE END REVERSE")
-                if (isReverse) {
-                    // Animation will ensure the pulse is reset to initial state before animating logo
-                    for (i in pulseAnimator.getInitialSize().indices) {
-                        when (i) {
-                            PulseAnimator.INNER_CIRCLE_INDEX -> {
-                                setLayout(innerCircleView, initialSizeList[i])
-                            }
-                            PulseAnimator.MIDDLE_CIRCLE_INDEX -> {
-                                setLayout(midCircleView, initialSizeList[i])
-                            }
-                            PulseAnimator.OUTER_CIRCLE_INDEX -> {
-                                setLayout(innerCircleView, initialSizeList[i])
-                            }
-                        }
-                    }
-                    w3wLogo.setImageResource(R.drawable.ic_voice)
-                }
-
-            }
-
-            override fun onAnimationCancel(animator: Animator?) {
-            }
-
-            override fun onAnimationEnd(animator: Animator?) {
-                Log.d("ANIM_END", "VOICE END")
-            }
-
-            override fun onAnimationRepeat(animator: Animator?) {
-            }
-
-            override fun onAnimationStart(animator: Animator?) {
-            }
-        }
-    }
-
-    private fun setLayout(view: View, layoutValue: Int) {
-        // overwrite the layout params for the gradient overlay
-        val layoutParams = view.layoutParams
-        layoutParams.height = layoutValue
-        layoutParams.width = layoutValue
-        view.layoutParams = layoutParams
-        view.requestLayout()
-        invalidatePulse(view)
+    fun onErrorCallback(callback: Consumer<APIResponse.What3WordsError?>) {
+        this.errorCallback = callback
     }
 
     fun setIsVoiceRunning(isVoiceRunning: Boolean, shouldAnimate: Boolean) {
@@ -160,89 +92,77 @@ internal class VoicePulseLayout
         if (isVoiceRunning) {
             if (shouldAnimate) {
                 visibility = VISIBLE
-                voicePlaceholder.visibility = VISIBLE
-                voiceHolder.animate().translationY(
+                binding.voicePlaceholder.visibility = VISIBLE
+                binding.voiceHolder.animate().translationY(
                     0f
                 ).setDuration(
                     ANIMATION_TIME
                 ).withEndAction {
-                    w3wLogo.setImageResource(R.drawable.ic_voice_active)
-                    innerCircleView.visibility = VISIBLE
-                    midCircleView.visibility = VISIBLE
-                    outerCircleView.visibility = VISIBLE
-                    icClose.visibility = VISIBLE
+                    binding.icClose.visibility = VISIBLE
                 }.start()
             } else {
-                voicePlaceholder.visibility = VISIBLE
-                w3wLogo.setImageResource(R.drawable.ic_voice_active)
-                innerCircleView.visibility = VISIBLE
-                midCircleView.visibility = VISIBLE
-                outerCircleView.visibility = VISIBLE
+                binding.voicePlaceholder.visibility = VISIBLE
             }
         } else {
-            resetLayout()
             if (shouldAnimate) {
-                icClose.visibility = GONE
-                voicePlaceholder.visibility = GONE
-                voiceHolder.animate().translationY(
+                binding.icClose.visibility = GONE
+                binding.voicePlaceholder.visibility = GONE
+                binding.voiceHolder.animate().translationY(
                     resources.getDimensionPixelSize(R.dimen.voice_popup_height).toFloat()
                 ).setDuration(
                     ANIMATION_TIME
                 ).withEndAction {
-                    w3wLogo.setImageResource(R.drawable.ic_voice)
-                    innerCircleView.visibility = GONE
-                    midCircleView.visibility = GONE
-                    outerCircleView.visibility = GONE
                     visibility = GONE
                 }.start()
             } else {
-                voicePlaceholder.visibility = GONE
-                w3wLogo.setImageResource(R.drawable.ic_voice)
-                innerCircleView.visibility = GONE
-                midCircleView.visibility = GONE
-                outerCircleView.visibility = GONE
+                binding.voicePlaceholder.visibility = GONE
             }
         }
     }
 
-    private fun invalidatePulse(view: View) {
-        view.postInvalidateOnAnimation()
-    }
-
-    fun onSignalUpdate(signalStrength: Float) {
-        pulseAnimator.runAnim(signalStrength)
-    }
-
-    fun onCloseCallback(callback: () -> Unit): VoicePulseLayout {
-        this.closeCallback = callback
-        return this
-    }
-
-    private fun resetLayout() {
-        if (initialSizeList.isEmpty()) return
-        setLayout(innerCircleView, initialSizeList[PulseAnimator.INNER_CIRCLE_INDEX])
-        setLayout(midCircleView, initialSizeList[PulseAnimator.MIDDLE_CIRCLE_INDEX])
-        setLayout(outerCircleView, initialSizeList[PulseAnimator.OUTER_CIRCLE_INDEX])
-    }
-
-    fun setup(builder: VoiceBuilder, microphone: VoiceBuilder.Microphone) {
-        microphone.onListening {
-            if (it != null) {
-                onSignalUpdate(transform(it))
-                if (it > 0.7) voicePlaceholder.visibility = GONE
+    /**
+     * [setup] should be called by [W3WAutoSuggestEditText] having the [AutosuggestLogicManager] which can be SDK or API as a parameter, using the internal [W3WAutoSuggestVoice.manager].
+     * This flow should only happen when using [W3WAutoSuggestVoice] inside [W3WAutoSuggestEditText].
+     * [W3WAutoSuggestVoice.onInternalResults] callback is needed to receive the suggestions from [W3WAutoSuggestVoice].
+     * [W3WAutoSuggestVoice.onListeningStateChanged] callback is needed to hide this view when [W3WAutoSuggestVoice] [W3WListeningState].
+     * [W3WAutoSuggestVoice.onError] callback is needed to get any [APIResponse.What3WordsError] returned by [W3WAutoSuggestVoice].
+     */
+    fun setup(logicManager: AutosuggestLogicManager) {
+        binding.autosuggestVoice.manager(logicManager)
+            .onInternalResults {
+                resultsCallback?.accept(it)
+            }.onListeningStateChanged {
+                if (it == null) return@onListeningStateChanged
+                when (it) {
+                    W3WListeningState.Connecting ->
+                        binding.voicePlaceholder.text =
+                            context.getString(R.string.loading)
+                    W3WListeningState.Started -> binding.voicePlaceholder.text = placeholder
+                    W3WListeningState.Stopped -> setIsVoiceRunning(
+                        isVoiceRunning = false,
+                        shouldAnimate = true
+                    )
+                }
+            }.onError {
+                errorCallback?.accept(it)
             }
+    }
+
+    /**
+     * [toggle] should be called by [W3WAutoSuggestEditText] to toggle the [W3WAutoSuggestVoice] inside the [VoicePulseLayout].
+     * if [isVoiceRunning] is true will call [W3WAutoSuggestVoice.stop].
+     * if [isVoiceRunning] is false will call [W3WAutoSuggestVoice.start] and change this view visibility to VISIBLE with animation.
+     */
+    fun toggle(options: AutosuggestOptions, returnCoordinates: Boolean, voiceLanguage: String) {
+        if (!isVoiceRunning) {
+            setIsVoiceRunning(isVoiceRunning = true, shouldAnimate = true)
+            binding.autosuggestVoice
+                .options(options)
+                .returnCoordinates(returnCoordinates)
+                .voiceLanguage(voiceLanguage)
+                .start()
+        } else {
+            binding.autosuggestVoice.stop()
         }
-        onToggle = {
-            if (isVoiceRunning) {
-                builder.stopListening()
-                setIsVoiceRunning(false, shouldAnimate = false)
-            } else {
-                builder.startListening()
-                setIsVoiceRunning(true, shouldAnimate = false)
-            }
-        }
-        setIsVoiceRunning(true, shouldAnimate = true)
-        voicePlaceholder.visibility = VISIBLE
-        builder.startListening()
     }
 }

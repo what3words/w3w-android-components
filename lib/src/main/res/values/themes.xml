@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="W3WAutoSuggestEditTextTheme" parent="@android:style/Theme">
+    <style name="W3WAutoSuggestPickerTheme" parent="@android:style/Theme">
+        <item name="customW3WAutoSuggestPickerStyle">
+            @style/W3WAutoSuggestPicker
+        </item>
+    </style>
+
+    <style name="W3WAutoSuggestCorrectionPickerTheme" parent="@android:style/Theme">
+        <item name="customW3WAutoSuggestCorrectionPickerStyle">
+            @style/W3WAutoSuggestCorrectionPickerTheme
+        </item>
+    </style>
+
+    <style name="W3WAutoSuggestEditTextTheme" parent="ThemeOverlay.AppCompat">
         <item name="customW3WAutoSuggestEditTextStyle">
             @style/Widget.AppCompat.W3WAutoSuggestEditText
+        </item>
+        <item name="colorAccent">@color/textColor</item>
+    </style>
+
+    <style name="W3WAutoSuggestEditTextDayNightTheme" parent="@android:style/Theme">
+        <item name="customW3WAutoSuggestEditTextStyle">
+            @style/Widget.AppCompat.W3WAutoSuggestEditTextDayNight
         </item>
     </style>
 

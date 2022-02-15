@@ -8,9 +8,9 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 
 internal class PulseAnimator(
-    private var innerMaxSizeDp: Float,
-    private var midMaxSizeDp: Float,
-    private var outerMaxSizeDp: Float,
+    innerMaxSizePixel: Float,
+    midMaxSizePixel: Float,
+    outerMaxSizePixel: Float,
     private var innerCircleView: ImageView,
     private var middleCircleView: ImageView,
     private var outerCircleView: ImageView,
@@ -26,13 +26,11 @@ internal class PulseAnimator(
     private var maxSizeList = arrayListOf<Float>()
 
     init {
-        with(DisplayMetricsConverter) {
-            maxSizeList = arrayListOf(
-                convertDpToPixel(innerMaxSizeDp),
-                convertDpToPixel(midMaxSizeDp),
-                convertDpToPixel(outerMaxSizeDp)
-            )
-        }
+        maxSizeList = arrayListOf(
+            innerMaxSizePixel,
+            midMaxSizePixel,
+            outerMaxSizePixel
+        )
     }
 
     private fun setVoicePulseAnimator(signalStrength: Float) {
@@ -110,7 +108,6 @@ internal class PulseAnimator(
 
         private const val VOICE_ANIMATION_DURATION = 200L
     }
-
 }
 
 internal object DisplayMetricsConverter {
@@ -162,5 +159,5 @@ internal fun transform(
 private val MIN_SIGNAL_LEVEL = 0.0f
 private val MAX_SIGNAL_LEVEL = 1.0f
 
-private val MIN_SCALED_LEVEL = 1f
+private val MIN_SCALED_LEVEL = 0f
 private val MAX_SCALED_LEVEL = 2.25f
