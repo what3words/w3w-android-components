@@ -124,7 +124,7 @@ If you run our Enterprise Suite API Server yourself, you may specify the URL to 
 |---|---|----|
 |apiKey|Set your What3Words API Key which will be used to get suggestions and coordinates. **mandatory** |```apiKey("YOUR_API_KEY_HERE")```|
 |returnCoordinates|Calls the what3words API to obtain the coordinates for the selected 3 word address (to then use on a map or pass through to a logistic company etc)|```returnCoordinates(true)```|
-|onSelected|Will provide the user selected 3 word address, if user selects an invalid 3 word address SuggestionWithCoordinates will be null.|```onSuggestionSelected { suggestion -> }```<br>or for custom picker view<br>```onSuggestionSelected(W3WAutoSuggestPicker) { suggestion -> }```|
+|onSuggestionSelected|Will provide the user selected 3 word address, if user selects an invalid 3 word address SuggestionWithCoordinates will be null.|```onSuggestionSelected { suggestion -> }```<br>or for custom picker view<br>```onSuggestionSelected(W3WAutoSuggestPicker) { suggestion -> }```|
 |onDisplaySuggestions|Callback to update view when suggestion picker is being displayed or not, example, show tips when false hide tips when true|```onDisplaySuggestions { isShowing -> }```|
 |onError|Will provide any errors APIResponse.What3WordsError that might happen during the API call.|```onError { error -> }```<br>or for custom error view<br>```onError(W3WAutoSuggestErrorMessage) { error -> }```|
 |focus|This is a location, specified as a latitude/longitude (often where the user making the query is). If specified, the results will be weighted to give preference to those near the focus. |```focus(Coordinates(49.180803, -8.001330))```|
