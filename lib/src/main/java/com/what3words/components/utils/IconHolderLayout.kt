@@ -200,11 +200,7 @@ internal class IconHolderLayout
                 ConstraintSet.END,
                 ConstraintSet.PARENT_ID,
                 ConstraintSet.END,
-                if (TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR) {
-                    (this.height / 2) + resources.getDimensionPixelSize(R.dimen.large_margin)
-                } else {
-                    (this.height / 2) + resources.getDimensionPixelSize(R.dimen.large_margin)
-                }
+                (this.height / 2) + resources.getDimensionPixelSize(R.dimen.large_margin)
             )
         }
         constraintSet.applyTo(binding.voicePulseLayout)
