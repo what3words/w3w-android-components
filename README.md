@@ -2,7 +2,7 @@
 
 An Android library to use the [what3words v3 API autosuggest](https://developer.what3words.com/public-api/docs#autosuggest).
 
-<img src="https://github.com/what3words/w3w-autosuggest-edittext-android/blob/refactor-with-helper/assets/components-1.gif" width=30% height=30%>
+<img src="https://github.com/what3words/w3w-android-components/blob/master/assets/components-1.gif" width=30% height=30%>
 
 To obtain an API key, please visit [https://what3words.com/select-plan](https://what3words.com/select-plan) and sign up for an account.
 
@@ -123,23 +123,23 @@ If you run our Enterprise Suite API Server yourself, you may specify the URL to 
 | Name | Summary | Example |
 |---|---|----|
 |apiKey|Set your What3Words API Key which will be used to get suggestions and coordinates. **mandatory** |```apiKey("YOUR_API_KEY_HERE")```|
-|returnCoordinates|Calls the what3words API to obtain the coordinates for the selected 3 word address (to then use on a map or pass through to a logistic company etc)|```returnCoordinates(true)```
-|onSelected|Will provide the user selected 3 word address, if user selects an invalid 3 word address SuggestionWithCoordinates will be null.|```onSelected { suggestion -> }```<br>or for custom picker view<br>```onSelected(W3WAutoSuggestPicker) { suggestion -> }```
-|onDisplaySuggestions|Callback to update view when suggestion picker is being displayed or not, example, show tips when false hide tips when true|```onDisplaySuggestions { isShowing -> }```
-|onError|Will provide any errors APIResponse.What3WordsError that might happen during the API call.|```onError { error -> }```<br>or for custom error view<br>```onError(W3WAutoSuggestErrorMessage) { error -> }```
+|returnCoordinates|Calls the what3words API to obtain the coordinates for the selected 3 word address (to then use on a map or pass through to a logistic company etc)|```returnCoordinates(true)```|
+|onSelected|Will provide the user selected 3 word address, if user selects an invalid 3 word address SuggestionWithCoordinates will be null.|```onSuggestionSelected { suggestion -> }```<br>or for custom picker view<br>```onSuggestionSelected(W3WAutoSuggestPicker) { suggestion -> }```|
+|onDisplaySuggestions|Callback to update view when suggestion picker is being displayed or not, example, show tips when false hide tips when true|```onDisplaySuggestions { isShowing -> }```|
+|onError|Will provide any errors APIResponse.What3WordsError that might happen during the API call.|```onError { error -> }```<br>or for custom error view<br>```onError(W3WAutoSuggestErrorMessage) { error -> }```|
 |focus|This is a location, specified as a latitude/longitude (often where the user making the query is). If specified, the results will be weighted to give preference to those near the focus. |```focus(Coordinates(49.180803, -8.001330))```|
-|clipToBoundingBox|Clip results to a bounding box specified using co-ordinates.|```clipToBoundingBox(BoundingBox(Coordinates(49.180803, -8.001330),Coordinates(58.470001, 2.158991)))```
+|clipToBoundingBox|Clip results to a bounding box specified using co-ordinates.|```clipToBoundingBox(BoundingBox(Coordinates(49.180803, -8.001330),Coordinates(58.470001, 2.158991)))```|
 |clipToCircle|Restrict autosuggest results to a circle, specified by Coordinates representing the centre of the circle, plus the radius in kilometres.|```clipToCircle(Coordinates(49.180803, -8.001330), 100.0)```|
 |clipToCountry|Restricts autosuggest to only return results inside the countries specified by comma-separated list of uppercase ISO 3166-1 alpha-2 country codes.|```clipToCountry(listOf("GB", "BE"))```|
 |clipToPolygon|Restrict autosuggest results to a polygon, specified by a collection of Coordinates.|```clipToPolygon(listOf(Coordinates(49.180803, -8.001330), ..., Coordinates(49.180803, -8.001330)))```|
 |correctionMessage|Set end-user correction picker title, default: "Did you mean?"|```correctionMessage("new title")```|
 |customCorrectionPicker|Add custom correction view.|```customCorrectionPicker(W3WAutoSuggestCorrectionPicker)```|
-|displayUnit|Set end-user display unit, DisplayUnits.SYSTEM (default), DisplayUnits.METRIC, DisplayUnits.IMPERIAL|```displayUnit(DisplayUnits.METRIC)```
+|displayUnit|Set end-user display unit, DisplayUnits.SYSTEM (default), DisplayUnits.METRIC, DisplayUnits.IMPERIAL|```displayUnit(DisplayUnits.METRIC)```|
 |errorMessage|Set end-user error message for API related issues, default: An error occurred.|```errorMessage("new message")```|
-|invalidSelectionMessage|Set end-user invalid address message for when user selects invalid three word address, default: "No valid what3words address found" |
-|onHomeClick|If DrawableStart is set and it's pressed callback will be called, usage example is to have a back button as drawableStart.|```onHomeClick { }```
-|allowFlexibleDelimiters|Allow EditText to accept different delimiters than the what3words standard full stop "index.home.raft".| ```allowFlexibleDelimiters(true)``` |
-|allowInvalid3wa|Allow EditText to keep any text user types, default is false, by default EditText will be cleared if not a valid 3 word address, set to true to ignore this default behaviour.|```allowInvalid3wa(true)```|
+|invalidSelectionMessage|Set end-user invalid address message for when user selects invalid three word address, default: "No valid what3words address found" ||
+|onHomeClick|If DrawableStart is set and it's pressed callback will be called, usage example is to have a back button as drawableStart.|```onHomeClick { }```|
+|allowFlexibleDelimiters|Allow EditText to accept different delimiters than the what3words standard full stop "index.home.raft", i.e  "index home raft" or "index,home,raft".| ```allowFlexibleDelimiters(true)``` |
+|allowInvalid3wa|By default the EditText field will clear an inputted value if a valid 3 word address is not entered. Setting allowInvalid3wa to true stops this behaviour and the value is persisted in the EditText.|```allowInvalid3wa(true)```|
 
 ## Enable voice autosuggest:
 
@@ -205,11 +205,11 @@ If you want to use voice-only (no text input) please look at our **voice-sample*
 
 If you want to check different ways to use our component please look at our **advanced-sample** app in this repo for examples of how to use and customize our **W3WAutoSuggestText component**.
 
-![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_10.png?raw=true "Screenshot 10")
+![alt text](https://github.com/what3words/w3w-android-components/blob/master/assets/screen_10.png?raw=true "Screenshot 10")
 
 ## Styles:
 
-<img src="https://github.com/what3words/w3w-autosuggest-edittext-android/blob/refactor-with-helper/assets/components-3.gif" width=30% height=30%>
+<img src="https://github.com/what3words/w3w-android-components/blob/master/assets/components-3.gif" width=30% height=30%>
 
 We added support for Night mode on version 3.+, if you want to enable Day/Night mode please add the following style to W3WAutoSuggestEditText.
 ```XML
@@ -240,4 +240,4 @@ You can use our base style as parent (Widget.AppCompat.W3WAutoSuggestEditText or
 </style>
 ```
 
-![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_4.png?raw=true "Screenshot 4")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_5.png?raw=true "Screenshot 5")![alt text](https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/screen_6.png?raw=true "Screenshot 6")
+![alt text](https://github.com/what3words/w3w-android-components/blob/master/assets/screen_4.png?raw=true "Screenshot 4")![alt text](https://github.com/what3words/w3w-android-components/blob/master/assets/screen_5.png?raw=true "Screenshot 5")![alt text](https://github.com/what3words/w3w-android-components/blob/master/assets/screen_6.png?raw=true "Screenshot 6")
