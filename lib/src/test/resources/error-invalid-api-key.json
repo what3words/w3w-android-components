@@ -1,0 +1,4 @@
+{
+  "code": "InvalidKey",
+  "message": "Authentication failed; invalid API key"
+}

@@ -2,28 +2,26 @@ package com.what3words.components.text
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Rect
 import android.icu.text.MeasureFormat
 import android.icu.text.MeasureFormat.FormatWidth
 import android.icu.util.Measure
 import android.icu.util.MeasureUnit
-import android.view.View.*
+import android.util.Log
+import android.view.View.GONE
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.text.TextUtilsCompat
-import androidx.core.view.ViewCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.what3words.components.R
-import com.what3words.components.utils.DisplayUnits
-import com.what3words.components.utils.MyDividerItemDecorator
+import com.what3words.components.models.DisplayUnits
 import com.what3words.components.utils.VoicePulseLayout
-import kotlinx.android.synthetic.main.item_suggestion.view.*
+import com.what3words.components.utils.VoicePulseLayoutFullScreen
 import java.text.NumberFormat
-import java.util.*
+import java.util.Locale
+import kotlin.math.min
 import kotlin.math.roundToInt
-
 
 internal fun W3WAutoSuggestEditText.buildErrorMessage() {
     val params = ViewGroup.MarginLayoutParams(
@@ -34,9 +32,11 @@ internal fun W3WAutoSuggestEditText.buildErrorMessage() {
         this.x = this@buildErrorMessage.x
         this.y =
             this@buildErrorMessage.y + this@buildErrorMessage.height - resources.getDimensionPixelSize(
-                R.dimen.tiny_margin
-            )
+            R.dimen.tiny_margin
+        )
         layoutParams = params
+        translationZ = context.resources.getDimension(R.dimen.overlay_z)
+        outlineProvider = null
     }
     (parent as? ViewGroup)?.addView(defaultInvalidAddressMessageView)
 }
@@ -50,50 +50,105 @@ internal fun W3WAutoSuggestEditText.buildCorrection() {
         this.x = this@buildCorrection.x
         this.y =
             this@buildCorrection.y + this@buildCorrection.height - resources.getDimensionPixelSize(
-                R.dimen.tiny_margin
-            )
+            R.dimen.tiny_margin
+        )
         layoutParams = params
+        translationZ = context.resources.getDimension(R.dimen.overlay_z)
+        outlineProvider = null
     }
     (parent as? ViewGroup)?.addView(defaultCorrectionPicker)
 }
 
-internal fun W3WAutoSuggestEditText.buildVoice() {
-    val params = ViewGroup.MarginLayoutParams(
-        resources.getDimensionPixelSize(R.dimen.voice_button_width),
-        resources.getDimensionPixelSize(R.dimen.input_height)
+internal fun W3WAutoSuggestEditText.buildIconHolderLayout() {
+    iconHolderLayout.layoutParams = ViewGroup.MarginLayoutParams(
+        this.width - (resources.getDimensionPixelSize(R.dimen.input_border_height) * 2),
+        this.height - (resources.getDimensionPixelSize(R.dimen.input_border_height) * 2)
     )
-    inlineVoicePulseLayout.apply {
-        if (TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR) {
-            this.x =
-                this@buildVoice.x + this@buildVoice.width - (resources.getDimensionPixelSize(R.dimen.voice_button_width))
-        } else {
-            this.x =
-                this@buildVoice.x
-        }
+    iconHolderLayout.apply {
+        this.x = this@buildIconHolderLayout.x
         this.y =
-            this@buildVoice.y + (resources.getDimensionPixelSize(R.dimen.input_border_height))
-        layoutParams = params
-        visibility = if (voiceEnabled) VISIBLE else GONE
-        setIsVoiceRunning(false)
+            this@buildIconHolderLayout.y + resources.getDimensionPixelSize(R.dimen.input_border_height)
     }
-    (parent as? ViewGroup)?.addView(inlineVoicePulseLayout)
+    (parent as? ViewGroup)?.addView(iconHolderLayout)
 }
 
-internal fun W3WAutoSuggestEditText.buildBackgroundVoice() {
-    voicePulseLayout = VoicePulseLayout(context, voicePlaceholder)
-    val params = ViewGroup.MarginLayoutParams(
-        (parent as? ViewGroup)?.rootView?.width ?: 0,
-        (parent as? ViewGroup)?.rootView?.height ?: 0
-    )
-    voicePulseLayout!!.apply {
-        visibility = GONE
-        layoutParams = params
-        setIsVoiceRunning(false, shouldAnimate = false)
+internal fun W3WAutoSuggestEditText.buildVoiceAnimatedPopup() {
+    try {
+        voiceAnimatedPopup = VoicePulseLayout(
+            context,
+            voicePlaceholder,
+            currentTextColor,
+            voiceBackgroundColor,
+            voiceBackgroundDrawable,
+            voiceIconsColor
+        )
+        val params = ViewGroup.MarginLayoutParams(
+            (parent as? ViewGroup)?.rootView?.width ?: 0,
+            (parent as? ViewGroup)?.rootView?.height ?: 0
+        )
+        voiceAnimatedPopup!!.apply {
+            visibility = GONE
+            layoutParams = params
+            setIsVoiceRunning(false, shouldAnimate = false)
+            translationZ = context.resources.getDimension(R.dimen.overlay_z)
+            outlineProvider = null
+        }
+        val parent = ((this.parent as? ViewGroup)?.rootView as? ViewGroup)
+        parent?.addView(voiceAnimatedPopup)
+    } catch (e: Exception) {
+        Log.e(
+            "W3WAutoSuggestEditText",
+            e.message?.plus(", fallback to inline voice")
+                ?: "Issue adding to rootView, check if parent allows multiple children"
+        )
+        voiceEnabled(true)
     }
-    ((parent as? ViewGroup)?.rootView as? ViewGroup)?.addView(voicePulseLayout)
 }
 
-internal fun W3WAutoSuggestEditText.buildSuggestionList() {
+internal fun W3WAutoSuggestEditText.buildVoiceFullscreen() {
+    try {
+        voicePulseLayoutFullScreen = VoicePulseLayoutFullScreen(
+            context,
+            voicePlaceholder,
+            currentTextColor,
+            voiceBackgroundColor,
+            voiceBackgroundDrawable,
+            voiceIconsColor
+        )
+        val displayFrame = Rect()
+        (parent as? ViewGroup)?.rootView?.getWindowVisibleDisplayFrame(displayFrame)
+        val params = ViewGroup.MarginLayoutParams(
+            displayFrame.width(),
+            displayFrame.height()
+        )
+        params.topMargin = displayFrame.top
+        params.bottomMargin = displayFrame.bottom
+        voicePulseLayoutFullScreen!!.apply {
+            visibility = GONE
+            layoutParams = params
+            this.applySize(
+                min(
+                    context.resources.displayMetrics.widthPixels,
+                    context.resources.displayMetrics.heightPixels
+                )
+            )
+            setIsVoiceRunning(false)
+            translationZ = context.resources.getDimension(R.dimen.overlay_z)
+            outlineProvider = null
+        }
+        val parent = ((parent as? ViewGroup)?.rootView as? ViewGroup)
+        parent?.addView(voicePulseLayoutFullScreen)
+    } catch (e: Exception) {
+        Log.e(
+            "W3WAutoSuggestEditText",
+            e.message?.plus(", fallback to inline voice")
+                ?: "Issue adding to rootView, check if parent allows multiple children"
+        )
+        voiceEnabled(true)
+    }
+}
+
+internal fun W3WAutoSuggestEditText.buildSuggestionList(isRelative: Boolean = true) {
     val params = ViewGroup.MarginLayoutParams(
         width,
         WRAP_CONTENT
@@ -101,27 +156,20 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList() {
     defaultPicker.apply {
         isFocusable = false
         isFocusableInTouchMode = false
-        this.x = this@buildSuggestionList.x
-        this.y =
-            this@buildSuggestionList.y + this@buildSuggestionList.height + resources.getDimensionPixelSize(
-                R.dimen.input_margin
+        if (isRelative) {
+            this.x = this@buildSuggestionList.x
+            this.y =
+                this@buildSuggestionList.y + this@buildSuggestionList.height - resources.getDimensionPixelSize(
+                R.dimen.tiny_margin
             )
+        }
         layoutParams = params
-        val linear = LinearLayoutManager(context)
-        background = AppCompatResources.getDrawable(context, R.drawable.bg_white_border_gray)
         resources.getDimensionPixelSize(R.dimen.tiny_margin).let {
             setPadding(it, it, it, it)
         }
-        layoutManager = linear
-        setHasFixedSize(true)
         visibility = GONE
-        ResourcesCompat.getDrawable(resources, R.drawable.divider, null)?.let {
-            addItemDecoration(
-                MyDividerItemDecorator(
-                    it,
-                )
-            )
-        }
+        translationZ = context.resources.getDimension(R.dimen.overlay_z)
+        outlineProvider = null
     }
     (parent as? ViewGroup)?.apply {
         addView(defaultPicker)
@@ -130,39 +178,33 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList() {
 
 internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {
     isShowingTick = showTick
-    if (TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_LTR) {
-        setCompoundDrawables(
-            null,
-            null,
-            if (showTick) tick else null,
+    setCompoundDrawablesRelative(
+        drawableStart,
+        null,
+        if (showTick && !hideSelectedIcon) {
+            tick
+        } else {
             null
-        )
-    } else {
-        setCompoundDrawables(
-            if (showTick) tick else null,
-            null,
-            null,
-            null
-        )
-    }
-
+        },
+        null
+    )
     if (!showTick && voiceEnabled) {
-        inlineVoicePulseLayout.visibility = VISIBLE
+        iconHolderLayout.setVoiceVisibility(VISIBLE)
     } else {
-        inlineVoicePulseLayout.visibility = GONE
+        iconHolderLayout.setVoiceVisibility(INVISIBLE)
     }
 }
 
 internal fun W3WAutoSuggestEditText.showKeyboard() {
     this.requestFocus()
-    this.setSelection(this.text!!.length)
+    this.setSelection(this.length())
     val imm: InputMethodManager =
         context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+    imm.showSoftInput(this, 0)
 }
 
 internal fun W3WAutoSuggestEditText.hideKeyboard() {
-    this.requestFocus()
+    this.clearFocus()
     val imm: InputMethodManager =
         context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(windowToken, 0)
@@ -170,34 +212,38 @@ internal fun W3WAutoSuggestEditText.hideKeyboard() {
 
 internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: Context): String {
     if (distanceKm == 0 ||
-        (displayUnits == DisplayUnits.SYSTEM && !Locale.getDefault()
-            .isMetric() && (distanceKm / 1.609) < 1) ||
+        (
+            displayUnits == DisplayUnits.SYSTEM && !Locale.getDefault()
+                .isMetric() && (distanceKm / 1.609) < 1
+            ) ||
         (displayUnits == DisplayUnits.IMPERIAL && (distanceKm / 1.609) < 1)
     ) {
         if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault().isMetric()) ||
             displayUnits == DisplayUnits.METRIC
         ) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 val fmtFr = MeasureFormat.getInstance(Locale.getDefault(), FormatWidth.SHORT)
                 val measureF = Measure(1, MeasureUnit.KILOMETER)
-                return context.getString(R.string.distance_metric_low, fmtFr.format(measureF))
+                context.getString(R.string.distance_metric_low, fmtFr.format(measureF))
             } else {
-                return context.getString(R.string.distance_metric_low, "1 km")
+                context.getString(R.string.distance_metric_low, "1 km")
             }
         } else {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 val fmtFr = MeasureFormat.getInstance(Locale.getDefault(), FormatWidth.SHORT)
                 val measureF = Measure(1, MeasureUnit.MILE)
-                return context.getString(R.string.distance_metric_low, fmtFr.format(measureF))
+                context.getString(R.string.distance_metric_low, fmtFr.format(measureF))
             } else {
-                return context.getString(R.string.distance_imperial_low, "1 mi")
+                context.getString(R.string.distance_imperial_low, "1 mi")
             }
         }
     } else {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             val fmtFr = MeasureFormat.getInstance(Locale.getDefault(), FormatWidth.SHORT)
-            return if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
-                    .isMetric()) || displayUnits == DisplayUnits.METRIC
+            return if ((
+                displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
+                    .isMetric()
+                ) || displayUnits == DisplayUnits.METRIC
             ) {
                 val measureF = Measure(distanceKm, MeasureUnit.KILOMETER)
                 fmtFr.format(measureF)
@@ -207,12 +253,14 @@ internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: C
             }
         } else {
             val nFormat = NumberFormat.getNumberInstance(Locale.getDefault())
-            if ((displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
-                    .isMetric()) || displayUnits == DisplayUnits.METRIC
+            return if ((
+                displayUnits == DisplayUnits.SYSTEM && Locale.getDefault()
+                    .isMetric()
+                ) || displayUnits == DisplayUnits.METRIC
             ) {
-                return context.getString(R.string.distance_metric, nFormat.format(distanceKm))
+                context.getString(R.string.distance_metric, nFormat.format(distanceKm))
             } else {
-                return context.getString(
+                context.getString(
                     R.string.distance_imperial,
                     nFormat.format((distanceKm / 1.609).roundToInt())
                 )
@@ -221,9 +269,8 @@ internal fun formatUnits(distanceKm: Int, displayUnits: DisplayUnits, context: C
     }
 }
 
-
 internal fun Locale.isMetric(): Boolean {
-    return when (country.toUpperCase()) {
+    return when (country.uppercase()) {
         "US", "GB", "MM", "LR" -> false
         else -> true
     }

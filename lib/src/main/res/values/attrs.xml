@@ -3,24 +3,68 @@
     <declare-styleable name="W3WAutoSuggestEditText">
         <attr name="nResults" format="integer" />
         <attr name="language" format="string" />
+        <attr name="isDayNightEnabled" format="boolean" />
         <attr name="returnCoordinates" format="boolean" />
-        <attr name="imageTintColor" format="color" />
         <attr name="errorMessage" format="string" />
         <attr name="invalidAddressMessage" format="string" />
         <attr name="correctionMessage" format="string" />
         <attr name="voiceEnabled" format="boolean" />
-        <attr name="voiceFullscreen" format="boolean" />
         <attr name="voiceLanguage" format="string" />
         <attr name="voicePlaceholder" format="string" />
+        <attr name="voiceBackgroundColor" format="color" />
+        <attr name="voiceBackgroundDrawable" format="reference" />
+        <attr name="voiceIconsColor" format="color" />
         <attr name="displayUnit" format="enum">
-            <enum name="system" value="0"/>
-            <enum name="imperial" value="1"/>
-            <enum name="metric" value="2"/>
+            <enum name="system" value="0" />
+            <enum name="imperial" value="1" />
+            <enum name="metric" value="2" />
+        </attr>
+        <attr name="voiceScreenType" format="enum">
+            <enum name="inline" value="0" />
+            <enum name="animatedPopup" value="1" />
+            <enum name="fullscreen" value="2" />
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="W3WAutoSuggestPicker">
+        <attr name="pickerItemSpacing" format="dimension" />
+        <attr name="pickerItemPadding" format="dimension" />
+        <attr name="pickerBackgroundDrawable" format="reference" />
+        <attr name="pickerItemBackground" format="color" />
+        <attr name="pickerItemHighlightBackground" format="color" />
+        <attr name="pickerItemBackgroundDrawable" format="reference" />
+        <attr name="pickerDivider" format="reference" />
+        <attr name="pickerDividerVisible" format="boolean" />
+        <attr name="pickerItemTitleTextSize" format="dimension" />
+        <attr name="pickerItemSubtitleTextSize" format="dimension" />
+        <attr name="pickerItemTitleTextColor" format="color" />
+        <attr name="pickerItemSubtitleTextColor" format="color" />
+        <attr name="pickerItemTitleFontFamily" format="string" />
+        <attr name="pickerItemSubtitleFontFamily" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="W3WAutoSuggestCorrectionPicker">
+        <attr name="correctionBackground" format="color" />
+        <attr name="correctionBackgroundDrawable" format="reference" />
+        <attr name="correctionTitleTextSize" format="dimension" />
+        <attr name="correctionSubtitleTextSize" format="dimension" />
+        <attr name="correctionTitleTextColor" format="color" />
+        <attr name="correctionSubtitleTextColor" format="color" />
+        <attr name="correctionTitleFontFamily" format="string" />
+        <attr name="correctionSubtitleFontFamily" format="string" />
+    </declare-styleable>
+
+
     <declare-styleable name="CustomTheme">
         <attr name="customW3WAutoSuggestEditTextStyle" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomPickerTheme">
+        <attr name="customW3WAutoSuggestPickerStyle" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomCorrectionPickerTheme">
+        <attr name="customW3WAutoSuggestCorrectionPickerStyle" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="CustomVoiceTheme">

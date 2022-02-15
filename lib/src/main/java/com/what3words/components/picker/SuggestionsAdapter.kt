@@ -1,24 +1,34 @@
 package com.what3words.components.picker
 
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
+import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.View
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.what3words.components.R
-import com.what3words.components.text.W3WAutoSuggestEditText
+import com.what3words.components.databinding.ItemSuggestionBinding
+import com.what3words.components.models.DisplayUnits
 import com.what3words.components.text.formatUnits
-import com.what3words.components.utils.DisplayUnits
 import com.what3words.components.utils.FlagResourceTranslatorImpl
 import com.what3words.javawrapper.response.Suggestion
-import kotlinx.android.synthetic.main.item_suggestion.view.*
 
 internal class SuggestionsAdapter(
-    private val typeface: Typeface,
-    private val textColor: Int,
-    private val callback: ((Suggestion) -> Unit)?
+    private val backgroundDrawable: Drawable?,
+    private val backgroundColor: Int?,
+    private val callback: ((Suggestion) -> Unit)?,
+    private val titleTextSize: Int,
+    private val titleTextColor: Int,
+    private val subtitleTextSize: Int,
+    private val subtitleTextColor: Int,
+    private val itemHighlightBackground: Int,
+    private val titleFontFamily: Typeface?,
+    private val subtitleFontFamily: Typeface?,
+    private val itemPadding: Int
 ) :
     RecyclerView.Adapter<SuggestionsAdapter.W3WLocationViewHolder>() {
 
@@ -40,9 +50,22 @@ internal class SuggestionsAdapter(
     override fun getItemCount() = suggestions?.size ?: 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): W3WLocationViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val view = layoutInflater.inflate(R.layout.item_suggestion, parent, false)
-        return W3WLocationViewHolder(view, typeface, textColor, displayUnits)
+        val binding =
+            ItemSuggestionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return W3WLocationViewHolder(
+            binding,
+            displayUnits,
+            backgroundDrawable,
+            backgroundColor,
+            titleTextSize,
+            titleTextColor,
+            subtitleTextSize,
+            subtitleTextColor,
+            itemHighlightBackground,
+            titleFontFamily,
+            subtitleFontFamily,
+            itemPadding
+        )
     }
 
     override fun onBindViewHolder(holder: W3WLocationViewHolder, position: Int) {
@@ -56,53 +79,112 @@ internal class SuggestionsAdapter(
     }
 
     class W3WLocationViewHolder(
-        private val view: View,
-        private val typeface: Typeface,
-        private val textColor: Int,
-        private val displayUnits: DisplayUnits
+        private val binding: ItemSuggestionBinding,
+        private val displayUnits: DisplayUnits,
+        private val backgroundDrawable: Drawable?,
+        private val backgroundColor: Int?,
+        private val titleTextSize: Int,
+        private val titleTextColor: Int,
+        private val subtitleTextSize: Int,
+        private val subtitleTextColor: Int,
+        private val itemHighlightBackground: Int,
+        private val titleFontFamily: Typeface?,
+        private val subtitleFontFamily: Typeface?,
+        private val itemPadding: Int
     ) :
-        RecyclerView.ViewHolder(view) {
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(
             suggestion: Suggestion,
             query: String?,
             onSuggestionClicked: (Suggestion) -> Unit
         ) {
-            if (query?.replace(view.context.getString(R.string.w3w_slash), "")
+            backgroundDrawable?.let {
+                binding.root.background = it
+            } ?: run {
+                backgroundColor?.let {
+                    binding.root.setBackgroundColor(it)
+                }
+                if (query?.replace(binding.root.context.getString(R.string.w3w_slash), "")
                     .equals(suggestion.words, ignoreCase = true)
-            ) {
-                view.w3wSuggestionHolder.setBackgroundColor(ContextCompat.getColor(view.context, R.color.w3wHover))
-            } else {
-                view.w3wSuggestionHolder.setBackgroundColor(ContextCompat.getColor(view.context, R.color.white))
+                ) {
+                    binding.w3wSuggestionHolder.setBackgroundColor(
+                        itemHighlightBackground
+                    )
+                } else {
+                    backgroundColor?.let {
+                        binding.root.setBackgroundColor(it)
+                    } ?: kotlin.run {
+                        ContextCompat.getColor(
+                            binding.root.context,
+                            R.color.background
+                        )
+                    }
+                }
             }
-            view.w3wAddressLabel.text = suggestion.words
-            view.w3wAddressLabel.setTextColor(ContextCompat.getColor(view.context, textColor))
+
+            binding.w3wSuggestionHolder.setPadding(
+                itemPadding,
+                itemPadding,
+                itemPadding,
+                itemPadding
+            )
+
+            if (titleFontFamily != null) {
+                binding.w3wSlashesLabel.typeface = titleFontFamily
+                binding.w3wAddressLabel.typeface = titleFontFamily
+            }
+
+            if (subtitleFontFamily != null) {
+                binding.w3wNearestPlaceLabel.typeface = subtitleFontFamily
+                binding.w3wDistanceToFocus.typeface = subtitleFontFamily
+            }
+
+            binding.w3wSlashesLabel.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX, titleTextSize.toFloat()
+            )
+            binding.w3wAddressLabel.setTextColor(titleTextColor)
+            binding.w3wAddressLabel.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX, titleTextSize.toFloat()
+            )
+            binding.w3wAddressLabel.text = suggestion.words
+            binding.w3wNearestPlaceLabel.setTextColor(subtitleTextColor)
+            binding.w3wSlashesLabel.setTextColor(binding.w3wSlashesLabel.context.getColor(R.color.slashesColor))
+            binding.w3wNearestPlaceLabel.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX, subtitleTextSize.toFloat()
+            )
             if (!suggestion.nearestPlace.isNullOrEmpty()) {
-                view.w3wNearestPlaceLabel.visibility = VISIBLE
-                view.w3wNearestPlaceLabel.text =
-                    if (suggestion.language != "en") suggestion.nearestPlace else view.w3wNearestPlaceLabel.context.getString(
+                binding.w3wNearestPlaceLabel.visibility = VISIBLE
+                binding.w3wNearestPlaceLabel.text =
+                    if (suggestion.language != "en") suggestion.nearestPlace else binding.w3wNearestPlaceLabel.context.getString(
                         R.string.near,
                         suggestion.nearestPlace
                     )
             } else {
-                view.w3wNearestPlaceLabel.visibility = INVISIBLE
+                binding.w3wNearestPlaceLabel.visibility = INVISIBLE
             }
-            view.w3wNearestPlaceLabel.setTypeface(typeface, Typeface.NORMAL)
+
             if (suggestion.country == "ZZ") {
-                view.w3wAddressFlagIcon.visibility = VISIBLE
-                FlagResourceTranslatorImpl(view.w3wAddressFlagIcon.context).let {
-                    view.w3wAddressFlagIcon.setImageResource(it.translate(suggestion.country))
+                binding.w3wAddressFlagIcon.visibility = VISIBLE
+                FlagResourceTranslatorImpl(binding.w3wAddressFlagIcon.context).let {
+                    binding.w3wAddressFlagIcon.setImageResource(it.translate(suggestion.country))
+                    binding.w3wAddressFlagIcon.setColorFilter(titleTextColor)
                 }
             } else {
-                view.w3wAddressFlagIcon.visibility = GONE
+                binding.w3wAddressFlagIcon.visibility = GONE
             }
+
+            binding.w3wDistanceToFocus.setTextColor(subtitleTextColor)
+            binding.w3wDistanceToFocus.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX, subtitleTextSize.toFloat()
+            )
             suggestion.distanceToFocusKm?.let {
-                view.w3wDistanceToFocus.text =
-                    formatUnits(suggestion.distanceToFocusKm, displayUnits, view.context)
-                view.w3wDistanceToFocus.visibility = VISIBLE
+                binding.w3wDistanceToFocus.text =
+                    formatUnits(suggestion.distanceToFocusKm, displayUnits, binding.root.context)
+                binding.w3wDistanceToFocus.visibility = VISIBLE
             } ?: run {
-                view.w3wDistanceToFocus.visibility = INVISIBLE
+                binding.w3wDistanceToFocus.visibility = INVISIBLE
             }
-            view.setOnClickListener {
+            binding.root.setOnClickListener {
                 onSuggestionClicked(suggestion)
             }
         }

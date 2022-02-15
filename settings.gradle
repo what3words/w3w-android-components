@@ -1,5 +1,14 @@
-include ':advanced-sample'
-rootProject.name='what3words-components'
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+    }
+}
+
 include ':lib'
 include ':sample'
 include ':sample-voice'
+include ':advanced-sample'
+rootProject.name='what3words-components'

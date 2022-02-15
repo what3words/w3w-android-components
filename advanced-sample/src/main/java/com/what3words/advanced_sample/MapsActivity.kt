@@ -12,7 +12,11 @@ import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.gms.location.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -21,13 +25,16 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.what3words.components.utils.W3WSuggestion
+import com.what3words.advanced_sample.databinding.ActivityMapsBinding
+import com.what3words.advanced_sample.databinding.ActivityMapsBinding.inflate
 import com.what3words.javawrapper.request.Coordinates
-import kotlinx.android.synthetic.main.activity_maps.*
+import com.what3words.javawrapper.response.SuggestionWithCoordinates
 import kotlin.math.abs
 import kotlin.math.pow
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private lateinit var binding: ActivityMapsBinding
 
     private var pickup: LatLng? = null
     private var dropoff: LatLng? = null
@@ -37,23 +44,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         client = LocationServices.getFusedLocationProviderClient(this)
-        setContentView(R.layout.activity_maps)
+        binding = inflate(layoutInflater)
 
-        //TODO: REPLACE GOOGLE MAPS API KEY ANDROIDMANIFEST
+        // TODO: REPLACE GOOGLE MAPS API KEY ANDROIDMANIFEST
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        //autosuggest using custom picker and custom error/invalid message
-        autosuggest.apiKey("YOUR_WHAT3WORDS_API_KEY_HERE")
+        // autosuggest using custom picker and custom error/invalid message
+        binding.autosuggest.apiKey(BuildConfig.W3W_API_KEY)
             .voiceEnabled(true)
             .returnCoordinates(true)
-            .customCorrectionPicker(correctionPicker)
-            .onSelected(picker, message) { suggestion ->
+            .customCorrectionPicker(binding.correctionPicker)
+            .onSuggestionSelected(binding.picker, binding.message) { suggestion ->
                 if (suggestion != null) populateMarker(suggestion)
-            }.onError(message) {
+            }.onError(binding.message) {
                 Log.e("autosuggest", it.message)
             }
+
+        setContentView(binding.root)
     }
 
     override fun onRequestPermissionsResult(
@@ -73,7 +82,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        //request location permission
+        // request location permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
         ) {
@@ -86,28 +95,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             moveInitialCamera()
         }
 
-        btnRestart.setOnClickListener {
+        binding.btnRestart.setOnClickListener {
             mMap.clear()
-            autosuggest.hint = getString(R.string.pick_up_hint)
-            autosuggest.setText("")
+            binding.autosuggest.hint = getString(R.string.pick_up_hint)
+            binding.autosuggest.setText("")
             pickup = null
             dropoff = null
-            autosuggest.visibility = VISIBLE
-            btnRestart.visibility = GONE
+            binding.autosuggest.visibility = VISIBLE
+            binding.btnRestart.visibility = GONE
         }
     }
 
-    private fun populateMarker(suggestion: W3WSuggestion) {
+    private fun populateMarker(suggestion: SuggestionWithCoordinates) {
         if (pickup == null) {
             pickup = LatLng(suggestion.coordinates!!.lat, suggestion.coordinates!!.lng)
-            mMap.addMarker(MarkerOptions().position(pickup!!).title(suggestion.suggestion.words))
+            mMap.addMarker(MarkerOptions().position(pickup!!).title(suggestion.words))
             mMap.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(pickup, 14f)
+                CameraUpdateFactory.newLatLngZoom(pickup!!, 14f)
             )
-            autosuggest.hint = getString(R.string.drop_off_hint)
-            autosuggest.setText("")
-            //reset focus to pick-up point
-            autosuggest.focus(
+            binding.autosuggest.hint = getString(R.string.drop_off_hint)
+            binding.autosuggest.setText("")
+            // reset focus to pick-up point
+            binding.autosuggest.focus(
                 Coordinates(
                     suggestion.coordinates!!.lat,
                     suggestion.coordinates!!.lng
@@ -115,15 +124,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             )
         } else {
             dropoff = LatLng(suggestion.coordinates!!.lat, suggestion.coordinates!!.lng)
-            mMap.addMarker(MarkerOptions().position(dropoff!!).title(suggestion.suggestion.words))
+            mMap.addMarker(MarkerOptions().position(dropoff!!).title(suggestion.words))
             drawLine(pickup!!, dropoff!!)
             mMap.animateCamera(
                 CameraUpdateFactory.newLatLngBounds(
-                    LatLngBounds.Builder().include(pickup).include(dropoff).build(), 50
+                    LatLngBounds.Builder().include(pickup!!).include(dropoff!!).build(), 50
                 )
             )
-            autosuggest.visibility = GONE
-            btnRestart.visibility = VISIBLE
+            binding.autosuggest.visibility = GONE
+            binding.btnRestart.visibility = VISIBLE
         }
     }
 
@@ -132,8 +141,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun moveInitialCamera() {
         mMap.isMyLocationEnabled = true
         requestMyGpsLocation {
-            //set focus to user current location
-            autosuggest.focus(
+            // set focus to user current location
+            binding.autosuggest.focus(
                 Coordinates(
                     it.latitude,
                     it.longitude
@@ -190,13 +199,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Manifest.permission.ACCESS_FINE_LOCATION
         )
         if (permission == PackageManager.PERMISSION_GRANTED) {
-            client.requestLocationUpdates(request, object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult?) {
-                    val location = locationResult?.lastLocation
-                    if (location != null)
-                        callback.invoke(location)
-                }
-            }, null)
+            client.requestLocationUpdates(
+                request,
+                object : LocationCallback() {
+                    override fun onLocationResult(locationResult: LocationResult?) {
+                        val location = locationResult?.lastLocation
+                        if (location != null)
+                            callback.invoke(location)
+                    }
+                },
+                null
+            )
         }
     }
     //endregion

@@ -7,9 +7,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:layout_height="wrap_content">
+        android:focusableInTouchMode="true">
 
         <TextView
             android:id="@+id/textHeader"
@@ -24,6 +24,7 @@
 
         <com.what3words.components.text.W3WAutoSuggestEditText
             android:id="@+id/suggestionEditText"
+            style="@style/Widget.AppCompat.W3WAutoSuggestEditTextDayNight"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
@@ -60,12 +61,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
             android:layout_marginTop="@dimen/main_l"
+            android:layout_marginEnd="@dimen/main_s"
             android:elevation="1dp"
-            app:layout_constraintTop_toBottomOf="@+id/suggestionEditText"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/suggestionEditText" />
 
         <TextView
             android:id="@+id/selectedInfo"
@@ -102,33 +103,44 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textCustomHeader" />
 
-        <CheckBox
-            android:id="@+id/checkboxVoiceEnabled"
+        <RadioGroup
+            android:id="@+id/voiceRadioGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
             android:layout_marginTop="@dimen/main_s"
             android:layout_marginEnd="@dimen/main_s"
-            android:checked="false"
-            android:text="@string/voice_enabled"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates" />
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates">
 
-        <CheckBox
-            android:id="@+id/checkboxVoiceFullscreen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginTop="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:checked="false"
-            android:text="@string/voice_fullscreen"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxVoiceEnabled" />
+            <RadioButton
+                android:id="@+id/checkboxVoiceDisabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/voice_disabled" />
+
+            <RadioButton
+                android:id="@+id/checkboxVoiceEnabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/voice_enabled" />
+
+            <RadioButton
+                android:id="@+id/checkboxVoicePopup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/voice_popup_enabled" />
+
+            <RadioButton
+                android:id="@+id/checkboxVoiceFullscreen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
+                android:text="@string/voice_fullscreen" />
+        </RadioGroup>
 
         <CheckBox
             android:id="@+id/checkboxCustomPicker"
@@ -142,7 +154,7 @@
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxVoiceFullscreen" />
+            app:layout_constraintTop_toBottomOf="@+id/voiceRadioGroup" />
 
         <CheckBox
             android:id="@+id/checkboxCustomError"
@@ -186,6 +198,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/checkboxCustomCorrectionPicker" />
 
+        <CheckBox
+            android:id="@+id/checkboxAllowFlexibleDelimiters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
+            android:checked="false"
+            android:text="@string/allow_flexible_delimiters"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkboxAllowInvalidAddress" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderPlaceholder"
             android:layout_width="match_parent"
@@ -195,7 +221,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/placeholder"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxAllowInvalidAddress">
+            app:layout_constraintTop_toBottomOf="@+id/checkboxAllowFlexibleDelimiters">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textPlaceholder"
@@ -455,6 +481,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
+            android:id="@+id/textClipToPolygonBoxInfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
@@ -465,5 +492,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/holderClipToPolygon" />
+
+        <Button
+            android:id="@+id/closeButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/main_l"
+            android:text="closeView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textClipToPolygonBoxInfo" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

@@ -1,96 +1,77 @@
-apply plugin: 'maven'
-apply plugin: 'signing'
+def ossrhUsername = findProperty('OSSRH_USERNAME')
+def ossrhPassword = findProperty('OSSRH_PASSWORD')
+def signingKey = findProperty('SIGNING_KEY')
+def signingKeyPwd = findProperty('SIGNING_KEY_PWD')
+def libVersion = findProperty('LIBRARY_VERSION') ? findProperty('LIBRARY_VERSION') : "1.0-debug"
 
-def isReleaseBuild() {
-    return VERSION_NAME.contains("SNAPSHOT") == false
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.convention('sources')
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
 }
 
-def getReleaseRepositoryUrl() {
-    return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
-            : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+task androidJavadocsJar(type: Jar, dependsOn: dokkaJavadoc) {
+    archiveClassifier.convention('javadoc')
+    archiveClassifier.set('javadoc')
+    from "$buildDir/dokka"
 }
 
-def getSnapshotRepositoryUrl() {
-    return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
-            : "https://oss.sonatype.org/content/repositories/snapshots/"
-}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                // You can then customize attributes of the publication as shown below.
+                groupId = "com.what3words"
+                artifactId = "w3w-android-components"
+                version = libVersion
 
-def getRepositoryUsername() {
-    return hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ""
-}
+                artifact androidSourcesJar
+                artifact androidJavadocsJar
 
-def getRepositoryPassword() {
-    return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
-}
-
-afterEvaluate { project ->
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                pom.groupId = GROUP
-                pom.artifactId = POM_ARTIFACT_ID
-                pom.version = VERSION_NAME
-
-                repository(url: getReleaseRepositoryUrl()) {
-                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-                }
-                snapshotRepository(url: getSnapshotRepositoryUrl()) {
-                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-                }
-
-                pom.project {
-                    name POM_NAME
-                    packaging POM_PACKAGING
-                    description POM_DESCRIPTION
-                    url POM_URL
-
-                    scm {
-                        url POM_SCM_URL
-                        connection POM_SCM_CONNECTION
-                        developerConnection POM_SCM_DEV_CONNECTION
-                    }
-
+                pom {
+                    name = "w3w-android-components"
+                    description = 'Android library for what3words REST API.'
+                    url = 'https://github.com/what3words/w3w-android-components'
                     licenses {
                         license {
-                            name POM_LICENCE_NAME
-                            url POM_LICENCE_URL
-                            distribution POM_LICENCE_DIST
+                            name = 'The MIT License (MIT)'
+                            url = 'https://github.com/what3words/w3w-android-components/blob/master/LICENSE'
                         }
                     }
-
                     developers {
                         developer {
-                            id POM_DEVELOPER_ID
-                            name POM_DEVELOPER_NAME
+                            id = 'what3words'
+                            name = 'what3words'
+                            email = 'development@what3words.com'
                         }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/what3words/w3w-android-components.git'
+                        developerConnection = 'scm:git:ssh://git@github.com:what3words/w3w-android-components.git'
+                        url = 'https://github.com/what3words/w3w-android-components'
                     }
                 }
             }
         }
+        repositories {
+            maven {
+                name = "sonatype"
+
+                def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+                credentials {
+                    username ossrhUsername
+                    password ossrhPassword
+                }
+            }
+        }
     }
+}
 
-    signing {
-        required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
-        sign configurations.archives
-    }
-
-    //task androidJavadocs(type: Javadoc) {
-    //source = android.sourceSets.main.allJava
-    //}
-
-    //task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
-    //classifier = 'javadoc'
-    //from androidJavadocs.destinationDir
-    //}
-
-    task androidSourcesJar(type: Jar) {
-        archiveClassifier = 'sources'
-        from android.sourceSets.main.java.sourceFiles
-    }
-
-    artifacts {
-        archives androidSourcesJar
-    }
+signing {
+    useInMemoryPgpKeys(signingKey, signingKeyPwd)
+    sign publishing.publications
 }

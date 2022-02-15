@@ -4,13 +4,20 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#0A3049</color>
 
-    <color name="w3wRed">#FFE11F26</color>
-    <color name="w3wBlue">#0A3049</color>
-    <color name="w3wLightGray">#C2C2C2</color>
-    <color name="w3wGray">#525252</color>
-    <color name="white">#FFF</color>
+    <color name="background">#FFF</color>
+    <color name="borderColor">#C2C2C2</color>
+    <color name="textColorForceDay">#0A3049</color>
+    <color name="textColor">#0A3049</color>
+    <color name="slashesColor">#E11F26</color>
+    <color name="subtextColorForceDay">#525252</color>
+    <color name="subtextColor">#525252</color>
+    <color name="hintColor">#A3A3A3</color>
     <color name="black">#000</color>
-    <color name="w3wError">#ED694E</color>
-    <color name="w3wHover">#DBEFFA</color>
+    <color name="errorBorderColor">#B24000</color>
+    <color name="errorBackgroundColor">#FFF</color>
+    <color name="errorTextColor">#B24000</color>
+    <color name="hoverColor">#DBEFFA</color>
     <color name="w3wVoiceBackground">#F2F4F5</color>
+    <color name="w3wVoiceBackgroundForceDay">#F2F4F5</color>
+    <color name="transparent">#00000000</color>
 </resources>

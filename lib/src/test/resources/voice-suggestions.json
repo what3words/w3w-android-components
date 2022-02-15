@@ -1,0 +1,29 @@
+{
+  "message": "Suggestions",
+  "suggestions": [
+    {
+      "country": "GB",
+      "nearestPlace": "West Bromwich, Sandwell",
+      "words": "star.words.forced",
+      "distanceToFocusKm": 166,
+      "rank": 1,
+      "language": "en"
+    },
+    {
+      "country": "AU",
+      "nearestPlace": "Katherine, Northern Territory",
+      "words": "star.wards.force",
+      "distanceToFocusKm": 14079,
+      "rank": 2,
+      "language": "en"
+    },
+    {
+      "country": "US",
+      "nearestPlace": "Rossmoor, Maryland",
+      "words": "star.words.force",
+      "distanceToFocusKm": 5880,
+      "rank": 3,
+      "language": "en"
+    }
+  ]
+}

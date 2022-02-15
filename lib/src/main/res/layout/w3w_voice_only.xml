@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:importantForAccessibility="noHideDescendants"
-    android:minWidth="98dp"
-    android:minHeight="98dp">
+    android:minWidth="@dimen/voice_button_min_width"
+    android:minHeight="@dimen/voice_button_min_width">
 
     <ImageView
         android:id="@+id/w3wLogo"
@@ -57,5 +57,20 @@
         app:layout_constraintStart_toStartOf="@id/w3wLogo"
         app:layout_constraintTop_toTopOf="@id/w3wLogo"
         app:layout_constraintWidth_percent="0.52" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:elevation="1dp"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="@id/w3wLogo"
+        app:layout_constraintEnd_toEndOf="@id/w3wLogo"
+        app:layout_constraintStart_toStartOf="@id/w3wLogo"
+        app:layout_constraintTop_toTopOf="@id/w3wLogo"
+        app:layout_constraintWidth_percent="0.4"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/lf20_5onlrrsf" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,23 +2,20 @@ package com.what3words.components.picker
 
 import android.content.Context
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.res.ResourcesCompat
+import android.view.View
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat.getFont
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.components.R
-import com.what3words.components.text.AutoSuggestOptions
-import com.what3words.components.text.W3WAutoSuggestEditText
-import com.what3words.components.text.handleSelectionTrack
-import com.what3words.components.utils.DisplayUnits
+import com.what3words.components.models.DisplayUnits
 import com.what3words.components.utils.MyDividerItemDecorator
-import com.what3words.components.utils.W3WSuggestion
+import com.what3words.components.vm.AutosuggestTextViewModel
+import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.Suggestion
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * A [RecyclerView] to show [W3WSuggestion] returned by w3w auto suggest component
@@ -28,105 +25,217 @@ class W3WAutoSuggestPicker
 @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : RecyclerView(context, attrs, defStyleAttr) {
+    defStyleAttr: Int = R.attr.customW3WAutoSuggestPickerStyle
+) : RecyclerView(
+    ContextThemeWrapper(context, R.style.W3WAutoSuggestPickerTheme),
+    attrs,
+    defStyleAttr
+) {
 
-    private var options: AutoSuggestOptions = AutoSuggestOptions()
+    private var titleFontFamily: Typeface? = null
+    private var subtitleFontFamily: Typeface? = null
+    private var subtitleTextColor: Int
+    private var titleTextColor: Int
+    private var itemHighlightBackground: Int
+    private var subtitleTextSize: Int
+    private var titleTextSize: Int
+    private var options: AutosuggestOptions = AutosuggestOptions()
     private var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
-    private var key: String = ""
-    private var isEnterprise: Boolean = false
     private var returnCoordinates: Boolean = false
     private var query: String = ""
-    private var wrapper: What3WordsV3? = null
-    private var callback: ((suggestion: W3WSuggestion?) -> Unit)? =
-        null
-
-    private val suggestionsAdapter: SuggestionsAdapter by lazy {
-        SuggestionsAdapter(
-            Typeface.DEFAULT,
-            R.color.w3wBlue
-        ) { suggestion ->
-            handleAddressPicked(suggestion)
-        }
-    }
+    private var viewModel: AutosuggestTextViewModel? = null
+    internal var itemBackgroundDrawable: Drawable? = null
+    internal var itemBackgroundColor: Int
+    private var suggestionsAdapter: SuggestionsAdapter
 
     private fun handleAddressPicked(
         suggestion: Suggestion?
     ) {
         suggestionsAdapter.refreshSuggestions(emptyList(), null, displayUnits)
         visibility = GONE
-        if (suggestion == null) {
-            callback?.invoke(null)
-        } else {
-            if (!isEnterprise && wrapper != null) handleSelectionTrack(
-                suggestion,
-                query,
-                options,
-                wrapper!!
-            )
-            if (!returnCoordinates) {
-                callback?.invoke(W3WSuggestion(suggestion))
-            } else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val res = wrapper!!.convertToCoordinates(suggestion.words).execute()
-                    CoroutineScope(Dispatchers.Main).launch {
-                        callback?.invoke(W3WSuggestion(suggestion, res.coordinates))
-                    }
-                }
-            }
-        }
+        viewModel?.onSuggestionClicked(query, suggestion, returnCoordinates)
     }
 
     init {
-        val linear = LinearLayoutManager(context, attrs, defStyleAttr, 0)
-        layoutManager = linear
-        setHasFixedSize(true)
-        background = AppCompatResources.getDrawable(context, R.drawable.bg_white_border_gray)
-        resources.getDimensionPixelSize(R.dimen.tiny_margin).let {
-            setPadding(it, it, it, it)
-        }
-        ResourcesCompat.getDrawable(resources, R.drawable.divider, null)?.let {
-            addItemDecoration(
-                MyDividerItemDecorator(
-                    it,
-                    (layoutManager as LinearLayoutManager).reverseLayout
-                )
-            )
-        }
-        adapter = suggestionsAdapter
-        visibility = GONE
-    }
+        context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.W3WAutoSuggestPicker,
+            defStyleAttr, R.style.W3WAutoSuggestPickerTheme
+        ).apply {
+            try {
+                val linear = LinearLayoutManager(context, attrs, defStyleAttr, 0)
+                layoutManager = linear
+                setHasFixedSize(true)
 
-    internal fun internalCallback(callback: (selectedSuggestion: W3WSuggestion?) -> Unit): W3WAutoSuggestPicker {
-        this.callback = callback
-        return this
+                resources.getDimensionPixelSize(R.dimen.tiny_margin).let {
+                    setPadding(it, it, it, it)
+                }
+
+                val itemBackgroundDrawableId = getResourceId(
+                    R.styleable.W3WAutoSuggestPicker_pickerItemBackgroundDrawable,
+                    -1
+                )
+
+                if (itemBackgroundDrawableId != -1) {
+                    itemBackgroundDrawable =
+                        ContextCompat.getDrawable(context, itemBackgroundDrawableId)
+                }
+
+                val backgroundDrawableId = getResourceId(
+                    R.styleable.W3WAutoSuggestPicker_pickerBackgroundDrawable,
+                    -1
+                )
+                if (backgroundDrawableId != -1) {
+                    background =
+                        ContextCompat.getDrawable(context, backgroundDrawableId)
+                }
+
+                val dividerDrawableId = getResourceId(
+                    R.styleable.W3WAutoSuggestPicker_pickerDivider,
+                    -1
+                )
+
+                val itemSpacing = getDimension(
+                    R.styleable.W3WAutoSuggestPicker_pickerItemSpacing,
+                    0f
+                )
+
+                val itemPadding = getDimensionPixelSize(
+                    R.styleable.W3WAutoSuggestPicker_pickerItemPadding,
+                    resources.getDimensionPixelSize(R.dimen.large_margin)
+                )
+
+                titleTextSize =
+                    getDimensionPixelSize(
+                        R.styleable.W3WAutoSuggestPicker_pickerItemTitleTextSize,
+                        context.resources.getDimensionPixelSize(R.dimen.default_text)
+                    )
+
+                subtitleTextSize =
+                    getDimensionPixelSize(
+                        R.styleable.W3WAutoSuggestPicker_pickerItemSubtitleTextSize,
+                        context.resources.getDimensionPixelSize(R.dimen.secondary_text)
+                    )
+
+                titleTextColor =
+                    getColor(
+                        R.styleable.W3WAutoSuggestPicker_pickerItemTitleTextColor,
+                        context.getColor(R.color.textColor)
+                    )
+
+                itemHighlightBackground =
+                    getColor(
+                        R.styleable.W3WAutoSuggestPicker_pickerItemHighlightBackground,
+                        context.getColor(R.color.hoverColor)
+                    )
+
+                subtitleTextColor =
+                    getColor(
+                        R.styleable.W3WAutoSuggestPicker_pickerItemSubtitleTextColor,
+                        context.getColor(R.color.subtextColor)
+                    )
+
+                itemBackgroundColor = getColor(
+                    R.styleable.W3WAutoSuggestPicker_pickerItemBackground,
+                    ContextCompat.getColor(context, R.color.background)
+                )
+
+                val dividerVisible = getBoolean(
+                    R.styleable.W3WAutoSuggestPicker_pickerDividerVisible,
+                    true
+                )
+
+                val titleFontFamilyId = getResourceId(
+                    R.styleable.W3WAutoSuggestPicker_pickerItemTitleFontFamily,
+                    -1
+                )
+                if (titleFontFamilyId != -1) {
+                    titleFontFamily = getFont(context, titleFontFamilyId)
+                }
+
+                val subtitleFontFamilyId = getResourceId(
+                    R.styleable.W3WAutoSuggestPicker_pickerItemSubtitleFontFamily,
+                    -1
+                )
+
+                if (subtitleFontFamilyId != -1) {
+                    subtitleFontFamily = getFont(context, subtitleFontFamilyId)
+                }
+
+                if (dividerDrawableId != -1) {
+                    ContextCompat.getDrawable(context, dividerDrawableId)?.let {
+                        addItemDecoration(
+                            MyDividerItemDecorator(
+                                if (dividerVisible) it else null,
+                                itemSpacing,
+                                (layoutManager as LinearLayoutManager).reverseLayout
+                            )
+                        )
+                    } ?: kotlin.run {
+                        addItemDecoration(
+                            MyDividerItemDecorator(
+                                null,
+                                itemSpacing,
+                                (layoutManager as LinearLayoutManager).reverseLayout
+                            )
+                        )
+                    }
+                } else {
+                    addItemDecoration(
+                        MyDividerItemDecorator(
+                            null,
+                            itemSpacing,
+                            (layoutManager as LinearLayoutManager).reverseLayout
+                        )
+                    )
+                }
+
+                suggestionsAdapter = SuggestionsAdapter(
+                    itemBackgroundDrawable,
+                    itemBackgroundColor,
+                    { suggestion ->
+                        handleAddressPicked(suggestion)
+                    },
+                    titleTextSize,
+                    titleTextColor,
+                    subtitleTextSize,
+                    subtitleTextColor,
+                    itemHighlightBackground,
+                    titleFontFamily,
+                    subtitleFontFamily,
+                    itemPadding
+                )
+            } finally {
+                recycle()
+            }
+
+            adapter = suggestionsAdapter
+            visibility = GONE
+        }
     }
 
     internal fun setup(
-        wrapper: What3WordsV3,
-        isEnterprise: Boolean,
-        key: String,
+        viewModel: AutosuggestTextViewModel,
         displayUnits: DisplayUnits
     ) {
-        this.isEnterprise = isEnterprise
-        this.key = key
-        this.wrapper = wrapper
+        this.viewModel = viewModel
         this.displayUnits = displayUnits
     }
 
-    internal fun refreshSuggestions(
+    internal fun populateAndSetVisibility(
         suggestions: List<Suggestion>,
         query: String?,
-        options: AutoSuggestOptions,
+        options: AutosuggestOptions,
         returnCoordinates: Boolean
     ) {
+        this.visibility = if (suggestions.isEmpty()) View.GONE else View.VISIBLE
         suggestionsAdapter.refreshSuggestions(suggestions, query, displayUnits)
         this.returnCoordinates = returnCoordinates
         this.query = query ?: ""
         this.options = options
     }
 
-    internal fun forceClear() {
+    internal fun forceClearAndHide() {
         suggestionsAdapter.refreshSuggestions(emptyList(), "", displayUnits)
         visibility = GONE
     }
