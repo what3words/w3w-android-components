@@ -77,7 +77,7 @@ dependencies {
     testImplementation "androidx.arch.core:core-testing:2.1.0"
 
     // What3Words wrapper
-    api "com.what3words:w3w-android-wrapper:3.1.16"
+    api "com.what3words:w3w-android-wrapper:3.1.17"
     implementation 'com.google.guava:guava:27.0.1-android'
     implementation 'com.intentfilter:android-permissions:2.0.54'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'

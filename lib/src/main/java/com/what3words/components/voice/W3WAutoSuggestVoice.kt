@@ -451,6 +451,25 @@ class W3WAutoSuggestVoice
         return this
     }
 
+    fun apiKey(
+        key: String,
+        endpoint: String,
+        voiceEndpoint: String,
+        headers: Map<String, String> = mapOf()
+    ): W3WAutoSuggestVoice {
+        viewModel.manager = AutosuggestApiManager(
+            What3WordsV3(
+                key,
+                endpoint,
+                voiceEndpoint,
+                context,
+                headers
+            )
+        )
+        viewModel.setMicrophone(Microphone())
+        return this
+    }
+
     /** Set your What3Words Manager with your SDK instance
      *
      * @param logicManager manager created using SDK instead of API
