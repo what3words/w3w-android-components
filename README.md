@@ -143,7 +143,7 @@ If you run our Enterprise Suite API Server yourself, you may specify the URL to 
 
 ## Enable voice autosuggest:
 
-<img src="https://github.com/what3words/w3w-autosuggest-edittext-android/blob/refactor-with-helper/assets/components-2.gif" width=30% height=30%>
+<img src="https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/components-2.gif" width=30% height=30%>
 
 The component also allows for voice input using the what3words Voice API. This feature allows the user to say 3 words and using speech recognition technology displays 3 word address suggestions to the user.
 
