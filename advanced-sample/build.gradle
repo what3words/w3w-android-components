@@ -16,7 +16,7 @@ android {
         targetSdkVersion 31
         versionCode 1
         versionName "1.0"
-        buildConfigField 'String', 'W3W_API_KEY', findProperty('W3W_API_KEY') ? "\"${findProperty('W3W_API_KEY')}\"" : "\"YOUR_API_KEY_HERE\""
+        buildConfigField 'String', 'W3W_API_KEY', findProperty('LOCAL_KEY') ? "\"${findProperty('LOCAL_KEY')}\"" : "\"YOUR_API_KEY_HERE\""
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
