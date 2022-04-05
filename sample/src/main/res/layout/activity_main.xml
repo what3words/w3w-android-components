@@ -24,13 +24,14 @@
 
         <com.what3words.components.text.W3WAutoSuggestEditText
             android:id="@+id/suggestionEditText"
-            style="@style/Widget.AppCompat.W3WAutoSuggestEditTextDayNight"
+            style="@style/YourCustomStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"
             android:layout_marginEnd="@dimen/main_s"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:shouldCheckForValidOnFocus="false"
             app:layout_constraintTop_toBottomOf="@+id/textHeader" />
 
         <com.what3words.components.picker.W3WAutoSuggestPicker

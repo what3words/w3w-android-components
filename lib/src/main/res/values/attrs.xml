@@ -9,6 +9,7 @@
         <attr name="invalidAddressMessage" format="string" />
         <attr name="correctionMessage" format="string" />
         <attr name="voiceEnabled" format="boolean" />
+        <attr name="shouldCheckForValidOnFocus" format="boolean" />
         <attr name="voiceLanguage" format="string" />
         <attr name="voicePlaceholder" format="string" />
         <attr name="voiceBackgroundColor" format="color" />

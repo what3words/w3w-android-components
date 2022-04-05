@@ -118,6 +118,7 @@ class W3WAutoSuggestEditText
     private var customErrorView: AppCompatTextView? = null
     private var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? = null
     private var customInvalidAddressMessageView: AppCompatTextView? = null
+    private var shouldHardRegexOnLoseFocus = true
 
     internal val tick: Drawable? by lazy {
         ContextCompat.getDrawable(context, R.drawable.ic_tick).apply {
@@ -273,19 +274,25 @@ class W3WAutoSuggestEditText
                     if (drawableId != -1) ContextCompat.getDrawable(context, drawableId) else null
                 voiceIconsColor = getColor(
                     R.styleable.W3WAutoSuggestEditText_voiceIconsColor,
-                    ContextCompat.getColor(context, if (isDayNightEnabled) R.color.subtextColor else R.color.subtextColorForceDay)
+                    ContextCompat.getColor(
+                        context,
+                        if (isDayNightEnabled) R.color.subtextColor else R.color.subtextColorForceDay
+                    )
                 )
 
                 returnCoordinates =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_returnCoordinates, false)
+
+                shouldHardRegexOnLoseFocus =
+                    getBoolean(R.styleable.W3WAutoSuggestEditText_shouldCheckForValidOnFocus, true)
                 voiceEnabled =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
                 voiceScreenType =
                     VoiceScreenType.values()[
-                        getInt(
-                            R.styleable.W3WAutoSuggestEditText_voiceScreenType,
-                            0
-                        )
+                            getInt(
+                                R.styleable.W3WAutoSuggestEditText_voiceScreenType,
+                                0
+                            )
                     ]
                 voiceLanguage =
                     getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
@@ -308,58 +315,67 @@ class W3WAutoSuggestEditText
             handleVoiceClick()
         }
 
-        setOnEditorActionListener { _, i, event ->
-            if (i == EditorInfo.IME_ACTION_DONE || (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER))) {
-                clearFocus()
-                true
-            } else {
-                false
+        if (shouldHardRegexOnLoseFocus) {
+            setOnEditorActionListener { _, i, event ->
+                if (i == EditorInfo.IME_ACTION_DONE || (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER))) {
+                    clearFocus()
+                    true
+                } else {
+                    false
+                }
             }
         }
 
         setOnFocusChangeListener { _, isFocused ->
-            when {
-                !focusFromVoice && !pickedFromDropDown && !isFocused && isReal3wa(text.toString()) -> {
-                    viewModel.onSuggestionClicked(
-                        text.toString(),
-                        getReal3wa(text.toString()),
-                        returnCoordinates
+            if (shouldHardRegexOnLoseFocus) {
+                when {
+                    !focusFromVoice && !pickedFromDropDown && !isFocused && isReal3wa(text.toString()) -> {
+                        viewModel.onSuggestionClicked(
+                            text.toString(),
+                            getReal3wa(text.toString()),
+                            returnCoordinates
+                        )
+                    }
+                    !allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
+                        text.toString()
+                    ) -> {
+                        viewModel.onSuggestionClicked(text.toString(), null, returnCoordinates)
+                    }
+                    allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
+                        text.toString()
+                    ) -> {
+                        getPicker().forceClearAndHide()
+                    }
+                }
+                if (!isFocused) {
+                    iconHolderLayout.setClearVisibility(GONE)
+                    setPaddingRelative(
+                        paddingStart,
+                        paddingTop,
+                        originalPaddingEnd,
+                        paddingBottom
                     )
+                    hideKeyboard()
+                } else {
+                    if (voiceEnabled)
+                        setPaddingRelative(paddingStart, paddingTop, height * 2, paddingBottom)
+                    else setPaddingRelative(paddingStart, paddingTop, height, paddingBottom)
+                    if (this.text.isNullOrEmpty() && !focusFromVoice) {
+                        this.setText(
+                            context.getString(R.string.w3w_slashes)
+                        )
+                    }
+                    showKeyboard()
+                    iconHolderLayout.setClearVisibility(VISIBLE)
+                    showImages(false)
                 }
-                !allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
-                    text.toString()
-                ) -> {
-                    viewModel.onSuggestionClicked(text.toString(), null, returnCoordinates)
-                }
-                allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
-                    text.toString()
-                ) -> {
-                    getPicker().forceClearAndHide()
-                }
-            }
-            if (!isFocused) {
-                iconHolderLayout.setClearVisibility(GONE)
-                setPaddingRelative(
-                    paddingStart,
-                    paddingTop,
-                    originalPaddingEnd,
-                    paddingBottom
-                )
-                hideKeyboard()
+                focusFromVoice = false
             } else {
-                if (voiceEnabled)
-                    setPaddingRelative(paddingStart, paddingTop, height * 2, paddingBottom)
-                else setPaddingRelative(paddingStart, paddingTop, height, paddingBottom)
-                if (this.text.isNullOrEmpty() && !focusFromVoice) {
-                    this.setText(
-                        context.getString(R.string.w3w_slashes)
-                    )
+                if (!isFocused) {
+                    clearFocus()
+                    hideKeyboard()
                 }
-                showKeyboard()
-                iconHolderLayout.setClearVisibility(VISIBLE)
-                showImages(false)
             }
-            focusFromVoice = false
         }
 
         this.setOnTouchListener(
@@ -430,7 +446,7 @@ class W3WAutoSuggestEditText
     private fun onTextChanged(searchText: String) {
         if (fromPaste) {
             if (searchText.removePrefix(context.getString(R.string.w3w_slashes))
-                .isPossible3wa()
+                    .isPossible3wa()
             ) {
                 fromPaste = false
                 setText(searchText.removePrefix(context.getString(R.string.w3w_slashes)))
@@ -1265,6 +1281,18 @@ class W3WAutoSuggestEditText
      */
     fun allowFlexibleDelimiters(isAllowed: Boolean): W3WAutoSuggestEditText {
         this.allowFlexibleDelimiters = isAllowed
+        return this
+    }
+
+    /**
+     * Allow EditText to accept different delimiters than the what3words standard full stop "index.home.raft".
+     * By default [allowFlexibleDelimiters] is false, when you type an existing three word address with a different delimiter (i.e "index home raft") will trigger our Did You Mean feature, but if you set [allowFlexibleDelimiters] (true) "index home raft" will be parsed to "index.home.raft" and will return the [nResults] suggestions for that query.
+     *
+     * @param isAllowed if true [W3WAutoSuggestEditText] will accept flexible delimiters and show suggestions, if false will not accept flexible delimiters but if is that three word address exist will show the did you mean feature.
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun shouldCheckForValidOnFocus(shouldCheck: Boolean): W3WAutoSuggestEditText {
+        this.shouldHardRegexOnLoseFocus = shouldCheck
         return this
     }
 
