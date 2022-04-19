@@ -21,9 +21,15 @@ class MainActivity : AppCompatActivity() {
                             w3wSuggestionInfo.text = ""
                             return@let
                         }
-                        w3wSuggestionInfo.text =
-                            "words: ${suggestionWithCoordinates!!.words}\ncountry: ${suggestionWithCoordinates.country}\nnear: ${suggestionWithCoordinates.nearestPlace}\ndistance: ${if (suggestionWithCoordinates.distanceToFocusKm == null) "N/A" else suggestionWithCoordinates.distanceToFocusKm.toString() + "km"}\nlatitude: ${suggestionWithCoordinates.coordinates?.lat}\nlongitude: ${suggestionWithCoordinates.coordinates?.lng}"
-
+                        w3wSuggestionInfo.text = String.format(
+                            resources.getString(R.string.text_search_result),
+                            suggestionWithCoordinates!!.words,
+                            suggestionWithCoordinates.country,
+                            suggestionWithCoordinates.nearestPlace,
+                            if (suggestionWithCoordinates.distanceToFocusKm == null) "N/A" else "${suggestionWithCoordinates.distanceToFocusKm}km",
+                            "${suggestionWithCoordinates.coordinates?.lat}",
+                            "${suggestionWithCoordinates.coordinates?.lng}"
+                        )
                     }
                 }
                 .onError {

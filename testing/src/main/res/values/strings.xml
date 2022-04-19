@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">w3wUI Test</string>
+    <string name="text_search_result">words: %1$s\ncountry: %2$s\nnear: %3$s\ndistance: %4$s\nlatitude: %5$s\nlongitude: %6$s"</string>
 </resources>
