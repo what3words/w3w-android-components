@@ -63,6 +63,9 @@ class W3WAutoSuggestPicker
             defStyleAttr, R.style.W3WAutoSuggestPickerTheme
         ).apply {
             try {
+                if (findViewById<W3WAutoSuggestPicker>(id) == null) id =
+                    R.id.w3wAutoSuggestDefaultPicker
+
                 val linear = LinearLayoutManager(context, attrs, defStyleAttr, 0)
                 layoutManager = linear
                 setHasFixedSize(true)
