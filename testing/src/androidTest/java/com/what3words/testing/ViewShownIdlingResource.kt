@@ -1,7 +1,6 @@
-package com.what3words.testing.utils
+package com.what3words.testing
 
 import android.view.View
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
@@ -33,7 +32,6 @@ class ViewShownIdlingResource(private val viewMatcher: Matcher<View>) :
     }
 
     companion object {
-        private val TAG = ViewShownIdlingResource::class.java.simpleName
         private fun getView(viewMatcher: Matcher<View>): View? {
             return try {
                 val viewInteraction = onView(viewMatcher)
