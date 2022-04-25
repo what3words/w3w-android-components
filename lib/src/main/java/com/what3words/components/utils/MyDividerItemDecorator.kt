@@ -20,6 +20,8 @@ internal class MyDividerItemDecorator(
     ) {
         super.getItemOffsets(outRect, view, parent, state)
         outRect.bottom = verticalSpacing.toInt()
+        outRect.left = verticalSpacing.toInt()
+        outRect.right = verticalSpacing.toInt()
         if (parent.getChildLayoutPosition(view) == 0) {
             outRect.top = verticalSpacing.toInt()
         }

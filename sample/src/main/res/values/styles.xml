@@ -19,7 +19,7 @@
 
     <style name="YourPickerCustomStyle" parent="W3WAutoSuggestPicker">
         <item name="pickerItemBackgroundDrawable">@drawable/bg_item_gradient</item>
-        <item name="pickerItemSpacing">8dp</item>
+        <item name="pickerItemSpacing">@dimen/main_s</item>
         <item name="pickerBackgroundDrawable">@null</item>
         <item name="pickerDivider">@null</item>
         <item name="pickerDividerVisible">false</item>
@@ -29,7 +29,7 @@
         <item name="pickerItemSubtitleTextSize">18sp</item>
         <item name="pickerItemTitleFontFamily">sans-serif-condensed-medium</item>
         <item name="pickerItemSubtitleFontFamily">sans-serif-condensed</item>
-        <item name="pickerItemPadding">@dimen/main_l</item>
+        <item name="pickerItemPadding">@dimen/main_m</item>
     </style>
 
     <style name="YourCustomStyleTextAppearance" parent="TextAppearance.AppCompat">
