@@ -254,18 +254,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textLanguageInfo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:text="@string/language_info"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/holderLanguage" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderVoicePlaceholder"
@@ -276,7 +264,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/voice_placeholder_header"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/textLanguageInfo">
+            app:layout_constraintTop_toBottomOf="@+id/holderLanguage">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textVoicePlaceholder"
@@ -309,18 +297,7 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textVoiceLanguageInfo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:text="@string/voice_language_info"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/holderVoiceLanguage" />
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderFocus"
@@ -331,7 +308,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/focus_hint"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/textVoiceLanguageInfo">
+            app:layout_constraintTop_toBottomOf="@+id/holderVoiceLanguage">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textFocus"
@@ -344,18 +321,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textFocusInfo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:text="@string/focus_info"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/holderFocus" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderClipToCountry"
@@ -366,7 +331,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/clip_to_country_hint"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/textFocusInfo">
+            app:layout_constraintTop_toBottomOf="@id/holderFocus">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textClipToCountry"
@@ -378,18 +343,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textClipToCountryInfo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:text="@string/clip_to_country_info"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/holderClipToCountry" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderClipToCircle"
@@ -400,7 +353,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/clip_to_circle_hint"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/textClipToCountryInfo">
+            app:layout_constraintTop_toBottomOf="@id/holderClipToCountry">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textClipToCircle"
@@ -412,18 +365,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textClipToCircleInfo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:text="@string/clip_to_circle_info"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/holderClipToCircle" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderClipToBoundingBox"
@@ -434,7 +375,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/clip_to_box_hint"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/textClipToCircleInfo">
+            app:layout_constraintTop_toBottomOf="@id/holderClipToCircle">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textClipToBoundingBox"
@@ -446,18 +387,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textClipToBoundingBoxInfo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:text="@string/clip_to_box_info"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/holderClipToBoundingBox" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderClipToPolygon"
@@ -468,7 +397,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/clip_to_polygon_hint"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/textClipToBoundingBoxInfo">
+            app:layout_constraintTop_toBottomOf="@id/holderClipToBoundingBox">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textClipToPolygon"
@@ -480,18 +409,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textClipToPolygonBoxInfo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:text="@string/clip_to_polygon_info"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/holderClipToPolygon" />
 
 
         <com.google.android.material.textfield.TextInputLayout
@@ -503,7 +420,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/specify_number_of_suggestions_hint"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@id/textClipToPolygonBoxInfo">
+            app:layout_constraintTop_toBottomOf="@id/holderClipToPolygon">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textSpecifyNumberOfSuggestions"
@@ -515,18 +432,7 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textSpecifyNumberOfSuggestionsInfo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/main_s"
-            android:layout_marginEnd="@dimen/main_s"
-            android:text="@string/specify_number_of_suggestions_info"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/holderSpecifyNumberOfSuggestions" />
+
 
         <Button
             android:id="@+id/closeButton"
@@ -536,6 +442,6 @@
             android:text="closeView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textSpecifyNumberOfSuggestionsInfo" />
+            app:layout_constraintTop_toBottomOf="@+id/holderSpecifyNumberOfSuggestions" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
