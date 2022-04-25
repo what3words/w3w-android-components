@@ -1,57 +1,38 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.kotlin.android'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
-
-    buildFeatures {
-        viewBinding true
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+    compileSdk 32
 
     defaultConfig {
-        applicationId "com.what3words.autosuggest"
-        minSdkVersion 23
-        targetSdkVersion 31
-        versionCode 18
-        versionName "1.17"
-        multiDexEnabled true
+        applicationId "com.what3words.testing"
+        minSdk 23
+        targetSdk 32
+        versionCode 1
+        versionName "1.0"
+
         buildConfigField 'String', 'W3W_API_KEY', findProperty('W3W_API_KEY') ? "\"${findProperty('W3W_API_KEY')}\"" : "\"YOUR_API_KEY_HERE\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    signingConfigs {
-        release {
-            storeFile file("../.signing/release.jks")
-            storePassword "123456"
-            keyAlias "key0"
-            keyPassword "123456"
-
-            // Optional, specify signing versions used
-            v1SigningEnabled true
-            v2SigningEnabled true
-        }
-    }
 
     buildTypes {
         release {
-            minifyEnabled true
-            signingConfig signingConfigs.release
+            minifyEnabled  true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets {
-        main {
-            java {
-                srcDirs 'src/main/java', 'src/test', 'src/androidTest'
-            }
-        }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        viewBinding true
     }
 }
 
