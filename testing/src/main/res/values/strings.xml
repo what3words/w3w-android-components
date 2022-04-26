@@ -15,6 +15,7 @@
     <string name="voice_fullscreen">enable voice with fullscreen</string>
     <string name="suggestion_list_below">Suggestion list below</string>
     <string name="custom_picker">use custom picker</string>
+    <string name="prefer_land">prefer land</string>
     <string name="custom_error">use custom error message view</string>
     <string name="custom_correction_picker">use custom correction picker</string>
     <string name="allow_invalid_address">allow invalid 3wa</string>
