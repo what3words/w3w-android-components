@@ -49,6 +49,10 @@ class MainActivity : AppCompatActivity() {
             binding.suggestionEditText.returnCoordinates(b)
         }
 
+        binding.checkboxPreferLand.setOnCheckedChangeListener { _, b ->
+            binding.suggestionEditText.preferLand(b)
+        }
+
         binding.checkboxAllowInvalidAddress.setOnCheckedChangeListener { _, b ->
             binding.suggestionEditText.allowInvalid3wa(b)
         }

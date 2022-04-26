@@ -89,11 +89,13 @@ class W3WAutoSuggestEditText
     private var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
     private var correctionMessage: String = context.getString(R.string.correction_message)
     private var invalidSelectionMessageText: String? = null
+
     internal var lastSuggestions: MutableList<Suggestion> = mutableListOf()
 
     @Deprecated("", ReplaceWith("callback"))
     private var oldCallback: Consumer<W3WSuggestion?>? =
         null
+
     private var callback: Consumer<SuggestionWithCoordinates?>? =
         null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? =
@@ -273,19 +275,24 @@ class W3WAutoSuggestEditText
                     if (drawableId != -1) ContextCompat.getDrawable(context, drawableId) else null
                 voiceIconsColor = getColor(
                     R.styleable.W3WAutoSuggestEditText_voiceIconsColor,
-                    ContextCompat.getColor(context, if (isDayNightEnabled) R.color.subtextColor else R.color.subtextColorForceDay)
+                    ContextCompat.getColor(
+                        context,
+                        if (isDayNightEnabled) R.color.subtextColor else R.color.subtextColorForceDay
+                    )
                 )
 
                 returnCoordinates =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_returnCoordinates, false)
                 voiceEnabled =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
+                viewModel.options.preferLand =
+                    getBoolean(R.styleable.W3WAutoSuggestEditText_preferLand, true)
                 voiceScreenType =
                     VoiceScreenType.values()[
-                        getInt(
-                            R.styleable.W3WAutoSuggestEditText_voiceScreenType,
-                            0
-                        )
+                            getInt(
+                                R.styleable.W3WAutoSuggestEditText_voiceScreenType,
+                                0
+                            )
                     ]
                 voiceLanguage =
                     getString(R.styleable.W3WAutoSuggestEditText_voiceLanguage) ?: "en"
@@ -430,7 +437,7 @@ class W3WAutoSuggestEditText
     private fun onTextChanged(searchText: String) {
         if (fromPaste) {
             if (searchText.removePrefix(context.getString(R.string.w3w_slashes))
-                .isPossible3wa()
+                    .isPossible3wa()
             ) {
                 fromPaste = false
                 setText(searchText.removePrefix(context.getString(R.string.w3w_slashes)))
@@ -1245,5 +1252,18 @@ class W3WAutoSuggestEditText
         this.hideSelectedIcon = b
         return this
     }
+
+    /**
+     * Makes AutoSuggest prefer results on land to those in the sea.
+     * This setting is on by default. Use false to disable this setting and receive more suggestions in the sea.                                                                                                                                                                             t to keep any text user types, default is false, by default EditText will be cleared if not a valid 3 word address, set to true to ignore this default behaviour.
+     *
+     * @param isPreferred if true, autosuggest results will be restricted to land and vice-versa
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun preferLand(isPreferred: Boolean): W3WAutoSuggestEditText {
+        viewModel.options.preferLand = isPreferred
+        return this
+    }
+
     //endregion
 }

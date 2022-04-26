@@ -27,46 +27,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = inflate(layoutInflater)
         setUpW3W()
-        setContentView(binding.root)
-    }
-
-    fun resetW3WApiKey(key: String) {
-        apiKey = key
-        setUpW3W()
-    }
-
-    private fun setUpW3W() {
-        binding.suggestionEditText.apiKey(apiKey)
-            .onDisplaySuggestions {
-            }
-            .onSuggestionSelected {
-                if (it != null) {
-                    binding.selectedInfo.text =  resources.getString(
-                        R.string.suggestion_info_placeholder,
-                        it.words,
-                        it.country,
-                        it.nearestPlace,
-                        if (it.distanceToFocusKm == null) "N/A" else "${it.distanceToFocusKm}km",
-                        it.coordinates?.lat.toString(),
-                        it.coordinates?.lng.toString()
-                    )
-                } else {
-                    binding.selectedInfo.text = ""
-                }
-            }
-            .onError {
-                Log.e("MainActivity", "${it.key} - ${it.message}")
-                Snackbar.make(
-                    binding.main, "${it.key} - ${it.message}",
-                    BaseTransientBottomBar.LENGTH_INDEFINITE
-                ).apply {
-                    setAction("OK") { dismiss() }
-                    show()
-                }
-            }
 
         binding.checkboxCoordinates.setOnCheckedChangeListener { _, b ->
             binding.suggestionEditText.returnCoordinates(b)
+        }
+
+        binding.checkboxPreferLand.setOnCheckedChangeListener { _, b ->
+            binding.suggestionEditText.preferLand(b)
         }
 
         binding.checkboxAllowInvalidAddress.setOnCheckedChangeListener { _, b ->
@@ -200,6 +167,43 @@ class MainActivity : AppCompatActivity() {
                 binding.suggestionEditText.nResults(suggestionsCount.toInt())
             }
         }
+        setContentView(binding.root)
+    }
+
+    fun resetW3WApiKey(key: String) {
+        apiKey = key
+        setUpW3W()
+    }
+
+    private fun setUpW3W() {
+        binding.suggestionEditText.apiKey(apiKey)
+            .onDisplaySuggestions {
+            }
+            .onSuggestionSelected {
+                if (it != null) {
+                    binding.selectedInfo.text = resources.getString(
+                        R.string.suggestion_info_placeholder,
+                        it.words,
+                        it.country,
+                        it.nearestPlace,
+                        if (it.distanceToFocusKm == null) "N/A" else "${it.distanceToFocusKm}km",
+                        it.coordinates?.lat.toString(),
+                        it.coordinates?.lng.toString()
+                    )
+                } else {
+                    binding.selectedInfo.text = ""
+                }
+            }
+            .onError {
+                Log.e("MainActivity", "${it.key} - ${it.message}")
+                Snackbar.make(
+                    binding.main, "${it.key} - ${it.message}",
+                    BaseTransientBottomBar.LENGTH_INDEFINITE
+                ).apply {
+                    setAction("OK") { dismiss() }
+                    show()
+                }
+            }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

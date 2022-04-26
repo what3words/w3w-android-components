@@ -89,6 +89,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/selectedInfo" />
 
+
         <CheckBox
             android:id="@+id/checkboxCoordinates"
             android:layout_width="match_parent"
@@ -103,6 +104,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textCustomHeader" />
 
+        <CheckBox
+            android:id="@+id/checkboxPreferLand"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
+            android:checked="true"
+            android:text="@string/prefer_land"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates" />
+
+
         <RadioGroup
             android:id="@+id/voiceRadioGroup"
             android:layout_width="match_parent"
@@ -111,7 +127,7 @@
             android:layout_marginTop="@dimen/main_s"
             android:layout_marginEnd="@dimen/main_s"
             android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxCoordinates">
+            app:layout_constraintTop_toBottomOf="@+id/checkboxPreferLand">
 
             <RadioButton
                 android:id="@+id/checkboxVoiceDisabled"
