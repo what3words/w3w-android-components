@@ -89,11 +89,13 @@ class W3WAutoSuggestEditText
     private var displayUnits: DisplayUnits = DisplayUnits.SYSTEM
     private var correctionMessage: String = context.getString(R.string.correction_message)
     private var invalidSelectionMessageText: String? = null
+
     internal var lastSuggestions: MutableList<Suggestion> = mutableListOf()
 
     @Deprecated("", ReplaceWith("callback"))
     private var oldCallback: Consumer<W3WSuggestion?>? =
         null
+
     private var callback: Consumer<SuggestionWithCoordinates?>? =
         null
     private var errorCallback: Consumer<APIResponse.What3WordsError>? =
@@ -283,6 +285,8 @@ class W3WAutoSuggestEditText
                     getBoolean(R.styleable.W3WAutoSuggestEditText_returnCoordinates, false)
                 voiceEnabled =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
+                viewModel.options.preferLand =
+                    getBoolean(R.styleable.W3WAutoSuggestEditText_preferLand, true)
                 voiceScreenType =
                     VoiceScreenType.values()[
                             getInt(

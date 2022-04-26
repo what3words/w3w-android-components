@@ -27,7 +27,6 @@ class W3WAutoSuggestUIPreferLandTests {
     var activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
 
-
     @Test
     fun testTextSearch_setPreferLandToFalse() {
         val threeWordAddress = "biochemists.replaced.wax"
@@ -43,8 +42,8 @@ class W3WAutoSuggestUIPreferLandTests {
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView(threeWordAddress))
+            .perform(click(), typeTextIntoFocusedView(threeWordAddress))
+
 
 
         Espresso.onView(
@@ -52,13 +51,14 @@ class W3WAutoSuggestUIPreferLandTests {
                 com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
             )
         )
-            .perform(waitUntil(hasItemCountGreaterThanZero()))
             .perform(
+                waitUntil(hasItemCountGreaterThanZero()),
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                     0,
                     click()
                 )
             )
+
 
         Espresso.onView(withId(R.id.selectedInfo))
             .check(matches(withText(containsString(threeWordAddress))))
