@@ -1,5 +1,6 @@
 package com.what3words.testing.what3wordscomponentuitest.clipToPolygon
 
+import android.widget.ScrollView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.clearText
@@ -16,12 +17,12 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
-import com.what3words.testing.waitUntilViewShown
 import org.hamcrest.CoreMatchers.containsString
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import com.what3words.testing.hasItemCountGreaterThanZero
+import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 import com.what3words.testing.waitUntil
 import org.hamcrest.CoreMatchers.not
 
@@ -45,9 +46,9 @@ class W3WAutoSuggestUIClipToPolygonTests {
     @Test
     fun testTextSearch_clipToPolygonContainAddressInsidePolygon() {
         val threeWordAddress = "advice.itself.mops"
-        waitUntilViewShown(
-            withId(R.id.main)
-        )
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible<ScrollView>())
+
         Espresso.onView(withId(R.id.textClipToPolygon))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
@@ -84,10 +85,9 @@ class W3WAutoSuggestUIClipToPolygonTests {
     fun testTextSearch_clipToPolygonDoesNotContainAddressOutsidePolygon() {
         val searchAddress = "advice.itself.mops"
         val notContainedAddress = "decent.chains.pages"
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible<ScrollView>())
 
-        waitUntilViewShown(
-            withId(R.id.main)
-        )
         Espresso.onView(withId(R.id.textClipToPolygon))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
