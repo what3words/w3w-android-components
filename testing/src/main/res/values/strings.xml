@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">autosuggest</string>
+    <string name="welcome_to_autosuggest">Welcome to Autosuggest sample</string>
+    <string name="selected_info">Selected info</string>
+    <string name="customise_the_autosuggest_component">Customise the AutoSuggest Component</string>
+    <string name="customise_device_settings">Customise device settings</string>
+    <string name="return_coordinates">return coordinates</string>
+    <string name="placeholder">placeholder</string>
+    <string name="language">language</string><string name="focus_hint">focus, i.e: 51.508354, -0.12549861</string><string name="clip_to_country_hint">clip to country</string><string name="clip_to_circle_hint">clip to circle</string><string name="clip_to_box_hint">clip to box</string> <string name="clip_to_polygon_hint">clip to polygon</string>
+    <string name="specify_number_of_suggestions_hint">specify number of suggestions</string><string name="voice_enabled">enable voice with inline animation</string>
+    <string name="voice_disabled">disable voice</string>
+    <string name="voice_popup_enabled">enable voice with popup animation</string>
+    <string name="voice_placeholder_header">voice placeholder</string>
+    <string name="voice_language">voice language</string>
+    <string name="voice_fullscreen">enable voice with fullscreen</string>
+    <string name="suggestion_list_below">Suggestion list below</string>
+    <string name="custom_picker">use custom picker</string>
+    <string name="prefer_land">prefer land</string>
+    <string name="custom_error">use custom error message view</string>
+    <string name="custom_correction_picker">use custom correction picker</string>
+    <string name="allow_invalid_address">allow invalid 3wa</string>
+    <string name="allow_flexible_delimiters">allow flexible delimiters</string>
+    <string name="suggestion_info_placeholder">words: %1$s\ncountry: %2$s\nnear: %3$s\ndistance: %4$s\nlatitude: %5$s\nlongitude: %6$s</string>
+</resources>
