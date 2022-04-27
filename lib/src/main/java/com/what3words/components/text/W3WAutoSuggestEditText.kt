@@ -120,7 +120,7 @@ class W3WAutoSuggestEditText
     private var customErrorView: AppCompatTextView? = null
     private var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? = null
     private var customInvalidAddressMessageView: AppCompatTextView? = null
-    private var shouldHardRegexOnLoseFocus = true
+    private var searchFlowEnabled = true
 
     internal val tick: Drawable? by lazy {
         ContextCompat.getDrawable(context, R.drawable.ic_tick).apply {
@@ -285,8 +285,8 @@ class W3WAutoSuggestEditText
                 returnCoordinates =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_returnCoordinates, false)
 
-                shouldHardRegexOnLoseFocus =
-                    getBoolean(R.styleable.W3WAutoSuggestEditText_shouldCheckForValidOnFocus, true)
+                searchFlowEnabled =
+                    getBoolean(R.styleable.W3WAutoSuggestEditText_searchFlowEnabled, false)
                 voiceEnabled =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
                 viewModel.options.preferLand =
@@ -319,7 +319,7 @@ class W3WAutoSuggestEditText
             handleVoiceClick()
         }
 
-        if (shouldHardRegexOnLoseFocus) {
+        if (searchFlowEnabled) {
             setOnEditorActionListener { _, i, event ->
                 if (i == EditorInfo.IME_ACTION_DONE || (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER))) {
                     clearFocus()
@@ -331,55 +331,48 @@ class W3WAutoSuggestEditText
         }
 
         setOnFocusChangeListener { _, isFocused ->
-            if (shouldHardRegexOnLoseFocus) {
-                when {
-                    !focusFromVoice && !pickedFromDropDown && !isFocused && isReal3wa(text.toString()) -> {
-                        viewModel.onSuggestionClicked(
-                            text.toString(),
-                            getReal3wa(text.toString()),
-                            returnCoordinates
-                        )
-                    }
-                    !allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
-                        text.toString()
-                    ) -> {
-                        viewModel.onSuggestionClicked(text.toString(), null, returnCoordinates)
-                    }
-                    allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
-                        text.toString()
-                    ) -> {
-                        getPicker().forceClearAndHide()
-                    }
-                }
-                if (!isFocused) {
-                    iconHolderLayout.setClearVisibility(GONE)
-                    setPaddingRelative(
-                        paddingStart,
-                        paddingTop,
-                        originalPaddingEnd,
-                        paddingBottom
+            when {
+                !focusFromVoice && !pickedFromDropDown && !isFocused && isReal3wa(text.toString()) -> {
+                    viewModel.onSuggestionClicked(
+                        text.toString(),
+                        getReal3wa(text.toString()),
+                        returnCoordinates
                     )
-                    hideKeyboard()
-                } else {
-                    if (voiceEnabled)
-                        setPaddingRelative(paddingStart, paddingTop, height * 2, paddingBottom)
-                    else setPaddingRelative(paddingStart, paddingTop, height, paddingBottom)
-                    if (this.text.isNullOrEmpty() && !focusFromVoice) {
-                        this.setText(
-                            context.getString(R.string.w3w_slashes)
-                        )
-                    }
-                    showKeyboard()
-                    iconHolderLayout.setClearVisibility(VISIBLE)
-                    showImages(false)
                 }
-                focusFromVoice = false
-            } else {
-                if (!isFocused) {
-                    clearFocus()
-                    hideKeyboard()
+                !allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
+                    text.toString()
+                ) -> {
+                    viewModel.onSuggestionClicked(text.toString(), null, returnCoordinates)
+                }
+                allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
+                    text.toString()
+                ) -> {
+                    getPicker().forceClearAndHide()
                 }
             }
+            if (!isFocused) {
+                iconHolderLayout.setClearVisibility(GONE)
+                setPaddingRelative(
+                    paddingStart,
+                    paddingTop,
+                    originalPaddingEnd,
+                    paddingBottom
+                )
+                hideKeyboard()
+            } else {
+                if (voiceEnabled)
+                    setPaddingRelative(paddingStart, paddingTop, height * 2, paddingBottom)
+                else setPaddingRelative(paddingStart, paddingTop, height, paddingBottom)
+                if (this.text.isNullOrEmpty() && !focusFromVoice) {
+                    this.setText(
+                        context.getString(R.string.w3w_slashes)
+                    )
+                }
+                showKeyboard()
+                iconHolderLayout.setClearVisibility(VISIBLE)
+                showImages(false)
+            }
+            focusFromVoice = false
         }
 
         this.setOnTouchListener(
@@ -1295,8 +1288,8 @@ class W3WAutoSuggestEditText
      * @param isAllowed if true [W3WAutoSuggestEditText] will accept flexible delimiters and show suggestions, if false will not accept flexible delimiters but if is that three word address exist will show the did you mean feature.
      * @return same [W3WAutoSuggestEditText] instance
      */
-    fun shouldCheckForValidOnFocus(shouldCheck: Boolean): W3WAutoSuggestEditText {
-        this.shouldHardRegexOnLoseFocus = shouldCheck
+    fun searchFlowEnabled(isEnabled: Boolean): W3WAutoSuggestEditText {
+        this.searchFlowEnabled = isEnabled
         return this
     }
 
