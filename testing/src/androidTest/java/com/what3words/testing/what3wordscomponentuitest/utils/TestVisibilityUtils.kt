@@ -1,64 +1,37 @@
-package com.what3words.testing
+package com.what3words.testing.what3wordscomponentuitest.utils
 
-
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
-import android.widget.TextView
 import androidx.core.view.children
-import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers
-import com.google.android.material.snackbar.Snackbar
-import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.StringDescription
-import kotlin.coroutines.CoroutineContext
 
+inline fun <reified T : View?> isVisible(): Matcher<View> {
 
-fun snackBarIsVisible(): Matcher<View> {
-    return object : BoundedMatcher<View, ViewGroup>(ViewGroup::class.java) {
+    return object : BoundedMatcher<View, T>(T::class.java) {
         override fun describeTo(description: Description?) {
-            description?.appendText("snackbar is visible")
+            description?.appendText("${T::class.simpleName} is visible")
         }
 
-        override fun matchesSafely(item: ViewGroup?): Boolean {
+        override fun matchesSafely(item: T): Boolean {
             if (item == null) return false
-            var matched = false
-            val children = item.children
-            for (child in children) {
-                matched = child is Snackbar.SnackbarLayout
-                if (matched) break
-            }
-            return matched
+            return item.isVisible
         }
     }
 }
 
-
-fun hasItemCountGreaterThanZero(): Matcher<View> {
-    return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
-        override fun describeTo(description: Description?) {
-            description?.appendText("has item count greater than 0")
-        }
-
-        override fun matchesSafely(item: RecyclerView?): Boolean {
-            return if (item?.adapter?.itemCount == null) false
-            else item.adapter!!.itemCount > 0
-        }
-    }
-}
-
-
-fun waitUntil(matcher: Matcher<View>): ViewAction {
+inline fun <reified T : View?> waitUntilVisible(
+    matcher: Matcher<View> = isVisible<T>(),
+    checkForChildren: Boolean = false
+): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
             val description = StringDescription()
@@ -72,21 +45,27 @@ fun waitUntil(matcher: Matcher<View>): ViewAction {
 
         override fun perform(uiController: UiController, view: View) {
             if (!matcher.matches(view)) {
-                val callback = LayoutChangeCallback(matcher)
+                val idlingResource = LayoutChangeCallback(matcher, checkForChildren)
                 try {
-                    IdlingRegistry.getInstance().register(callback)
-                    view.addOnLayoutChangeListener(callback)
+                    IdlingRegistry.getInstance().register(idlingResource)
+                    if (checkForChildren) (view.parent as ViewGroup).addOnLayoutChangeListener(
+                        idlingResource
+                    )
+                    else view.addOnLayoutChangeListener(idlingResource)
                     uiController.loopMainThreadUntilIdle()
                 } finally {
-                    view.removeOnLayoutChangeListener(callback)
-                    IdlingRegistry.getInstance().unregister(callback)
+                    IdlingRegistry.getInstance().unregister(idlingResource)
                 }
             }
         }
     }
 }
 
-private class LayoutChangeCallback(private val matcher: Matcher<View>) : IdlingResource,
+class LayoutChangeCallback(
+    private val matcher: Matcher<View>,
+    private val checkForChildren: Boolean
+) :
+    IdlingResource,
     View.OnLayoutChangeListener {
     private var callback: IdlingResource.ResourceCallback? = null
     private var matched = false
@@ -114,8 +93,17 @@ private class LayoutChangeCallback(private val matcher: Matcher<View>) : IdlingR
         oldRight: Int,
         oldBottom: Int
     ) {
-        matched = matcher.matches(v)
-        callback?.onTransitionToIdle()
+        if (checkForChildren) {
+            (v as ViewGroup).children.forEach { child ->
+                if (matcher.matches(child)) {
+                    matched = true
+                    callback?.onTransitionToIdle()
+                }
+            }
+        } else {
+            matched = true
+            callback?.onTransitionToIdle()
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package com.what3words.testing.what3wordscomponentuitest.errors.invalidcountrycode
 
+import android.widget.ScrollView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
@@ -9,11 +10,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
 import org.hamcrest.CoreMatchers
-import com.what3words.testing.waitUntilViewShown
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import com.what3words.testing.snackBarIsVisible
+import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 import com.what3words.testing.waitUntil
 
 
@@ -27,9 +28,8 @@ class W3WAutoSuggestUIInvalidCountryCodeTests {
     @Test
     fun testTextSearch_InvalidCountryCodeDisplaysError() {
         val threeWordAddress = "advice.itself.mops"
-        waitUntilViewShown(
-            withId(R.id.main)
-        )
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible<ScrollView>())
 
         Espresso.onView(withId(R.id.textClipToCountry))
             .perform(scrollTo())
@@ -52,7 +52,6 @@ class W3WAutoSuggestUIInvalidCountryCodeTests {
 
 
         Espresso.onView(withId(com.google.android.material.R.id.snackbar_text))
-
             .check(matches(isDisplayed()))
     }
 

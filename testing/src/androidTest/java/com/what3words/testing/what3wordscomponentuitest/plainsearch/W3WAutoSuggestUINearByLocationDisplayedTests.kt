@@ -1,5 +1,6 @@
 package com.what3words.testing.what3wordscomponentuitest.plainsearch
 
+import android.widget.ScrollView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
@@ -12,12 +13,12 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
-import com.what3words.testing.waitUntilViewShown
 import org.hamcrest.CoreMatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import com.what3words.testing.hasItemCountGreaterThanZero
+import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 import com.what3words.testing.waitUntil
 
 
@@ -30,9 +31,8 @@ class W3WAutoSuggestUINearByLocationDisplayedTests {
     @Test
     fun testTextSearch_containsNearByLocation() {
         val threeWordAddress = "crazy.palace.moral"
-        waitUntilViewShown(
-            withId(R.id.main)
-        )
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible<ScrollView>())
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(ViewActions.scrollTo())
