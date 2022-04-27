@@ -1,5 +1,6 @@
 package com.what3words.testing.what3wordscomponentuitest.errors.invalidapikey
 
+import android.widget.ScrollView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
@@ -9,11 +10,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
 import org.hamcrest.CoreMatchers
-import com.what3words.testing.waitUntilViewShown
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import com.what3words.testing.snackBarIsVisible
+import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 import com.what3words.testing.waitUntil
 import org.junit.Before
 
@@ -34,10 +35,8 @@ class W3WAutoSuggestUITest_ClipToPolygon {
     @Test
     fun testTextSearch_invalidApiKeyDisplaysError() {
         val threeWordAddress = "filled.count.soap"
-        waitUntilViewShown(
-            withId(R.id.main)
-        )
-
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible<ScrollView>())
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(scrollTo())
