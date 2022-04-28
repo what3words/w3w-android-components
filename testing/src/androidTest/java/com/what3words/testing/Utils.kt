@@ -25,20 +25,13 @@ import kotlin.coroutines.CoroutineContext
 
 
 fun snackBarIsVisible(): Matcher<View> {
-    return object : BoundedMatcher<View, ViewGroup>(ViewGroup::class.java) {
+    return object : BoundedMatcher<View, View>(View::class.java) {
         override fun describeTo(description: Description?) {
             description?.appendText("snackbar is visible")
         }
 
-        override fun matchesSafely(item: ViewGroup?): Boolean {
-            if (item == null) return false
-            var matched = false
-            val children = item.children
-            for (child in children) {
-                matched = child is Snackbar.SnackbarLayout
-                if (matched) break
-            }
-            return matched
+        override fun matchesSafely(item: View): Boolean {
+            return item is Snackbar.SnackbarLayout && item.isVisible
         }
     }
 }
@@ -58,6 +51,7 @@ fun hasItemCountGreaterThanZero(): Matcher<View> {
 }
 
 
+/*
 fun waitUntil(matcher: Matcher<View>): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
@@ -118,4 +112,4 @@ private class LayoutChangeCallback(private val matcher: Matcher<View>) : IdlingR
         callback?.onTransitionToIdle()
     }
 
-}
+}*/

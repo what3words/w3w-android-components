@@ -14,22 +14,20 @@ import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.StringDescription
 
-inline fun <reified T : View?> isVisible(): Matcher<View> {
-
-    return object : BoundedMatcher<View, T>(T::class.java) {
+fun isVisible(): Matcher<View> {
+    return object : BoundedMatcher<View, View>(View::class.java) {
         override fun describeTo(description: Description?) {
-            description?.appendText("${T::class.simpleName} is visible")
+            description?.appendText("${View::class.simpleName} is visible")
         }
 
-        override fun matchesSafely(item: T): Boolean {
-            if (item == null) return false
+        override fun matchesSafely(item: View): Boolean {
             return item.isVisible
         }
     }
 }
 
-inline fun <reified T : View?> waitUntilVisible(
-    matcher: Matcher<View> = isVisible<T>(),
+fun waitUntilVisible(
+    matcher: Matcher<View> = isVisible(),
     checkForChildren: Boolean = false
 ): ViewAction {
     return object : ViewAction {

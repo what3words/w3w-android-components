@@ -1,6 +1,6 @@
 package com.what3words.testing.what3wordscomponentuitest.specifyNumberOfSuggestions
 
-import android.widget.ScrollView
+
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
@@ -19,7 +19,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import com.what3words.testing.hasItemCountGreaterThanZero
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
-import com.what3words.testing.waitUntil
 
 
 @RunWith(AndroidJUnit4::class)
@@ -33,7 +32,7 @@ class W3WAutoSuggestUISpecifyNumberOfSuggestionsTests {
         val threeWordAddress = "filled.count.soap"
         val numberOfSuggestions = "5"
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible<ScrollView>())
+            .perform(waitUntilVisible())
         Espresso.onView(withId(R.id.textSpecifyNumberOfSuggestions))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
@@ -51,7 +50,7 @@ class W3WAutoSuggestUISpecifyNumberOfSuggestionsTests {
                 com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
             )
         )
-            .perform(waitUntil(hasItemCountGreaterThanZero()))
+            .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .check(matches(hasChildCount(numberOfSuggestions.toInt())))
 
     }
