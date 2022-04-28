@@ -14,6 +14,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
 import org.hamcrest.CoreMatchers.containsString
@@ -23,7 +24,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import com.what3words.testing.hasItemCountGreaterThanZero
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
-import com.what3words.testing.waitUntil
 
 
 @RunWith(AndroidJUnit4::class)
@@ -37,7 +37,7 @@ class W3WAutoSuggestUIClipToBoundingBoxTests {
     @Test
     fun testTextSearch_clipToBoundingBoxContainAddressInsideBox() {
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible<ScrollView>())
+            .perform(waitUntilVisible())
         Espresso.onView(withId(R.id.textClipToBoundingBox))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
@@ -56,7 +56,7 @@ class W3WAutoSuggestUIClipToBoundingBoxTests {
                 com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
             )
         )
-            .perform(waitUntil(hasItemCountGreaterThanZero()))
+            .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                 0,
@@ -72,7 +72,7 @@ class W3WAutoSuggestUIClipToBoundingBoxTests {
     @Test
     fun testTextSearch_clipToBoundingBoxDoesNotContainAddressOutsideBox() {
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible<ScrollView>())
+            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.textClipToBoundingBox))
             .perform(scrollTo())
@@ -92,7 +92,7 @@ class W3WAutoSuggestUIClipToBoundingBoxTests {
                 com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
             )
         )
-            .perform(waitUntil(hasChildCount(3)))
+            .perform(waitUntilVisible(hasChildCount(3)))
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                     0,

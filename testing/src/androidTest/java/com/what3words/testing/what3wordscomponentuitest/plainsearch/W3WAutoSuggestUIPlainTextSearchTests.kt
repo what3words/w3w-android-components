@@ -1,6 +1,5 @@
 package com.what3words.testing.what3wordscomponentuitest.plainsearch
 
-import android.widget.ScrollView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.*
@@ -14,7 +13,6 @@ import com.what3words.testing.MainActivity
 import com.what3words.testing.R
 import com.what3words.testing.hasItemCountGreaterThanZero
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
-import com.what3words.testing.waitUntil
 import org.hamcrest.CoreMatchers
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +28,7 @@ class W3WAutoSuggestUIPlainTextSearchTests {
     @Test
     fun testTextSearch_withoutFiltersOrCoordinates() {
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible<ScrollView>())
+            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(click(), typeTextIntoFocusedView("filled.count.soap"))
@@ -41,7 +39,7 @@ class W3WAutoSuggestUIPlainTextSearchTests {
                 com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
             )
         )
-            .perform(waitUntil(hasItemCountGreaterThanZero()))
+            .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .perform(
             RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                 0,

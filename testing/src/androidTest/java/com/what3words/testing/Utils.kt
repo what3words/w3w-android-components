@@ -25,20 +25,13 @@ import kotlin.coroutines.CoroutineContext
 
 
 fun snackBarIsVisible(): Matcher<View> {
-    return object : BoundedMatcher<View, ViewGroup>(ViewGroup::class.java) {
+    return object : BoundedMatcher<View, View>(View::class.java) {
         override fun describeTo(description: Description?) {
             description?.appendText("snackbar is visible")
         }
 
-        override fun matchesSafely(item: ViewGroup?): Boolean {
-            if (item == null) return false
-            var matched = false
-            val children = item.children
-            for (child in children) {
-                matched = child is Snackbar.SnackbarLayout
-                if (matched) break
-            }
-            return matched
+        override fun matchesSafely(item: View): Boolean {
+            return item is Snackbar.SnackbarLayout && item.isVisible
         }
     }
 }
@@ -57,65 +50,3 @@ fun hasItemCountGreaterThanZero(): Matcher<View> {
     }
 }
 
-
-fun waitUntil(matcher: Matcher<View>): ViewAction {
-    return object : ViewAction {
-        override fun getDescription(): String {
-            val description = StringDescription()
-            matcher.describeTo(description)
-            return String.format("wait until: %s", description)
-        }
-
-        override fun getConstraints(): Matcher<View> {
-            return ViewMatchers.isAssignableFrom(View::class.java)
-        }
-
-        override fun perform(uiController: UiController, view: View) {
-            if (!matcher.matches(view)) {
-                val callback = LayoutChangeCallback(matcher)
-                try {
-                    IdlingRegistry.getInstance().register(callback)
-                    view.addOnLayoutChangeListener(callback)
-                    uiController.loopMainThreadUntilIdle()
-                } finally {
-                    view.removeOnLayoutChangeListener(callback)
-                    IdlingRegistry.getInstance().unregister(callback)
-                }
-            }
-        }
-    }
-}
-
-private class LayoutChangeCallback(private val matcher: Matcher<View>) : IdlingResource,
-    View.OnLayoutChangeListener {
-    private var callback: IdlingResource.ResourceCallback? = null
-    private var matched = false
-
-    override fun getName(): String {
-        return "Layout change callback"
-    }
-
-    override fun isIdleNow(): Boolean {
-        return matched
-    }
-
-    override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
-        this.callback = callback
-    }
-
-    override fun onLayoutChange(
-        v: View?,
-        left: Int,
-        top: Int,
-        right: Int,
-        bottom: Int,
-        oldLeft: Int,
-        oldTop: Int,
-        oldRight: Int,
-        oldBottom: Int
-    ) {
-        matched = matcher.matches(v)
-        callback?.onTransitionToIdle()
-    }
-
-}

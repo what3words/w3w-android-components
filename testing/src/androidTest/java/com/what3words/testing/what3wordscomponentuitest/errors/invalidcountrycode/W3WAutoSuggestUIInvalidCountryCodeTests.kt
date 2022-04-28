@@ -1,6 +1,6 @@
 package com.what3words.testing.what3wordscomponentuitest.errors.invalidcountrycode
 
-import android.widget.ScrollView
+
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
@@ -15,7 +15,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import com.what3words.testing.snackBarIsVisible
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
-import com.what3words.testing.waitUntil
 
 
 @RunWith(AndroidJUnit4::class)
@@ -29,7 +28,7 @@ class W3WAutoSuggestUIInvalidCountryCodeTests {
     fun testTextSearch_InvalidCountryCodeDisplaysError() {
         val threeWordAddress = "advice.itself.mops"
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible<ScrollView>())
+            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.textClipToCountry))
             .perform(scrollTo())
@@ -43,8 +42,8 @@ class W3WAutoSuggestUIInvalidCountryCodeTests {
             .perform(click())
             .perform(typeTextIntoFocusedView(threeWordAddress))
 
-        Espresso.onView(withChild(withId(R.id.main)))
-            .perform(waitUntil(snackBarIsVisible()))
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible(matcher = snackBarIsVisible(), checkForChildren = true))
 
         Espresso.onView(withText(CoreMatchers.containsString("BadClipToCountry")))
             .check(matches(isDisplayed()))

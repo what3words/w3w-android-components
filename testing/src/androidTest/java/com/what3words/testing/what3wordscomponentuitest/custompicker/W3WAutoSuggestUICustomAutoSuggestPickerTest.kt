@@ -1,6 +1,6 @@
-package com.what3words.testing.what3wordscomponentuitest.clipToCountry
+package com.what3words.testing.what3wordscomponentuitest.custompicker
 
-import android.widget.ScrollView
+
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
@@ -13,7 +13,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
 import org.hamcrest.CoreMatchers.containsString
@@ -22,49 +21,60 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import com.what3words.testing.hasItemCountGreaterThanZero
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
+import org.hamcrest.CoreMatchers.not
 
 
 @RunWith(AndroidJUnit4::class)
-class W3WAutoSuggestUIClipToRussiaTests {
+class W3WAutoSuggestUICustomAutoSuggestPickerTest {
 
     @get:Rule
     var activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
-    private val country = "RU"
-
-
     @Test
-    fun testTextSearch_clipToCountryContainAddressInsideCountry() {
-        val threeWordAddress = "liked.shopper.remotes"
+    fun testTextSearch_plainTextSearchWithArabicAddress() {
         Espresso.onView(withId(R.id.main))
             .perform(waitUntilVisible())
-        Espresso.onView(withId(R.id.textClipToCountry))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView(country))
+
+        val threeWordAddress = "index.home.raft"
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView(threeWordAddress))
+            .perform(click(), typeTextIntoFocusedView(threeWordAddress))
 
-        Espresso.onView(
-            withId(
-                com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
-            )
-        )
+        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
+            .check(matches(isDisplayed()))
+
+        Espresso.onView(withId(R.id.btnClear))
+            .perform(click())
+
+        Espresso.onView(withId(R.id.checkboxCustomPicker))
+            .perform(scrollTo(), click())
+
+        Espresso.onView(withId(R.id.suggestionEditText))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
+            .perform(click(), typeTextIntoFocusedView(threeWordAddress))
+
+        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
+            .check(matches(not(isDisplayed())))
+
+        Espresso.onView(withId(R.id.suggestionPicker))
+            .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
+            .check(matches(isDisplayed()))
             .perform(
-            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                0,
-                click()
+                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                    0,
+                    click()
+                )
             )
-        )
 
         Espresso.onView(withId(R.id.selectedInfo))
+            .check(matches(isDisplayed()))
             .check(matches(withText(containsString(threeWordAddress))))
 
     }
+
+
 }
