@@ -14,10 +14,10 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
+import com.what3words.testing.what3wordscomponentuitest.utils.hasItemCountGreaterThanZero
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.what3words.testing.hasItemCountGreaterThanZero
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 
 

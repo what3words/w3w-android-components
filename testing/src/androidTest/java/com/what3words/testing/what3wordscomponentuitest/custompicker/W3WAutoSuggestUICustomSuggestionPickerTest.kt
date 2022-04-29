@@ -15,23 +15,23 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
+import com.what3words.testing.what3wordscomponentuitest.utils.hasItemCountGreaterThanZero
 import org.hamcrest.CoreMatchers.containsString
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.what3words.testing.hasItemCountGreaterThanZero
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 import org.hamcrest.CoreMatchers.not
 
 
 @RunWith(AndroidJUnit4::class)
-class W3WAutoSuggestUICustomAutoSuggestPickerTest {
+class W3WAutoSuggestUICustomSuggestionPickerTest {
 
     @get:Rule
     var activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
     @Test
-    fun testTextSearch_plainTextSearchWithArabicAddress() {
+    fun testCstomSuggestionPickerIsVisible() {
         Espresso.onView(withId(R.id.main))
             .perform(waitUntilVisible())
 

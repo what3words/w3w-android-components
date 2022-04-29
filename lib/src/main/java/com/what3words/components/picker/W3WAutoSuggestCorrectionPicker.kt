@@ -40,6 +40,9 @@ class W3WAutoSuggestCorrectionPicker
             defStyleAttr, R.style.W3WAutoSuggestCorrectionPickerTheme
         ).apply {
             try {
+                if (findViewById<W3WAutoSuggestPicker>(id) == null) id =
+                    R.id.w3wAutoSuggestDefaultCorrectionPicker
+
                 val backgroundDrawableId = getResourceId(
                     R.styleable.W3WAutoSuggestCorrectionPicker_correctionBackgroundDrawable,
                     -1
