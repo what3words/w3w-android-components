@@ -44,6 +44,10 @@ class MainActivity : AppCompatActivity() {
             binding.suggestionEditText.allowFlexibleDelimiters(b)
         }
 
+        binding.checkboxSearchFlowEnabled.setOnCheckedChangeListener { _, b ->
+            binding.suggestionEditText.searchFlowEnabled(b)
+        }
+
         binding.checkboxVoiceDisabled.isChecked = true
 
         binding.checkboxCustomPicker.setOnCheckedChangeListener { _, _ ->

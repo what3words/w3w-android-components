@@ -330,9 +330,15 @@ class W3WAutoSuggestEditText
             }
         }
 
+        if (searchFlowEnabled) {
+            changeKeyboardImeToSearch()
+        } else {
+            changeKeyboardImeToDone()
+        }
+
         setOnFocusChangeListener { _, isFocused ->
             when {
-                !focusFromVoice && !pickedFromDropDown && !isFocused && isReal3wa(text.toString()) -> {
+                !focusFromVoice && !pickedFromDropDown && !isFocused && isReal3wa(text.toString()) && !searchFlowEnabled -> {
                     viewModel.onSuggestionClicked(
                         text.toString(),
                         getReal3wa(text.toString()),
@@ -341,12 +347,12 @@ class W3WAutoSuggestEditText
                 }
                 !allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
                     text.toString()
-                ) -> {
+                ) && !searchFlowEnabled -> {
                     viewModel.onSuggestionClicked(text.toString(), null, returnCoordinates)
                 }
                 allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
                     text.toString()
-                ) -> {
+                ) && !searchFlowEnabled -> {
                     getPicker().forceClearAndHide()
                 }
             }
@@ -394,6 +400,7 @@ class W3WAutoSuggestEditText
         // create empty APIManager, will fail in case dev doesn't call apiKey()
         viewModel.manager = AutosuggestApiManager(What3WordsV3("", context))
     }
+
 
     /**
      * Since [W3WAutoSuggestEditText] have other views which depends on like [W3WAutoSuggestPicker], [W3WAutoSuggestErrorMessage], [W3WAutoSuggestCorrectionPicker] and multiple [voiceScreenType]'s
@@ -779,6 +786,15 @@ class W3WAutoSuggestEditText
             },
             100
         )
+    }
+
+    private fun changeKeyboardImeToSearch() {
+        this.imeOptions = (EditorInfo.IME_ACTION_SEARCH)
+    }
+
+    private fun changeKeyboardImeToDone() {
+        this.imeOptions =
+            (EditorInfo.IME_ACTION_DONE and EditorInfo.IME_FLAG_NO_FULLSCREEN and EditorInfo.IME_FLAG_NO_EXTRACT_UI)
     }
 
     //endregion
@@ -1285,14 +1301,18 @@ class W3WAutoSuggestEditText
     }
 
     /**
-     * Allow EditText to accept different delimiters than the what3words standard full stop "index.home.raft".
-     * By default [allowFlexibleDelimiters] is false, when you type an existing three word address with a different delimiter (i.e "index home raft") will trigger our Did You Mean feature, but if you set [allowFlexibleDelimiters] (true) "index home raft" will be parsed to "index.home.raft" and will return the [nResults] suggestions for that query.
+     * Search flow will keep the suggestions visible when [W3WAutoSuggestEditText] loses focus, meaning that is not going to check if [W3WAutoSuggestEditText.getText] is a valid 3wa and clear text and show error message if not.
      *
-     * @param isAllowed if true [W3WAutoSuggestEditText] will accept flexible delimiters and show suggestions, if false will not accept flexible delimiters but if is that three word address exist will show the did you mean feature.
+     * @param isEnabled if true [W3WAutoSuggestEditText] will not verify if current text is a valid 3wa on losing focus (normal behaviour) keeping the suggestions visible until user clicks or deletes text.
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun searchFlowEnabled(isEnabled: Boolean): W3WAutoSuggestEditText {
         this.searchFlowEnabled = isEnabled
+        if (searchFlowEnabled) {
+            changeKeyboardImeToSearch()
+        } else {
+            changeKeyboardImeToDone()
+        }
         return this
     }
 
