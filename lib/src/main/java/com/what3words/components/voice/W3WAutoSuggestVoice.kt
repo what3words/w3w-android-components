@@ -451,6 +451,14 @@ class W3WAutoSuggestVoice
         return this
     }
 
+    /** Set your What3Words API Key and the Enterprise Suite API Server endpoint which will be used to get suggestions and coordinates (if enabled)
+     *
+     * @param key your API key from what3words developer dashboard
+     * @param endpoint your Enterprise API endpoint
+     * @param voiceEndpoint your custom Voice API endpoint
+     * @param headers any custom headers needed for your Enterprise API
+     * @return same [W3WAutoSuggestVoice] instance
+     */
     fun apiKey(
         key: String,
         endpoint: String,

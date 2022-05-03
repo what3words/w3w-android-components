@@ -851,6 +851,7 @@ class W3WAutoSuggestEditText
      *
      * @param key your API key from what3words developer dashboard
      * @param endpoint your Enterprise API endpoint
+     * @param voiceEndpoint your custom Voice API endpoint
      * @param headers any custom headers needed for your Enterprise API
      * @return same [W3WAutoSuggestEditText] instance
      */
