@@ -92,5 +92,5 @@ workflows:
             - build-test-sonar
           filters:
             branches:
-              ignore:
+              only:
                 - dev
