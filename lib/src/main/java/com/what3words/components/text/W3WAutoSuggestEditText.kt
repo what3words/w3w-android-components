@@ -779,7 +779,14 @@ class W3WAutoSuggestEditText
 
     private fun changeKeyboardImeToSearch() {
         this.imeOptions = (EditorInfo.IME_ACTION_SEARCH)
-        setOnEditorActionListener(null)
+        setOnEditorActionListener { _, i, event ->
+            if (i == EditorInfo.IME_ACTION_SEARCH || (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER))) {
+                clearFocus()
+                true
+            } else {
+                false
+            }
+        }
     }
 
     private fun changeKeyboardImeToDone() {
