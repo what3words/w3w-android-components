@@ -4,33 +4,78 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
+import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers
+import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import org.hamcrest.Description
 import org.hamcrest.Matcher
+import org.hamcrest.Matchers
 import org.hamcrest.StringDescription
 
-inline fun <reified T : View?> isVisible(): Matcher<View> {
 
-    return object : BoundedMatcher<View, T>(T::class.java) {
-        override fun describeTo(description: Description?) {
-            description?.appendText("${T::class.simpleName} is visible")
+inline fun <reified T : View> waitUntilVisibleInParent(
+    matcher: Matcher<View> = isVisibleInParentMatcher<T>()
+): ViewAction {
+    return object : ViewAction {
+        override fun getDescription(): String {
+            val description = StringDescription()
+            matcher.describeTo(description)
+            return String.format("wait until is visible in parent: %s", description)
         }
 
-        override fun matchesSafely(item: T): Boolean {
-            if (item == null) return false
-            return item.isVisible
+        override fun getConstraints(): Matcher<View> {
+            return ViewMatchers.isAssignableFrom(View::class.java)
+        }
+
+        override fun perform(uiController: UiController?, view: View?) {
+            if (!matcher.matches(view)) {
+                var hasMatchedMatcher = false
+                var hasMatchedId = false
+                var idlingResourceCallback: IdlingResource.ResourceCallback? = null
+                val idlingResource = object : IdlingResource {
+                    override fun getName(): String {
+                        return "Parent layout change listener"
+                    }
+
+                    override fun isIdleNow(): Boolean {
+                        return hasMatchedId && hasMatchedMatcher
+                    }
+
+                    override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
+                        idlingResourceCallback = callback
+                    }
+                }
+                try {
+                    IdlingRegistry.getInstance().register(idlingResource)
+                    (view?.parent as ViewGroup).addOnLayoutChangeListener { parent, _, _, _, _, _, _, _, _ ->
+                        for (child in (parent as ViewGroup).children) {
+                            if (child.id == view.id) hasMatchedId = true
+                            if (matcher.matches(child)) hasMatchedMatcher = true
+                            if (hasMatchedId && hasMatchedMatcher) {
+                                idlingResourceCallback?.onTransitionToIdle()
+                                break
+                            }
+                        }
+                    }
+                    uiController?.loopMainThreadUntilIdle()
+                } catch (exception: IdlingResourceTimeoutException) {
+                    exception.printStackTrace()
+                } finally {
+                    IdlingRegistry.getInstance().unregister(idlingResource)
+                }
+            }
         }
     }
 }
 
-inline fun <reified T : View?> waitUntilVisible(
-    matcher: Matcher<View> = isVisible<T>(),
-    checkForChildren: Boolean = false
+fun waitUntilVisible(
+    matcher: Matcher<View> = isVisibleMatcher()
 ): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
@@ -45,14 +90,32 @@ inline fun <reified T : View?> waitUntilVisible(
 
         override fun perform(uiController: UiController, view: View) {
             if (!matcher.matches(view)) {
-                val idlingResource = LayoutChangeCallback(matcher, checkForChildren)
+                var matched = false
+                var idlingResourceCallback: IdlingResource.ResourceCallback? = null
+                val idlingResource = object : IdlingResource {
+                    override fun getName(): String {
+                        return "Layout out change listener"
+                    }
+
+                    override fun isIdleNow(): Boolean {
+                        return matched
+                    }
+
+                    override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
+                        idlingResourceCallback = callback
+                    }
+                }
                 try {
                     IdlingRegistry.getInstance().register(idlingResource)
-                    if (checkForChildren) (view.parent as ViewGroup).addOnLayoutChangeListener(
-                        idlingResource
-                    )
-                    else view.addOnLayoutChangeListener(idlingResource)
+                    view.addOnLayoutChangeListener { mView, _, _, _, _, _, _, _, _ ->
+                        if (matcher.matches(mView)) {
+                            matched = true
+                            idlingResourceCallback?.onTransitionToIdle()
+                        }
+                    }
                     uiController.loopMainThreadUntilIdle()
+                } catch (exception: IdlingResourceTimeoutException) {
+                    exception.printStackTrace()
                 } finally {
                     IdlingRegistry.getInstance().unregister(idlingResource)
                 }
@@ -61,49 +124,4 @@ inline fun <reified T : View?> waitUntilVisible(
     }
 }
 
-class LayoutChangeCallback(
-    private val matcher: Matcher<View>,
-    private val checkForChildren: Boolean
-) :
-    IdlingResource,
-    View.OnLayoutChangeListener {
-    private var callback: IdlingResource.ResourceCallback? = null
-    private var matched = false
 
-    override fun getName(): String {
-        return "Layout change callback"
-    }
-
-    override fun isIdleNow(): Boolean {
-        return matched
-    }
-
-    override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
-        this.callback = callback
-    }
-
-    override fun onLayoutChange(
-        v: View?,
-        left: Int,
-        top: Int,
-        right: Int,
-        bottom: Int,
-        oldLeft: Int,
-        oldTop: Int,
-        oldRight: Int,
-        oldBottom: Int
-    ) {
-        if (checkForChildren) {
-            (v as ViewGroup).children.forEach { child ->
-                if (matcher.matches(child)) {
-                    matched = true
-                    callback?.onTransitionToIdle()
-                }
-            }
-        } else {
-            matched = true
-            callback?.onTransitionToIdle()
-        }
-    }
-
-}

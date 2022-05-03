@@ -1,6 +1,5 @@
 package com.what3words.testing.what3wordscomponentuitest.clipToCountry
 
-import android.widget.ScrollView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
@@ -20,9 +19,8 @@ import org.hamcrest.CoreMatchers.not
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.what3words.testing.hasItemCountGreaterThanZero
+import com.what3words.testing.what3wordscomponentuitest.utils.hasItemCountGreaterThanZero
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
-import com.what3words.testing.waitUntil
 
 
 @RunWith(AndroidJUnit4::class)
@@ -38,7 +36,7 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
     fun testTextSearch_clipToCountryContainAddressInsideCountry() {
         val threeWordAddress = "decent.chains.pages"
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible<ScrollView>())
+            .perform(waitUntilVisible())
         Espresso.onView(withId(R.id.textClipToCountry))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
@@ -57,7 +55,7 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
                 com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
             )
         )
-            .perform(waitUntil(hasItemCountGreaterThanZero()))
+            .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                     0,
@@ -74,7 +72,7 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
     fun testTextSearch_clipToCountryDoesNotContainAddressOutsideCountry() {
         val threeWordAddress = "cliche.whom.passage"
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible<ScrollView>())
+            .perform(waitUntilVisible())
         Espresso.onView(withId(R.id.textClipToCountry))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
@@ -92,7 +90,7 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
                 com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
             )
         )
-            .perform(waitUntil(hasItemCountGreaterThanZero()))
+            .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                     0,

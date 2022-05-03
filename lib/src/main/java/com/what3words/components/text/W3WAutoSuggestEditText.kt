@@ -1196,6 +1196,9 @@ class W3WAutoSuggestEditText
     fun customCorrectionPicker(
         customCorrectionPicker: W3WAutoSuggestCorrectionPicker? = null,
     ): W3WAutoSuggestEditText {
+        this.customCorrectionPicker?.forceClearAndHide()
+        defaultCorrectionPicker.forceClearAndHide()
+
         this.customCorrectionPicker = customCorrectionPicker
         this.customCorrectionPicker?.setCorrectionMessage(correctionMessage)
             ?.internalCallback { selectedSuggestion ->

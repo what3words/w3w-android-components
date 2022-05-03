@@ -1,6 +1,6 @@
 package com.what3words.testing.what3wordscomponentuitest.preferLand
 
-import android.widget.ScrollView
+
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.*
@@ -15,9 +15,8 @@ import org.hamcrest.CoreMatchers.containsString
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.what3words.testing.hasItemCountGreaterThanZero
+import com.what3words.testing.what3wordscomponentuitest.utils.hasItemCountGreaterThanZero
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
-import com.what3words.testing.waitUntil
 
 
 @RunWith(AndroidJUnit4::class)
@@ -31,7 +30,7 @@ class W3WAutoSuggestUIPreferLandTests {
     fun testTextSearch_setPreferLandToFalse() {
         val threeWordAddress = "biochemists.replaced.wax"
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible<ScrollView>())
+            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.checkboxPreferLand))
             .perform(scrollTo())
@@ -51,7 +50,7 @@ class W3WAutoSuggestUIPreferLandTests {
             )
         )
             .perform(
-                waitUntil(hasItemCountGreaterThanZero()),
+                waitUntilVisible(hasItemCountGreaterThanZero()),
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                     0,
                     click()

@@ -1,6 +1,6 @@
 package com.what3words.testing.what3wordscomponentuitest.clipToPolygon
 
-import android.widget.ScrollView
+
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.clearText
@@ -17,13 +17,12 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
+import com.what3words.testing.what3wordscomponentuitest.utils.hasItemCountGreaterThanZero
 import org.hamcrest.CoreMatchers.containsString
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.what3words.testing.hasItemCountGreaterThanZero
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
-import com.what3words.testing.waitUntil
 import org.hamcrest.CoreMatchers.not
 
 
@@ -47,7 +46,7 @@ class W3WAutoSuggestUIClipToPolygonTests {
     fun testTextSearch_clipToPolygonContainAddressInsidePolygon() {
         val threeWordAddress = "advice.itself.mops"
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible<ScrollView>())
+            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.textClipToPolygon))
             .perform(scrollTo())
@@ -68,7 +67,7 @@ class W3WAutoSuggestUIClipToPolygonTests {
                 com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
             )
         )
-            .perform(waitUntil(hasItemCountGreaterThanZero()))
+            .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                     0,
@@ -86,7 +85,7 @@ class W3WAutoSuggestUIClipToPolygonTests {
         val searchAddress = "advice.itself.mops"
         val notContainedAddress = "decent.chains.pages"
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible<ScrollView>())
+            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.textClipToPolygon))
             .perform(scrollTo())
@@ -106,7 +105,7 @@ class W3WAutoSuggestUIClipToPolygonTests {
                 com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
             )
         )
-            .perform(waitUntil(hasItemCountGreaterThanZero()))
+            .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
 
         val itemCount = getSuggestionCount()
         for (i in 0 until itemCount) {
@@ -119,7 +118,7 @@ class W3WAutoSuggestUIClipToPolygonTests {
                     com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
                 )
             )
-                .perform(waitUntil(hasItemCountGreaterThanZero()))
+                .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
                 .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(i))
                 .perform(
                     RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(

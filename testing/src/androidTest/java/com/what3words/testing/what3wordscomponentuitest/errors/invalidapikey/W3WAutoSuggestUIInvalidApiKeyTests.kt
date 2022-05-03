@@ -1,21 +1,21 @@
 package com.what3words.testing.what3wordscomponentuitest.errors.invalidapikey
 
-import android.widget.ScrollView
+
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.android.material.snackbar.Snackbar
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
 import org.hamcrest.CoreMatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.what3words.testing.snackBarIsVisible
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
-import com.what3words.testing.waitUntil
+import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisibleInParent
 import org.junit.Before
 
 
@@ -36,15 +36,15 @@ class W3WAutoSuggestUITest_ClipToPolygon {
     fun testTextSearch_invalidApiKeyDisplaysError() {
         val threeWordAddress = "filled.count.soap"
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible<ScrollView>())
+            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
             .perform(click(), typeTextIntoFocusedView(threeWordAddress))
 
-        Espresso.onView(withChild(withId(R.id.main)))
-            .perform(waitUntil(snackBarIsVisible()))
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisibleInParent<Snackbar.SnackbarLayout>())
 
         Espresso.onView(withText(CoreMatchers.containsString("InvalidKey - Authentication failed")))
             .check(matches(isDisplayed()))
