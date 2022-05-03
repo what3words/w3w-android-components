@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
+import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.matcher.BoundedMatcher
@@ -63,6 +64,8 @@ inline fun <reified T : View> waitUntilVisibleInParent(
                         }
                     }
                     uiController?.loopMainThreadUntilIdle()
+                } catch (exception: IdlingResourceTimeoutException) {
+                    exception.printStackTrace()
                 } finally {
                     IdlingRegistry.getInstance().unregister(idlingResource)
                 }
@@ -111,6 +114,8 @@ fun waitUntilVisible(
                         }
                     }
                     uiController.loopMainThreadUntilIdle()
+                } catch (exception: IdlingResourceTimeoutException) {
+                    exception.printStackTrace()
                 } finally {
                     IdlingRegistry.getInstance().unregister(idlingResource)
                 }
