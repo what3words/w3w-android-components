@@ -320,10 +320,6 @@ class W3WAutoSuggestEditText
         }
 
         if (searchFlowEnabled) {
-
-        }
-
-        if (searchFlowEnabled) {
             changeKeyboardImeToSearch()
         } else {
             changeKeyboardImeToDone()
