@@ -120,7 +120,7 @@ class W3WAutoSuggestEditText
     private var customErrorView: AppCompatTextView? = null
     private var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? = null
     private var customInvalidAddressMessageView: AppCompatTextView? = null
-    private var searchFlowEnabled = true
+    private var searchFlowEnabled = false
 
     internal val tick: Drawable? by lazy {
         ContextCompat.getDrawable(context, R.drawable.ic_tick).apply {
@@ -320,14 +320,7 @@ class W3WAutoSuggestEditText
         }
 
         if (searchFlowEnabled) {
-            setOnEditorActionListener { _, i, event ->
-                if (i == EditorInfo.IME_ACTION_DONE || (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER))) {
-                    clearFocus()
-                    true
-                } else {
-                    false
-                }
-            }
+
         }
 
         if (searchFlowEnabled) {
@@ -790,11 +783,20 @@ class W3WAutoSuggestEditText
 
     private fun changeKeyboardImeToSearch() {
         this.imeOptions = (EditorInfo.IME_ACTION_SEARCH)
+        setOnEditorActionListener(null)
     }
 
     private fun changeKeyboardImeToDone() {
         this.imeOptions =
-            (EditorInfo.IME_ACTION_DONE and EditorInfo.IME_FLAG_NO_FULLSCREEN and EditorInfo.IME_FLAG_NO_EXTRACT_UI)
+            (EditorInfo.IME_ACTION_DONE or EditorInfo.IME_FLAG_NO_FULLSCREEN or EditorInfo.IME_FLAG_NO_EXTRACT_UI)
+        setOnEditorActionListener { _, i, event ->
+            if (i == EditorInfo.IME_ACTION_DONE || (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER))) {
+                clearFocus()
+                true
+            } else {
+                false
+            }
+        }
     }
 
     //endregion
