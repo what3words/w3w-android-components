@@ -17,7 +17,7 @@ import org.hamcrest.CoreMatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.what3words.testing.hasItemCountGreaterThanZero
+import com.what3words.testing.what3wordscomponentuitest.utils.hasItemCountGreaterThanZero
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 
 

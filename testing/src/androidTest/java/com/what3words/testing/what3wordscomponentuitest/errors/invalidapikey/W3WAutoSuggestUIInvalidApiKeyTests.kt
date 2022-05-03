@@ -7,14 +7,15 @@ import androidx.test.espresso.assertion.ViewAssertions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.android.material.snackbar.Snackbar
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
 import org.hamcrest.CoreMatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.what3words.testing.snackBarIsVisible
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
+import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisibleInParent
 import org.junit.Before
 
 
@@ -43,7 +44,7 @@ class W3WAutoSuggestUITest_ClipToPolygon {
             .perform(click(), typeTextIntoFocusedView(threeWordAddress))
 
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible(matcher = snackBarIsVisible(), checkForChildren = true))
+            .perform(waitUntilVisibleInParent<Snackbar.SnackbarLayout>())
 
         Espresso.onView(withText(CoreMatchers.containsString("InvalidKey - Authentication failed")))
             .check(matches(isDisplayed()))
