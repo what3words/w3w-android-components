@@ -120,6 +120,7 @@ class W3WAutoSuggestEditText
     private var customErrorView: AppCompatTextView? = null
     private var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? = null
     private var customInvalidAddressMessageView: AppCompatTextView? = null
+    private var searchFlowEnabled = false
 
     internal val tick: Drawable? by lazy {
         ContextCompat.getDrawable(context, R.drawable.ic_tick).apply {
@@ -283,6 +284,9 @@ class W3WAutoSuggestEditText
 
                 returnCoordinates =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_returnCoordinates, false)
+
+                searchFlowEnabled =
+                    getBoolean(R.styleable.W3WAutoSuggestEditText_searchFlowEnabled, false)
                 voiceEnabled =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_voiceEnabled, false)
                 viewModel.options.preferLand =
@@ -315,18 +319,15 @@ class W3WAutoSuggestEditText
             handleVoiceClick()
         }
 
-        setOnEditorActionListener { _, i, event ->
-            if (i == EditorInfo.IME_ACTION_DONE || (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER))) {
-                clearFocus()
-                true
-            } else {
-                false
-            }
+        if (searchFlowEnabled) {
+            changeKeyboardImeToSearch()
+        } else {
+            changeKeyboardImeToDone()
         }
 
         setOnFocusChangeListener { _, isFocused ->
             when {
-                !focusFromVoice && !pickedFromDropDown && !isFocused && isReal3wa(text.toString()) -> {
+                !focusFromVoice && !pickedFromDropDown && !isFocused && isReal3wa(text.toString()) && !searchFlowEnabled -> {
                     viewModel.onSuggestionClicked(
                         text.toString(),
                         getReal3wa(text.toString()),
@@ -335,12 +336,12 @@ class W3WAutoSuggestEditText
                 }
                 !allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
                     text.toString()
-                ) -> {
+                ) && !searchFlowEnabled -> {
                     viewModel.onSuggestionClicked(text.toString(), null, returnCoordinates)
                 }
                 allowInvalid3wa && !focusFromVoice && !pickedFromDropDown && !isFocused && !isReal3wa(
                     text.toString()
-                ) -> {
+                ) && !searchFlowEnabled -> {
                     getPicker().forceClearAndHide()
                 }
             }
@@ -388,6 +389,7 @@ class W3WAutoSuggestEditText
         // create empty APIManager, will fail in case dev doesn't call apiKey()
         viewModel.manager = AutosuggestApiManager(What3WordsV3("", context))
     }
+
 
     /**
      * Since [W3WAutoSuggestEditText] have other views which depends on like [W3WAutoSuggestPicker], [W3WAutoSuggestErrorMessage], [W3WAutoSuggestCorrectionPicker] and multiple [voiceScreenType]'s
@@ -775,6 +777,31 @@ class W3WAutoSuggestEditText
         )
     }
 
+    private fun changeKeyboardImeToSearch() {
+        this.imeOptions = (EditorInfo.IME_ACTION_SEARCH)
+        setOnEditorActionListener { _, i, event ->
+            if (i == EditorInfo.IME_ACTION_SEARCH || (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER))) {
+                clearFocus()
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    private fun changeKeyboardImeToDone() {
+        this.imeOptions =
+            (EditorInfo.IME_ACTION_DONE or EditorInfo.IME_FLAG_NO_FULLSCREEN or EditorInfo.IME_FLAG_NO_EXTRACT_UI)
+        setOnEditorActionListener { _, i, event ->
+            if (i == EditorInfo.IME_ACTION_DONE || (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER))) {
+                clearFocus()
+                true
+            } else {
+                false
+            }
+        }
+    }
+
     //endregion
 
     //region Public custom properties
@@ -819,6 +846,34 @@ class W3WAutoSuggestEditText
             )
         return this
     }
+
+    /** Set your What3Words API Key and the Enterprise Suite API Server endpoint which will be used to get suggestions and coordinates (if enabled)
+     *
+     * @param key your API key from what3words developer dashboard
+     * @param endpoint your Enterprise API endpoint
+     * @param voiceEndpoint your custom Voice API endpoint
+     * @param headers any custom headers needed for your Enterprise API
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun apiKey(
+        key: String,
+        endpoint: String,
+        voiceEndpoint: String,
+        headers: Map<String, String> = mapOf()
+    ): W3WAutoSuggestEditText {
+        viewModel.manager =
+            AutosuggestApiManager(
+                What3WordsV3(
+                    key,
+                    endpoint,
+                    voiceEndpoint,
+                    context,
+                    headers
+                )
+            )
+        return this
+    }
+
 
     /** Set your What3Words Manager with your SDK instance
      *
@@ -1248,6 +1303,22 @@ class W3WAutoSuggestEditText
      */
     fun allowFlexibleDelimiters(isAllowed: Boolean): W3WAutoSuggestEditText {
         this.allowFlexibleDelimiters = isAllowed
+        return this
+    }
+
+    /**
+     * Search flow will keep the suggestions visible when [W3WAutoSuggestEditText] loses focus, meaning that is not going to check if [W3WAutoSuggestEditText.getText] is a valid 3wa and clear text and show error message if not.
+     *
+     * @param isEnabled if true [W3WAutoSuggestEditText] will not verify if current text is a valid 3wa on losing focus (normal behaviour) keeping the suggestions visible until user clicks or deletes text.
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun searchFlowEnabled(isEnabled: Boolean): W3WAutoSuggestEditText {
+        this.searchFlowEnabled = isEnabled
+        if (searchFlowEnabled) {
+            changeKeyboardImeToSearch()
+        } else {
+            changeKeyboardImeToDone()
+        }
         return this
     }
 
