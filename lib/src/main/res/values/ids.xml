@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item type="id" name="w3wAutoSuggestDefaultPicker" />
-    <item type="id" name="w3wAutoSuggestDefaultCorrectionPicker"/>
+    <item name="w3wAutoSuggestDefaultPicker" type="id" />
+    <item name="w3wAutoSuggestDefaultCorrectionPicker" type="id" />
+    <item name="w3wAutoSuggestDefaultErrorMessage" type="id" />
 </resources>

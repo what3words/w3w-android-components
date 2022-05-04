@@ -3,24 +3,22 @@ package com.what3words.testing.what3wordscomponentuitest.utils
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.children
-import androidx.core.view.isVisible
-import androidx.test.espresso.Espresso
+import androidx.test.espresso.IdlingPolicies
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
 import androidx.test.espresso.IdlingResourceTimeoutException
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers
-import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
-import org.hamcrest.Description
+import androidx.test.espresso.matcher.ViewMatchers.assertThat
+import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers
 import org.hamcrest.StringDescription
+import java.util.concurrent.TimeUnit
 
 
 inline fun <reified T : View> waitUntilVisibleInParent(
-    matcher: Matcher<View> = isVisibleInParentMatcher<T>()
+    matcher: Matcher<View> = isVisibleInParent<T>()
 ): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
@@ -34,48 +32,74 @@ inline fun <reified T : View> waitUntilVisibleInParent(
         }
 
         override fun perform(uiController: UiController?, view: View?) {
-            if (!matcher.matches(view)) {
-                var hasMatchedMatcher = false
-                var hasMatchedId = false
-                var idlingResourceCallback: IdlingResource.ResourceCallback? = null
-                val idlingResource = object : IdlingResource {
-                    override fun getName(): String {
-                        return "Parent layout change listener"
-                    }
+            IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
+            IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
+            var hasMatchedMatcher = false
+            var hasMatchedId = false
 
-                    override fun isIdleNow(): Boolean {
-                        return hasMatchedId && hasMatchedMatcher
-                    }
-
-                    override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
-                        idlingResourceCallback = callback
-                    }
+            for (child in (view as ViewGroup).children) {
+                if (child.id == view.id) hasMatchedId = true
+                if (matcher.matches(child)) hasMatchedMatcher = true
+                if (hasMatchedId && hasMatchedMatcher) {
+                    return
                 }
-                try {
-                    IdlingRegistry.getInstance().register(idlingResource)
-                    (view?.parent as ViewGroup).addOnLayoutChangeListener { parent, _, _, _, _, _, _, _, _ ->
-                        for (child in (parent as ViewGroup).children) {
-                            if (child.id == view.id) hasMatchedId = true
-                            if (matcher.matches(child)) hasMatchedMatcher = true
-                            if (hasMatchedId && hasMatchedMatcher) {
-                                idlingResourceCallback?.onTransitionToIdle()
-                                break
-                            }
+            }
+
+            var idlingResourceCallback: IdlingResource.ResourceCallback? = null
+            val idlingResource = object : IdlingResource {
+                override fun getName(): String {
+                    return "Parent layout change listener"
+                }
+
+                override fun isIdleNow(): Boolean {
+                    return hasMatchedId && hasMatchedMatcher
+                }
+
+                override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
+                    idlingResourceCallback = callback
+                }
+            }
+            try {
+                IdlingRegistry.getInstance().register(idlingResource)
+                (view?.parent as ViewGroup).addOnLayoutChangeListener { parent, _, _, _, _, _, _, _, _ ->
+                    for (child in (parent as ViewGroup).children) {
+                        if (child.id == view.id) hasMatchedId = true
+                        if (matcher.matches(child)) hasMatchedMatcher = true
+                        if (hasMatchedId && hasMatchedMatcher) {
+                            idlingResourceCallback?.onTransitionToIdle()
+                            break
                         }
                     }
-                    uiController?.loopMainThreadUntilIdle()
-                } catch (exception: IdlingResourceTimeoutException) {
-                    exception.printStackTrace()
-                } finally {
-                    IdlingRegistry.getInstance().unregister(idlingResource)
                 }
+                uiController?.loopMainThreadUntilIdle()
+            } finally {
+                IdlingRegistry.getInstance().unregister(idlingResource)
             }
         }
     }
 }
 
+fun waitUntilGone(delay: Long): ViewAction {
+    return object : ViewAction {
+        override fun getConstraints(): Matcher<View> {
+            return ViewMatchers.isAssignableFrom(View::class.java)
+        }
+
+        override fun getDescription(): String {
+            return "wait for  $delay + milliseconds"
+        }
+
+        override fun perform(uiController: UiController, view: View) {
+            assertThat(view, withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))
+            uiController.loopMainThreadForAtLeast(delay)
+            assertThat(view, withEffectiveVisibility(ViewMatchers.Visibility.GONE))
+        }
+    }
+}
+
+
 fun waitUntilVisible(
-    matcher: Matcher<View> = isVisibleMatcher()
+    matcher: Matcher<View> = withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
 ): ViewAction {
     return object : ViewAction {
         override fun getDescription(): String {
@@ -89,6 +113,8 @@ fun waitUntilVisible(
         }
 
         override fun perform(uiController: UiController, view: View) {
+            IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
+            IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
             if (!matcher.matches(view)) {
                 var matched = false
                 var idlingResourceCallback: IdlingResource.ResourceCallback? = null
@@ -114,8 +140,6 @@ fun waitUntilVisible(
                         }
                     }
                     uiController.loopMainThreadUntilIdle()
-                } catch (exception: IdlingResourceTimeoutException) {
-                    exception.printStackTrace()
                 } finally {
                     IdlingRegistry.getInstance().unregister(idlingResource)
                 }

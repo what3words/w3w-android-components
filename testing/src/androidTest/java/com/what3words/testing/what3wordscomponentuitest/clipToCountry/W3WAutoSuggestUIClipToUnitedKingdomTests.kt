@@ -35,19 +35,16 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
     @Test
     fun testTextSearch_clipToCountryContainAddressInsideCountry() {
         val threeWordAddress = "decent.chains.pages"
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
+
         Espresso.onView(withId(R.id.textClipToCountry))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView(country))
+            .perform(click(), waitUntilVisible(), typeTextIntoFocusedView(country))
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView(threeWordAddress))
+            .perform(click(), waitUntilVisible(), typeTextIntoFocusedView(threeWordAddress))
 
 
         Espresso.onView(
@@ -55,8 +52,8 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
                 com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
             )
         )
-            .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .perform(
+                waitUntilVisible(hasItemCountGreaterThanZero()),
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                     0,
                     click()
@@ -82,8 +79,7 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView(threeWordAddress))
+            .perform(click(), waitUntilVisible(), typeTextIntoFocusedView(threeWordAddress))
 
         Espresso.onView(
             withId(
@@ -101,4 +97,5 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
         Espresso.onView(withId(R.id.selectedInfo))
             .check(matches(withText(not(containsString(threeWordAddress)))))
     }
+
 }

@@ -12,7 +12,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
-import com.what3words.testing.what3wordscomponentuitest.utils.isVisibleInParentMatcher
+import com.what3words.testing.what3wordscomponentuitest.utils.isVisibleInParent
 import com.what3words.testing.what3wordscomponentuitest.utils.hasItemCountGreaterThanZero
 import org.junit.Rule
 import org.junit.Test
@@ -34,9 +34,6 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
     fun testTextSearch_allowFlexibleDelimiters() {
         val spaceSeparatedThreeWordAddress = "index home raft"
         val correctThreeWordsAddress = "index.home.raft"
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
-
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(scrollTo())
@@ -53,7 +50,7 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
             .perform(click())
 
         Espresso.onView(withId(R.id.checkboxAllowFlexibleDelimiters))
-            .perform(scrollTo(), click())
+            .perform(scrollTo(), waitUntilVisible(), click())
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(scrollTo())
@@ -64,7 +61,7 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
             .check(
                 matches(
                     not(
-                        isVisibleInParentMatcher<W3WAutoSuggestCorrectionPicker>()
+                        isVisibleInParent<W3WAutoSuggestCorrectionPicker>()
                     )
                 )
             )

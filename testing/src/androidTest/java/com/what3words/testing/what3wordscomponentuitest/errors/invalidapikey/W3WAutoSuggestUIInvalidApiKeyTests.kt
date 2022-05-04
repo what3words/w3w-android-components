@@ -35,8 +35,6 @@ class W3WAutoSuggestUITest_ClipToPolygon {
     @Test
     fun testTextSearch_invalidApiKeyDisplaysError() {
         val threeWordAddress = "filled.count.soap"
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(scrollTo())

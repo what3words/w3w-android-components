@@ -32,8 +32,6 @@ class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
 
     @Test
     fun testTextSearch_plainTextSearchWithArabicAddress() {
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
 
         val threeWordAddress = "القرفة.العامل.أسماك"
         Espresso.onView(withId(R.id.suggestionEditText))
@@ -61,9 +59,6 @@ class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
 
     @Test
     fun testTextSearch_plainTextSearchWithRussianAddress() {
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
-
         val threeWordAddress = "обилие.городовой.весенний"
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(scrollTo())
@@ -90,9 +85,6 @@ class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
 
     @Test
     fun testTextSearch_plainTextSearchWithNonLatinAddress() {
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
-
         val threeWordAddress = "postverwaltung.postverwaltung.postverwaltung"
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(scrollTo())

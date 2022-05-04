@@ -34,8 +34,7 @@ class W3WAutoSuggestUIClipToCircleTests {
     @Test
     fun testTextSearch_clipToCircleContainAddressInsideCircle() {
         val threeWordAddress = "falters.curtains.point"
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
+
         Espresso.onView(withId(R.id.textClipToCircle))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
@@ -70,8 +69,6 @@ class W3WAutoSuggestUIClipToCircleTests {
     @Test
     fun testTextSearch_clipToCircleDoesNotContainAddressOutsideCircle() {
         val threeWordAddress = "jazz.silver.bagels"
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.textClipToCircle))
             .perform(scrollTo())
@@ -101,4 +98,5 @@ class W3WAutoSuggestUIClipToCircleTests {
         Espresso.onView(withId(R.id.selectedInfo))
             .check(matches(withText(not(containsString(threeWordAddress)))))
     }
+
 }

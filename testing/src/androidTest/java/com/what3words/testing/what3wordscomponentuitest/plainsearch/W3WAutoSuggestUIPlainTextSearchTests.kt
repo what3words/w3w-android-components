@@ -27,8 +27,6 @@ class W3WAutoSuggestUIPlainTextSearchTests {
 
     @Test
     fun testTextSearch_withoutFiltersOrCoordinates() {
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(click(), typeTextIntoFocusedView("filled.count.soap"))
