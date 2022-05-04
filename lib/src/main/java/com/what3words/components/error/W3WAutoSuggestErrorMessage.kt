@@ -22,6 +22,8 @@ class W3WAutoSuggestErrorMessage
         visibility = GONE
         if (findViewById<W3WAutoSuggestErrorMessage>(id) == null) id =
             R.id.w3wAutoSuggestDefaultErrorMessage
+
+
     }
 }
 

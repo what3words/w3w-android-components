@@ -31,9 +31,7 @@ class W3WAutoSuggestUICustomSuggestionPickerTest {
     var activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
     @Test
-    fun testCstomSuggestionPickerIsVisible() {
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
+    fun testCustomSuggestionPickerIsVisible() {
 
         val threeWordAddress = "index.home.raft"
 

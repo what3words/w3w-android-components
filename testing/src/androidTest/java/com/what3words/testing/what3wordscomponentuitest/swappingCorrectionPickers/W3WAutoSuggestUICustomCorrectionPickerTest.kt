@@ -31,20 +31,13 @@ class W3WAutoSuggestUICustomCorrectionPickerTest {
     fun testSwappingDefaultCorrectionPickerWithCustomCorrectionPicker() {
         val spaceSeparatedThreeWordsAddress = "index home raft"
 
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
-
         // turn on the custom correction picker
         Espresso.onView(withId(R.id.checkboxCustomCorrectionPicker))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
+            .perform(scrollTo(), waitUntilVisible(), click())
 
         // type into the auto-suggest edit text
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click(), typeTextIntoFocusedView(spaceSeparatedThreeWordsAddress))
+            .perform(scrollTo(), waitUntilVisible(), click(), typeTextIntoFocusedView(spaceSeparatedThreeWordsAddress))
 
         // wait and check that the custom correction picker is visible
         Espresso.onView(withId(R.id.correctionPicker))
@@ -54,13 +47,11 @@ class W3WAutoSuggestUICustomCorrectionPickerTest {
 
         // turn off the custom correction picker
         Espresso.onView(withId(R.id.checkboxCustomCorrectionPicker))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
+            .perform(scrollTo(), waitUntilVisible(), click())
 
         // clear text from auto-suggest edit text
         Espresso.onView(withId(R.id.btnClear))
-            .perform(scrollTo(), click())
+            .perform(scrollTo(), waitUntilVisible(), click())
 
         // type into the auto-suggest edit text
         Espresso.onView(withId(R.id.suggestionEditText))

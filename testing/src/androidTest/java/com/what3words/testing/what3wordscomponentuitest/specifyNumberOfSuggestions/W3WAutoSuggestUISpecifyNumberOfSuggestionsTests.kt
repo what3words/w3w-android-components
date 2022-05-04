@@ -31,8 +31,7 @@ class W3WAutoSuggestUISpecifyNumberOfSuggestionsTests {
     fun testTextSearch_plainTextSearchWithFiveSuggestions() {
         val threeWordAddress = "filled.count.soap"
         val numberOfSuggestions = "5"
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
+
         Espresso.onView(withId(R.id.textSpecifyNumberOfSuggestions))
             .perform(scrollTo())
             .check(matches(isDisplayed()))

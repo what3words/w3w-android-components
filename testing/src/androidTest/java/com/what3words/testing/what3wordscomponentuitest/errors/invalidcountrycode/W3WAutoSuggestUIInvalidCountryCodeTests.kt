@@ -28,8 +28,6 @@ class W3WAutoSuggestUIInvalidCountryCodeTests {
     @Test
     fun testTextSearch_InvalidCountryCodeDisplaysError() {
         val threeWordAddress = "advice.itself.mops"
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.textClipToCountry))
             .perform(scrollTo())

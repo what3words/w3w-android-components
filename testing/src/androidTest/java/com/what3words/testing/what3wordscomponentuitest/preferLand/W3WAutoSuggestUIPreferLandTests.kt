@@ -29,8 +29,6 @@ class W3WAutoSuggestUIPreferLandTests {
     @Test
     fun testTextSearch_setPreferLandToFalse() {
         val threeWordAddress = "biochemists.replaced.wax"
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.checkboxPreferLand))
             .perform(scrollTo())

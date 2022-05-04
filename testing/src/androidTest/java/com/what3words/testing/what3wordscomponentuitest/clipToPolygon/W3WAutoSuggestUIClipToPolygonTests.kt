@@ -40,13 +40,11 @@ class W3WAutoSuggestUIClipToPolygonTests {
             "51.598583, -0.040593 ,51.598583, -0.040594 ,51.598583, -0.040595 ," +
             "51.598583, -0.040596 ,51.598583, -0.040597 ,51.598583, -0.040598 ," +
             "51.598583, -0.040599 ,51.598583, -0.040600 ,51.598583, -0.040601 ," +
-            "51.598583, -0.040602 ,51.598583, -0.040603 ,51.598583, -0.040604"
+            "51.598583, -0.040602 ,51.598583, -0.040603 ,51.598583"
 
     @Test
     fun testTextSearch_clipToPolygonContainAddressInsidePolygon() {
         val threeWordAddress = "advice.itself.mops"
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.textClipToPolygon))
             .perform(scrollTo())
@@ -88,16 +86,10 @@ class W3WAutoSuggestUIClipToPolygonTests {
             .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.textClipToPolygon))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView(polygon))
+            .perform(scrollTo(), waitUntilVisible(), click(), typeTextIntoFocusedView(polygon))
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView(searchAddress))
+            .perform(scrollTo(), waitUntilVisible(), click(), typeTextIntoFocusedView(searchAddress))
 
 
         Espresso.onView(
@@ -145,4 +137,5 @@ class W3WAutoSuggestUIClipToPolygonTests {
         }
         return itemCount
     }
+
 }
