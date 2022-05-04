@@ -227,6 +227,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/checkboxAllowInvalidAddress" />
 
+        <CheckBox
+            android:id="@+id/checkboxSearchFlowEnabled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/main_s"
+            android:layout_marginTop="@dimen/main_s"
+            android:layout_marginEnd="@dimen/main_s"
+            android:checked="false"
+            android:text="@string/search_flow_enabled"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkboxAllowFlexibleDelimiters" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/holderPlaceholder"
             android:layout_width="match_parent"
@@ -236,7 +250,7 @@
             android:layout_marginEnd="@dimen/main_s"
             android:hint="@string/placeholder"
             android:visibility="visible"
-            app:layout_constraintTop_toBottomOf="@+id/checkboxAllowFlexibleDelimiters">
+            app:layout_constraintTop_toBottomOf="@+id/checkboxSearchFlowEnabled">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textPlaceholder"
