@@ -13,6 +13,7 @@ android {
         versionCode 1
         versionName "1.0"
 
+        buildConfigField 'String', 'W3W_PRE_PROD_URL', findProperty('W3W_PRE_PROD_URL') ? "\"${findProperty('W3W_PRE_PROD_URL')}\"" : "\"PRE_PRO_URL_HERE\""
         buildConfigField 'String', 'W3W_API_KEY', findProperty('W3W_API_KEY') ? "\"${findProperty('W3W_API_KEY')}\"" : "\"YOUR_API_KEY_HERE\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // The following argument makes the Android Test Orchestrator run its
