@@ -4,11 +4,11 @@ package com.what3words.testing.what3wordscomponentuitest.nonlatinaddress
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -23,7 +23,6 @@ import org.junit.runner.RunWith
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 
 
-
 @RunWith(AndroidJUnit4::class)
 class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
 
@@ -35,10 +34,10 @@ class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
 
         val threeWordAddress = "القرفة.العامل.أسماك"
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(replaceText(threeWordAddress))
+            .perform(
+                scrollTo(), click(), replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
         Espresso.onView(
             withId(
@@ -47,11 +46,11 @@ class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
         )
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .perform(
-            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                0,
-                click()
+                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                    0,
+                    click()
+                )
             )
-        )
 
         Espresso.onView(withId(R.id.selectedInfo))
             .check(matches(withText(containsString(threeWordAddress))))
@@ -61,10 +60,7 @@ class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
     fun testTextSearch_plainTextSearchWithRussianAddress() {
         val threeWordAddress = "обилие.городовой.весенний"
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(replaceText(threeWordAddress))
+            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
         Espresso.onView(
             withId(
@@ -73,11 +69,11 @@ class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
         )
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .perform(
-            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                0,
-                click()
+                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                    0,
+                    click()
+                )
             )
-        )
 
         Espresso.onView(withId(R.id.selectedInfo))
             .check(matches(withText(containsString(threeWordAddress))))
@@ -87,10 +83,7 @@ class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
     fun testTextSearch_plainTextSearchWithNonLatinAddress() {
         val threeWordAddress = "postverwaltung.postverwaltung.postverwaltung"
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(replaceText(threeWordAddress))
+            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
 
         Espresso.onView(
@@ -100,11 +93,11 @@ class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
         )
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .perform(
-            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                0,
-                click()
+                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                    0,
+                    click()
+                )
             )
-        )
 
         Espresso.onView(withId(R.id.selectedInfo))
             .check(matches(withText(containsString(threeWordAddress))))

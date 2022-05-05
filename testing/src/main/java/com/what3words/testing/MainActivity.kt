@@ -180,7 +180,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpW3W() {
-        binding.suggestionEditText.apiKey(apiKey)
+        binding.suggestionEditText.apiKey(
+            key = apiKey,
+            endpoint = "https://api.london.preprod.w3w.io/v3/"
+        )
             .onDisplaySuggestions {
             }
             .onSuggestionSelected {

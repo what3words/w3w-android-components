@@ -27,9 +27,9 @@ class W3WAutoSuggestUIPlainTextSearchTests {
 
     @Test
     fun testTextSearch_withoutFiltersOrCoordinates() {
-
+        val threeWordAddress = "filled.count.soap"
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(click(), typeTextIntoFocusedView("filled.count.soap"))
+            .perform(click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
 
         Espresso.onView(
@@ -46,7 +46,7 @@ class W3WAutoSuggestUIPlainTextSearchTests {
         )
 
         Espresso.onView(withId(R.id.selectedInfo))
-            .check(matches(withText(CoreMatchers.containsString("filled.count.soap"))))
+            .check(matches(withText(CoreMatchers.containsString(threeWordAddress))))
 
         Espresso.onView(withId(R.id.selectedInfo))
             .check(matches(withText(CoreMatchers.containsStringIgnoringCase("latitude: null"))))

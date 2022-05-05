@@ -2,7 +2,9 @@ package com.what3words.testing.what3wordscomponentuitest.specifyNumberOfSuggesti
 
 
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView
@@ -35,14 +37,10 @@ class W3WAutoSuggestUISpecifyNumberOfSuggestionsTests {
         Espresso.onView(withId(R.id.textSpecifyNumberOfSuggestions))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(replaceText(numberOfSuggestions))
+            .perform(click(), typeTextIntoFocusedView(numberOfSuggestions), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView(threeWordAddress))
+            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
         Espresso.onView(
             withId(

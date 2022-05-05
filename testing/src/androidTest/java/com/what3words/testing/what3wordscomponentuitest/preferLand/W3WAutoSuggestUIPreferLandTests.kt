@@ -31,15 +31,10 @@ class W3WAutoSuggestUIPreferLandTests {
         val threeWordAddress = "biochemists.replaced.wax"
 
         Espresso.onView(withId(R.id.checkboxPreferLand))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
+            .perform(scrollTo(), click())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click(), typeTextIntoFocusedView(threeWordAddress))
-
+            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
 
         Espresso.onView(

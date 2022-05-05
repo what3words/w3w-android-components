@@ -3,12 +3,13 @@ package com.what3words.testing.what3wordscomponentuitest.clipToBox
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -42,9 +43,9 @@ class W3WAutoSuggestUIClipToBoundingBoxTests {
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
                 scrollTo(),
-                waitUntilVisible(),
                 click(),
-                typeTextIntoFocusedView(threeWordAddress)
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
             )
 
         Espresso.onView(
@@ -61,7 +62,7 @@ class W3WAutoSuggestUIClipToBoundingBoxTests {
             )
 
         Espresso.onView(withId(R.id.selectedInfo))
-            .check(matches(withText(containsString(threeWordAddress))))
+            .check(matches(withText(containsString( threeWordAddress))))
 
     }
 
@@ -75,9 +76,9 @@ class W3WAutoSuggestUIClipToBoundingBoxTests {
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
                 scrollTo(),
-                waitUntilVisible(),
                 click(),
-                typeTextIntoFocusedView(threeWordAddress)
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
             )
 
         Espresso.onView(
