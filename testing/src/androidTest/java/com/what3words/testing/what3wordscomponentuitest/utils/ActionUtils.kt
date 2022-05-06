@@ -3,6 +3,8 @@ package com.what3words.testing.what3wordscomponentuitest.utils
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.children
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.test.espresso.IdlingPolicies
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
@@ -32,18 +34,7 @@ inline fun <reified T : View> waitUntilVisibleInParent(
         }
 
         override fun perform(uiController: UiController?, view: View?) {
-            IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
-            IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
-            var hasMatchedMatcher = false
-            var hasMatchedId = false
-
-            for (child in (view as ViewGroup).children) {
-                if (child.id == view.id) hasMatchedId = true
-                if (matcher.matches(child)) hasMatchedMatcher = true
-                if (hasMatchedId && hasMatchedMatcher) {
-                    return
-                }
-            }
+            var hasMatched = false
 
             var idlingResourceCallback: IdlingResource.ResourceCallback? = null
             val idlingResource = object : IdlingResource {
@@ -52,27 +43,31 @@ inline fun <reified T : View> waitUntilVisibleInParent(
                 }
 
                 override fun isIdleNow(): Boolean {
-                    return hasMatchedId && hasMatchedMatcher
+                    return hasMatched
                 }
 
                 override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
                     idlingResourceCallback = callback
+                    idlingResourceCallback?.onTransitionToIdle()
                 }
             }
-            try {
-                IdlingRegistry.getInstance().register(idlingResource)
-                (view?.parent as ViewGroup).addOnLayoutChangeListener { parent, _, _, _, _, _, _, _, _ ->
-                    for (child in (parent as ViewGroup).children) {
-                        if (child.id == view.id) hasMatchedId = true
-                        if (matcher.matches(child)) hasMatchedMatcher = true
-                        if (hasMatchedId && hasMatchedMatcher) {
-                            idlingResourceCallback?.onTransitionToIdle()
-                            break
-                        }
+
+            val changeListener = View.OnLayoutChangeListener { parent, _, _, _, _, _, _, _, _ ->
+                for (child in (parent as ViewGroup).children) {
+                    if (child.id == view?.id) {
+                        hasMatched = true
+                        idlingResourceCallback?.onTransitionToIdle()
+                        break
                     }
                 }
+            }
+
+            try {
+                IdlingRegistry.getInstance().register(idlingResource)
+                (view?.parent as ViewGroup).addOnLayoutChangeListener(changeListener)
                 uiController?.loopMainThreadUntilIdle()
             } finally {
+                (view?.parent as ViewGroup).removeOnLayoutChangeListener(changeListener)
                 IdlingRegistry.getInstance().unregister(idlingResource)
             }
         }
@@ -86,7 +81,7 @@ fun waitUntilGone(delay: Long): ViewAction {
         }
 
         override fun getDescription(): String {
-            return "wait for  $delay + milliseconds"
+            return "wait for view to be gone in $delay + milliseconds"
         }
 
         override fun perform(uiController: UiController, view: View) {
@@ -113,8 +108,6 @@ fun waitUntilVisible(
         }
 
         override fun perform(uiController: UiController, view: View) {
-            IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
-            IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
             if (!matcher.matches(view)) {
                 var matched = false
                 var idlingResourceCallback: IdlingResource.ResourceCallback? = null
@@ -131,16 +124,18 @@ fun waitUntilVisible(
                         idlingResourceCallback = callback
                     }
                 }
+                val changeListener = View.OnLayoutChangeListener { mView, _, _, _, _, _, _, _, _ ->
+                    if (matcher.matches(mView)) {
+                        matched = true
+                        idlingResourceCallback?.onTransitionToIdle()
+                    }
+                }
                 try {
                     IdlingRegistry.getInstance().register(idlingResource)
-                    view.addOnLayoutChangeListener { mView, _, _, _, _, _, _, _, _ ->
-                        if (matcher.matches(mView)) {
-                            matched = true
-                            idlingResourceCallback?.onTransitionToIdle()
-                        }
-                    }
+                    view.addOnLayoutChangeListener(changeListener)
                     uiController.loopMainThreadUntilIdle()
                 } finally {
+                    view.removeOnLayoutChangeListener(changeListener)
                     IdlingRegistry.getInstance().unregister(idlingResource)
                 }
             }

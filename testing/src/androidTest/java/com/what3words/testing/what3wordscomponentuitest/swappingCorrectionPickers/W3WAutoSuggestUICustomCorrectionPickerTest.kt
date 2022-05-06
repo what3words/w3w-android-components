@@ -3,6 +3,7 @@ package com.what3words.testing.what3wordscomponentuitest.swappingCorrectionPicke
 
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -16,7 +17,6 @@ import com.what3words.testing.R
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisibleInParent
 import org.hamcrest.CoreMatchers.not
 
@@ -33,11 +33,15 @@ class W3WAutoSuggestUICustomCorrectionPickerTest {
 
         // turn on the custom correction picker
         Espresso.onView(withId(R.id.checkboxCustomCorrectionPicker))
-            .perform(scrollTo(), waitUntilVisible(), click())
+            .perform(scrollTo(), click())
 
         // type into the auto-suggest edit text
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), waitUntilVisible(), click(), typeTextIntoFocusedView(spaceSeparatedThreeWordsAddress))
+            .perform(
+                scrollTo(),
+                click(),
+                typeTextIntoFocusedView(spaceSeparatedThreeWordsAddress)
+            )
 
         // wait and check that the custom correction picker is visible
         Espresso.onView(withId(R.id.correctionPicker))
@@ -47,11 +51,11 @@ class W3WAutoSuggestUICustomCorrectionPickerTest {
 
         // turn off the custom correction picker
         Espresso.onView(withId(R.id.checkboxCustomCorrectionPicker))
-            .perform(scrollTo(), waitUntilVisible(), click())
+            .perform(scrollTo(), click())
 
         // clear text from auto-suggest edit text
         Espresso.onView(withId(R.id.btnClear))
-            .perform(scrollTo(), waitUntilVisible(), click())
+            .perform(scrollTo(), click())
 
         // type into the auto-suggest edit text
         Espresso.onView(withId(R.id.suggestionEditText))

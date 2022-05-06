@@ -14,13 +14,12 @@ import org.hamcrest.CoreMatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisibleInParent
 import org.junit.Before
 
 
 @RunWith(AndroidJUnit4::class)
-class W3WAutoSuggestUITest_ClipToPolygon {
+class W3WAutoSuggestUITestClipToPolygon {
 
     @get:Rule
     var activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
@@ -37,9 +36,7 @@ class W3WAutoSuggestUITest_ClipToPolygon {
         val threeWordAddress = "filled.count.soap"
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click(), typeTextIntoFocusedView(threeWordAddress))
+            .perform(scrollTo(),click(), typeTextIntoFocusedView(threeWordAddress), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.main))
             .perform(waitUntilVisibleInParent<Snackbar.SnackbarLayout>())

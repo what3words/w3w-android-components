@@ -14,7 +14,6 @@ import org.hamcrest.CoreMatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisibleInParent
 
 
@@ -30,23 +29,20 @@ class W3WAutoSuggestUIInvalidCountryCodeTests {
         val threeWordAddress = "advice.itself.mops"
 
         Espresso.onView(withId(R.id.textClipToCountry))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView("GBR"))
+            .perform(scrollTo(), click(), typeTextIntoFocusedView("GBR"), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView(threeWordAddress))
+            .perform(
+                scrollTo(),
+                click(),
+                typeTextIntoFocusedView(threeWordAddress)
+            )
 
         Espresso.onView(withId(R.id.main))
             .perform(waitUntilVisibleInParent<Snackbar.SnackbarLayout>())
 
         Espresso.onView(withText(CoreMatchers.containsString("BadClipToCountry")))
             .check(matches(isDisplayed()))
-
 
 
         Espresso.onView(withId(com.google.android.material.R.id.snackbar_text))

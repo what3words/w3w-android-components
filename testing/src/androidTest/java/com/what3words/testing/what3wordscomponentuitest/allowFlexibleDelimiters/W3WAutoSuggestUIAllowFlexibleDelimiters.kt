@@ -1,6 +1,7 @@
 package com.what3words.testing.what3wordscomponentuitest.allowFlexibleDelimiters
 
 
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.*
@@ -36,26 +37,29 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
         val correctThreeWordsAddress = "index.home.raft"
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click(), typeTextIntoFocusedView(spaceSeparatedThreeWordAddress))
+            .perform(
+                click(),
+                replaceText(spaceSeparatedThreeWordAddress),
+            )
 
         Espresso.onView(withId(R.id.correctionPicker))
             .perform(
                 waitUntilVisibleInParent<W3WAutoSuggestCorrectionPicker>()
             )
 
-
         Espresso.onView(withId(R.id.btnClear))
             .perform(click())
 
         Espresso.onView(withId(R.id.checkboxAllowFlexibleDelimiters))
-            .perform(scrollTo(), waitUntilVisible(), click())
+            .perform(scrollTo(), click())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click(), typeTextIntoFocusedView(spaceSeparatedThreeWordAddress))
+            .perform(
+                scrollTo(),
+                click(),
+                replaceText(spaceSeparatedThreeWordAddress),
+                closeSoftKeyboard()
+            )
 
         Espresso.onView(withId(R.id.correctionPicker))
             .check(
@@ -76,6 +80,7 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
             )
 
         Espresso.onView(withId(R.id.selectedInfo))
+            .perform(waitUntilVisible())
             .check(matches(withText(containsStringIgnoringCase(correctThreeWordsAddress))))
 
     }

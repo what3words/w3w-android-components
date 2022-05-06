@@ -3,9 +3,10 @@ package com.what3words.testing.what3wordscomponentuitest.searchFlowEnabled
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.pressImeActionButton
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -40,9 +41,9 @@ class W3WAutoSuggestUISearchFlowEnabledTest {
         val threeWordAddress = "filled.count.soa"
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click(), typeTextIntoFocusedView(threeWordAddress))
+            .perform(scrollTo(), click(), typeTextIntoFocusedView(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
         Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
@@ -64,9 +65,7 @@ class W3WAutoSuggestUISearchFlowEnabledTest {
             .perform(scrollTo(), click())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click(), typeTextIntoFocusedView(threeWordAddress))
+            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
@@ -91,7 +90,7 @@ class W3WAutoSuggestUISearchFlowEnabledTest {
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                     0,
-                    ViewActions.click()
+                    click()
                 )
             )
 

@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.clearText
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView
@@ -47,17 +48,16 @@ class W3WAutoSuggestUIClipToPolygonTests {
         val threeWordAddress = "advice.itself.mops"
 
         Espresso.onView(withId(R.id.textClipToPolygon))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView(polygon))
+            .perform(
+                scrollTo(),
+                click(),
+                typeTextIntoFocusedView(polygon),
+                closeSoftKeyboard()
+            )
 
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
-            .perform(typeTextIntoFocusedView(threeWordAddress))
+            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
 
         Espresso.onView(
@@ -82,14 +82,17 @@ class W3WAutoSuggestUIClipToPolygonTests {
     fun testTextSearch_clipToPolygonDoesNotContainAddressOutsidePolygon() {
         val searchAddress = "advice.itself.mops"
         val notContainedAddress = "decent.chains.pages"
-        Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
+
 
         Espresso.onView(withId(R.id.textClipToPolygon))
-            .perform(scrollTo(), waitUntilVisible(), click(), typeTextIntoFocusedView(polygon))
+            .perform(scrollTo(), click(), typeTextIntoFocusedView(polygon))
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), waitUntilVisible(), click(), typeTextIntoFocusedView(searchAddress))
+            .perform(
+                scrollTo(),
+                click(),
+                replaceText(searchAddress)
+            )
 
 
         Espresso.onView(
@@ -102,8 +105,7 @@ class W3WAutoSuggestUIClipToPolygonTests {
         val itemCount = getSuggestionCount()
         for (i in 0 until itemCount) {
             Espresso.onView(withId(R.id.suggestionEditText))
-                .perform(click())
-                .perform(replaceText((searchAddress)))
+                .perform(click(), replaceText((searchAddress)))
 
             Espresso.onView(
                 withId(
@@ -123,8 +125,7 @@ class W3WAutoSuggestUIClipToPolygonTests {
                 .check(matches(withText(not(containsString(notContainedAddress)))))
 
             Espresso.onView(withId(R.id.suggestionEditText))
-                .perform(click())
-                .perform(clearText())
+                .perform(click(), clearText())
         }
 
     }

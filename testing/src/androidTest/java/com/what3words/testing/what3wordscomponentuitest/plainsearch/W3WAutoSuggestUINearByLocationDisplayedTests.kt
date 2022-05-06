@@ -3,10 +3,9 @@ package com.what3words.testing.what3wordscomponentuitest.plainsearch
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -21,7 +20,6 @@ import com.what3words.testing.what3wordscomponentuitest.utils.hasItemCountGreate
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 
 
-
 @RunWith(AndroidJUnit4::class)
 class W3WAutoSuggestUINearByLocationDisplayedTests {
 
@@ -33,10 +31,7 @@ class W3WAutoSuggestUINearByLocationDisplayedTests {
         val threeWordAddress = "crazy.palace.moral"
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(ViewActions.scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(ViewActions.click())
-            .perform(ViewActions.typeTextIntoFocusedView(threeWordAddress))
+            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
 
         Espresso.onView(
@@ -48,7 +43,7 @@ class W3WAutoSuggestUINearByLocationDisplayedTests {
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                     0,
-                    ViewActions.click()
+                    click()
                 )
             )
 
