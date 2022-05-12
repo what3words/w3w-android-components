@@ -71,7 +71,7 @@ class W3WAutoSuggestUIClipToCircleTests {
             .perform(scrollTo(), click(), typeTextIntoFocusedView(circle))
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress))
+            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
         Espresso.onView(
             withId(

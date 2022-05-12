@@ -71,7 +71,7 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
             .perform(scrollTo(), click(), replaceText(country))
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(),  replaceText(threeWordAddress))
+            .perform(scrollTo(), click(), replaceText(threeWordAddress))
 
         Espresso.onView(
             withId(

@@ -15,6 +15,7 @@ import com.what3words.testing.MainActivity
 import com.what3words.testing.R
 import com.what3words.testing.what3wordscomponentuitest.utils.isVisibleInParent
 import com.what3words.testing.what3wordscomponentuitest.utils.hasItemCountGreaterThanZero
+import com.what3words.testing.what3wordscomponentuitest.utils.textIsVisible
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -80,7 +81,7 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
             )
 
         Espresso.onView(withId(R.id.selectedInfo))
-            .perform(waitUntilVisible())
+            .perform(waitUntilVisible(textIsVisible()))
             .check(matches(withText(containsStringIgnoringCase(correctThreeWordsAddress))))
 
     }
