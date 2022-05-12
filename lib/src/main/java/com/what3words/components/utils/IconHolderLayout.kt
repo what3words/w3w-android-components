@@ -169,8 +169,8 @@ internal class IconHolderLayout
                 }
             }
 
-            // in case setVoiceVisibility has been before global layout state
-            // or the visibility of views within the view tree of icon holder changes
+            // in case setVoiceVisibility has been invoked before global layout state
+            // or the visibility of views within the view tree of IconHolderLayout changes
             setVoiceVisibility(binding.icMic.visibility)
 
             binding.btnClear.updateLayoutParams {
