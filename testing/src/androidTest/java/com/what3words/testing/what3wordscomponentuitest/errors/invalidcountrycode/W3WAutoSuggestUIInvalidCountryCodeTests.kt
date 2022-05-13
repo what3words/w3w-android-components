@@ -10,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.android.material.snackbar.Snackbar
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
+import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 import org.hamcrest.CoreMatchers
 import org.junit.Rule
 import org.junit.Test
@@ -28,11 +29,23 @@ class W3WAutoSuggestUIInvalidCountryCodeTests {
     fun testTextSearch_InvalidCountryCodeDisplaysError() {
         val threeWordAddress = "advice.itself.mops"
 
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible())
+
+        Espresso.onView(withId(R.id.holderClipToCountry))
+            .perform(waitUntilVisible(), scrollTo())
+
         Espresso.onView(withId(R.id.textClipToCountry))
-            .perform(scrollTo(), click(), typeTextIntoFocusedView("GBR"), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                click(),
+                typeTextIntoFocusedView("GBR"),
+                closeSoftKeyboard()
+            )
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
+                waitUntilVisible(),
                 scrollTo(),
                 click(),
                 typeTextIntoFocusedView(threeWordAddress)

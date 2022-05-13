@@ -47,9 +47,15 @@ class W3WAutoSuggestUIClipToPolygonTests {
     fun testTextSearch_clipToPolygonContainAddressInsidePolygon() {
         val threeWordAddress = "advice.itself.mops"
 
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible(), closeSoftKeyboard())
+
+        Espresso.onView(withId(R.id.holderClipToPolygon))
+            .perform(waitUntilVisible(), scrollTo())
+
         Espresso.onView(withId(R.id.textClipToPolygon))
             .perform(
-                scrollTo(),
+                waitUntilVisible(),
                 click(),
                 typeTextIntoFocusedView(polygon),
                 closeSoftKeyboard()
@@ -57,7 +63,13 @@ class W3WAutoSuggestUIClipToPolygonTests {
 
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                scrollTo(),
+                click(),
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
 
         Espresso.onView(
@@ -83,12 +95,18 @@ class W3WAutoSuggestUIClipToPolygonTests {
         val searchAddress = "advice.itself.mops"
         val notContainedAddress = "decent.chains.pages"
 
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible(), closeSoftKeyboard())
+
+        Espresso.onView(withId(R.id.holderClipToPolygon))
+            .perform(waitUntilVisible(), scrollTo())
 
         Espresso.onView(withId(R.id.textClipToPolygon))
-            .perform(scrollTo(), click(), typeTextIntoFocusedView(polygon))
+            .perform(waitUntilVisible(), click(), typeTextIntoFocusedView(polygon))
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
+                waitUntilVisible(),
                 scrollTo(),
                 click(),
                 replaceText(searchAddress)
@@ -125,7 +143,7 @@ class W3WAutoSuggestUIClipToPolygonTests {
                 .check(matches(withText(not(containsString(notContainedAddress)))))
 
             Espresso.onView(withId(R.id.suggestionEditText))
-                .perform(click(), clearText())
+                .perform(waitUntilVisible(), click(), clearText())
         }
 
     }

@@ -14,6 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
+import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,13 +32,17 @@ class W3WAutoSuggestUICustomCorrectionPickerTest {
     fun testSwappingDefaultCorrectionPickerWithCustomCorrectionPicker() {
         val spaceSeparatedThreeWordsAddress = "index home raft"
 
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible())
+
         // turn on the custom correction picker
         Espresso.onView(withId(R.id.checkboxCustomCorrectionPicker))
-            .perform(scrollTo(), click())
+            .perform(waitUntilVisible(), scrollTo(), click())
 
         // type into the auto-suggest edit text
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
+                waitUntilVisible(),
                 scrollTo(),
                 click(),
                 typeTextIntoFocusedView(spaceSeparatedThreeWordsAddress)
@@ -51,11 +56,11 @@ class W3WAutoSuggestUICustomCorrectionPickerTest {
 
         // turn off the custom correction picker
         Espresso.onView(withId(R.id.checkboxCustomCorrectionPicker))
-            .perform(scrollTo(), click())
+            .perform( waitUntilVisible(),scrollTo(), click())
 
         // clear text from auto-suggest edit text
         Espresso.onView(withId(R.id.btnClear))
-            .perform(scrollTo(), click())
+            .perform( waitUntilVisible(),scrollTo(), click())
 
         // type into the auto-suggest edit text
         Espresso.onView(withId(R.id.suggestionEditText))
@@ -72,6 +77,5 @@ class W3WAutoSuggestUICustomCorrectionPickerTest {
         Espresso.onView(withId(R.id.correctionPicker))
             .check(matches(not(isDisplayed())))
     }
-
 
 }

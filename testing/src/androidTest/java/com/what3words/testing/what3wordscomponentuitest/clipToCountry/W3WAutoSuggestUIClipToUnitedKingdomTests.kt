@@ -9,7 +9,6 @@ import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -38,11 +37,28 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
     fun testTextSearch_clipToCountryContainAddressInsideCountry() {
         val threeWordAddress = "decent.chains.pages"
 
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible(), closeSoftKeyboard())
+
+        Espresso.onView(withId(R.id.holderClipToCountry))
+            .perform(waitUntilVisible(), scrollTo())
+
         Espresso.onView(withId(R.id.textClipToCountry))
-            .perform(scrollTo(), click(), typeTextIntoFocusedView(country), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                click(),
+                typeTextIntoFocusedView(country),
+                closeSoftKeyboard()
+            )
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                scrollTo(),
+                click(),
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
 
         Espresso.onView(
@@ -67,11 +83,17 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
     fun testTextSearch_clipToCountryDoesNotContainAddressOutsideCountry() {
         val threeWordAddress = "cliche.whom.passage"
 
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible(), closeSoftKeyboard())
+
+        Espresso.onView(withId(R.id.holderClipToCountry))
+            .perform(waitUntilVisible(), scrollTo())
+
         Espresso.onView(withId(R.id.textClipToCountry))
-            .perform(scrollTo(), click(), replaceText(country))
+            .perform(waitUntilVisible(), click(), replaceText(country))
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress))
+            .perform(waitUntilVisible(), scrollTo(), click(), replaceText(threeWordAddress))
 
         Espresso.onView(
             withId(

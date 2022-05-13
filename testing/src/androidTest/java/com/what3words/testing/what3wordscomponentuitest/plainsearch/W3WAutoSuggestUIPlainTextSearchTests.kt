@@ -28,8 +28,17 @@ class W3WAutoSuggestUIPlainTextSearchTests {
     @Test
     fun testTextSearch_withoutFiltersOrCoordinates() {
         val threeWordAddress = "filled.count.soap"
+
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible())
+
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(click(), replaceText(threeWordAddress), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                click(),
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
 
         Espresso.onView(
@@ -39,11 +48,11 @@ class W3WAutoSuggestUIPlainTextSearchTests {
         )
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .perform(
-            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                0,
-                click()
+                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                    0,
+                    click()
+                )
             )
-        )
 
         Espresso.onView(withId(R.id.selectedInfo))
             .check(matches(withText(CoreMatchers.containsString(threeWordAddress))))

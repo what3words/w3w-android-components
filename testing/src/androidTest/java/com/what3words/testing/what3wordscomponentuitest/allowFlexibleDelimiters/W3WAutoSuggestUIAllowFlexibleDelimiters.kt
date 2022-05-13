@@ -15,7 +15,6 @@ import com.what3words.testing.MainActivity
 import com.what3words.testing.R
 import com.what3words.testing.what3wordscomponentuitest.utils.isVisibleInParent
 import com.what3words.testing.what3wordscomponentuitest.utils.hasItemCountGreaterThanZero
-import com.what3words.testing.what3wordscomponentuitest.utils.textIsVisible
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,8 +36,12 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
         val spaceSeparatedThreeWordAddress = "index home raft"
         val correctThreeWordsAddress = "index.home.raft"
 
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible(), closeSoftKeyboard())
+
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
+                waitUntilVisible(),
                 click(),
                 replaceText(spaceSeparatedThreeWordAddress),
             )
@@ -49,13 +52,14 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
             )
 
         Espresso.onView(withId(R.id.btnClear))
-            .perform(click())
+            .perform(waitUntilVisible(), click())
 
         Espresso.onView(withId(R.id.checkboxAllowFlexibleDelimiters))
-            .perform(scrollTo(), click())
+            .perform(waitUntilVisible(), scrollTo(), click())
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
+                waitUntilVisible(),
                 scrollTo(),
                 click(),
                 replaceText(spaceSeparatedThreeWordAddress),
@@ -81,7 +85,7 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
             )
 
         Espresso.onView(withId(R.id.selectedInfo))
-            .perform(waitUntilVisible(textIsVisible()))
+            .perform(waitUntilVisible())
             .check(matches(withText(containsStringIgnoringCase(correctThreeWordsAddress))))
 
     }

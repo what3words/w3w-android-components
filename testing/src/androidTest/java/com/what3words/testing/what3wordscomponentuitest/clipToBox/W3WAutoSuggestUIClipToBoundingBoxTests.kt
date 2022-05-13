@@ -9,6 +9,7 @@ import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -35,13 +36,19 @@ class W3WAutoSuggestUIClipToBoundingBoxTests {
 
     @Test
     fun testTextSearch_clipToBoundingBoxContainAddressInsideBox() {
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible(), closeSoftKeyboard())
+
+        Espresso.onView(withId(R.id.holderClipToBoundingBox))
+            .perform(waitUntilVisible(), scrollTo())
 
         Espresso.onView(withId(R.id.textClipToBoundingBox))
-            .perform(scrollTo(), waitUntilVisible(), click(), typeTextIntoFocusedView(boundingBox))
+            .perform(click(), typeTextIntoFocusedView(boundingBox))
 
         val threeWordAddress = "cliche.whom.passage"
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
+                waitUntilVisible(),
                 scrollTo(),
                 click(),
                 replaceText(threeWordAddress),
@@ -62,19 +69,25 @@ class W3WAutoSuggestUIClipToBoundingBoxTests {
             )
 
         Espresso.onView(withId(R.id.selectedInfo))
-            .check(matches(withText(containsString( threeWordAddress))))
+            .check(matches(withText(containsString(threeWordAddress))))
 
     }
 
     @Test
     fun testTextSearch_clipToBoundingBoxDoesNotContainAddressOutsideBox() {
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible())
+
+        Espresso.onView(withId(R.id.holderClipToBoundingBox))
+            .perform(waitUntilVisible(), scrollTo())
 
         Espresso.onView(withId(R.id.textClipToBoundingBox))
-            .perform(scrollTo(), click(), waitUntilVisible(), typeTextIntoFocusedView(boundingBox))
+            .perform(waitUntilVisible(), click(), typeTextIntoFocusedView(boundingBox))
 
         val threeWordAddress = "falters.curtains.point"
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
+                waitUntilVisible(),
                 scrollTo(),
                 click(),
                 replaceText(threeWordAddress),
@@ -86,7 +99,7 @@ class W3WAutoSuggestUIClipToBoundingBoxTests {
                 com.what3words.components.R.id.w3wAutoSuggestDefaultPicker
             )
         )
-            .perform(waitUntilVisible(hasChildCount(3)))
+            .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .perform(
                 RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
                     0,

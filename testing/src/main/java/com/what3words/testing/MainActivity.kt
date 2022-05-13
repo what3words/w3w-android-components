@@ -19,6 +19,10 @@ import com.what3words.testing.databinding.ActivityMainBinding.inflate
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        const val FOCUS_AUTO_SUGGEST_TEXT_ON_CREATE = "focus_auto_suggest_text_on_create"
+    }
+
     private lateinit var binding: ActivityMainBinding
     private var apiKey = BuildConfig.W3W_API_KEY
 
@@ -26,6 +30,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = inflate(layoutInflater)
+        if (intent.extras?.getBoolean(FOCUS_AUTO_SUGGEST_TEXT_ON_CREATE, false) == true) {
+            binding.suggestionEditText.requestFocus()
+        }
         setUpW3W()
 
         binding.checkboxCoordinates.setOnCheckedChangeListener { _, b ->
@@ -61,8 +68,6 @@ class MainActivity : AppCompatActivity() {
         binding.checkboxCustomCorrectionPicker.setOnCheckedChangeListener { _, b ->
             binding.suggestionEditText.customCorrectionPicker(if (b) binding.correctionPicker else null)
         }
-
-
 
         binding.textPlaceholder.setText(R.string.input_hint)
         binding.textPlaceholder.addOnTextChangedListener {
@@ -180,6 +185,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpW3W() {
+        binding.suggestionEditText.requestFocus()
+
         binding.suggestionEditText.apiKey(
             key = apiKey,
             endpoint = BuildConfig.W3W_PRE_PROD_URL
