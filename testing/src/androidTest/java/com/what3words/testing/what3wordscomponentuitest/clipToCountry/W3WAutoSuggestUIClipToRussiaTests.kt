@@ -36,11 +36,23 @@ class W3WAutoSuggestUIClipToRussiaTests {
     fun testTextSearch_clipToCountryContainAddressInsideCountry() {
         val threeWordAddress = "liked.shopper.remotes"
 
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible(), closeSoftKeyboard())
+
+        Espresso.onView(withId(R.id.holderClipToCountry))
+            .perform(waitUntilVisible(), scrollTo())
+
         Espresso.onView(withId(R.id.textClipToCountry))
-            .perform(scrollTo(), click(), typeTextIntoFocusedView(country), closeSoftKeyboard())
+            .perform(click(), typeTextIntoFocusedView(country), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                scrollTo(),
+                click(),
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
         Espresso.onView(
             withId(

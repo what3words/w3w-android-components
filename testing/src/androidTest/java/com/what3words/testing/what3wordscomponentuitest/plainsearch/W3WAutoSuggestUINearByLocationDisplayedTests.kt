@@ -30,8 +30,16 @@ class W3WAutoSuggestUINearByLocationDisplayedTests {
     fun testTextSearch_containsNearByLocation() {
         val threeWordAddress = "crazy.palace.moral"
 
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible())
+
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                click(),
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
 
         Espresso.onView(

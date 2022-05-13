@@ -34,12 +34,15 @@ class W3WAutoSuggestUICustomSuggestionPickerTest {
 
     @Test
     fun testCustomSuggestionPickerIsVisible() {
-
         val threeWordAddress = "index.home.raft"
+
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
-                scrollTo(), click(), typeTextIntoFocusedView(threeWordAddress),
+                waitUntilVisible(),
+                click(), typeTextIntoFocusedView(threeWordAddress),
                 closeSoftKeyboard()
             )
 
@@ -48,13 +51,19 @@ class W3WAutoSuggestUICustomSuggestionPickerTest {
             .check(matches(isDisplayed()))
 
         Espresso.onView(withId(R.id.btnClear))
-            .perform(click())
+            .perform(waitUntilVisible(), click())
 
         Espresso.onView(withId(R.id.checkboxCustomPicker))
-            .perform(scrollTo(), click())
+            .perform(waitUntilVisible(), scrollTo(), click())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                scrollTo(),
+                click(),
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
         Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
             .check(matches(not(isDisplayed())))
@@ -74,6 +83,5 @@ class W3WAutoSuggestUICustomSuggestionPickerTest {
             .check(matches(withText(containsString(threeWordAddress))))
 
     }
-
 
 }

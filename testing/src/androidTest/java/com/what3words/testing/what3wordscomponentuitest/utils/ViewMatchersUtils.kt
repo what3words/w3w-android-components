@@ -1,6 +1,7 @@
 package com.what3words.testing.what3wordscomponentuitest.utils
 
 import android.view.View
+import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
@@ -20,6 +21,18 @@ inline fun <reified T : View> isVisibleInParent(): Matcher<View> {
     }
 }
 
+fun textIsVisible(): Matcher<View>{
+    return object : BoundedMatcher<View, TextView>(TextView::class.java) {
+        override fun describeTo(description: Description?) {
+            description?.appendText("text is visible")
+        }
+
+        override fun matchesSafely(item: TextView?): Boolean {
+            if(item == null) return false
+            return item.isVisible && item.text.isNotBlank()
+        }
+    }
+}
 
 fun hasItemCountGreaterThanZero(): Matcher<View> {
     return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {

@@ -36,8 +36,12 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
         val spaceSeparatedThreeWordAddress = "index home raft"
         val correctThreeWordsAddress = "index.home.raft"
 
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible(), closeSoftKeyboard())
+
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
+                waitUntilVisible(),
                 click(),
                 replaceText(spaceSeparatedThreeWordAddress),
             )
@@ -48,13 +52,14 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
             )
 
         Espresso.onView(withId(R.id.btnClear))
-            .perform(click())
+            .perform(waitUntilVisible(), click())
 
         Espresso.onView(withId(R.id.checkboxAllowFlexibleDelimiters))
-            .perform(scrollTo(), click())
+            .perform(waitUntilVisible(), scrollTo(), click())
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
+                waitUntilVisible(),
                 scrollTo(),
                 click(),
                 replaceText(spaceSeparatedThreeWordAddress),

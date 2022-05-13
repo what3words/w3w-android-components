@@ -29,32 +29,48 @@ class W3WCustomErrorMessageViewTest {
     @Test
     fun testCustomErrorMessageViewIsShown() {
         val threeWordAddress = "index.home.r"
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible())
 
         // type index.home.r into auto suggest edit text
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(click(), replaceText(threeWordAddress), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                click(),
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
 
         Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
 
         // give focus to the clip to country edit text
+        Espresso.onView(withId(R.id.holderClipToCountry))
+            .perform(waitUntilVisible(), scrollTo())
+
         Espresso.onView(withId(R.id.textClipToCountry))
-            .perform(scrollTo(), click())
+            .perform(waitUntilVisible(), click())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
+            .perform(waitUntilVisible(), scrollTo())
 
         // check that the default error message view is shown for just 5 seconds
         Espresso.onView(withId(R.id.w3wAutoSuggestDefaultErrorMessage))
             .perform(waitUntilGone(delay = 5000))
 
         Espresso.onView(withId(R.id.checkboxCustomError))
-            .perform(scrollTo(), click())
+            .perform(waitUntilVisible(), scrollTo(), click())
 
         // type index.home.r into auto suggest edit text
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                scrollTo(),
+                click(),
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
 
         Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
@@ -62,10 +78,10 @@ class W3WCustomErrorMessageViewTest {
 
         // give focus to the clip to country edit text
         Espresso.onView(withId(R.id.textClipToCountry))
-            .perform(scrollTo(), click())
+            .perform(waitUntilVisible(), scrollTo(), click())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo())
+            .perform(waitUntilVisible(), scrollTo())
 
         Espresso.onView(withId(R.id.w3wAutoSuggestDefaultErrorMessage))
             .check(matches(not(isDisplayed())))

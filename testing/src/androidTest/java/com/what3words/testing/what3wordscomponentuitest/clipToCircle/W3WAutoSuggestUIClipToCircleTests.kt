@@ -36,14 +36,26 @@ class W3WAutoSuggestUIClipToCircleTests {
     fun testTextSearch_clipToCircleContainAddressInsideCircle() {
         val threeWordAddress = "falters.curtains.point"
 
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible(), closeSoftKeyboard())
+
+        Espresso.onView(withId(R.id.holderClipToCircle))
+            .perform(waitUntilVisible(), scrollTo())
+
         Espresso.onView(withId(R.id.textClipToCircle))
-            .perform(scrollTo(), click(), typeTextIntoFocusedView(circle),
+            .perform(
+                click(), typeTextIntoFocusedView(circle),
                 closeSoftKeyboard()
             )
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
-
+            .perform(
+                waitUntilVisible(),
+                scrollTo(),
+                click(),
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
         Espresso.onView(
             withId(
@@ -66,12 +78,23 @@ class W3WAutoSuggestUIClipToCircleTests {
     @Test
     fun testTextSearch_clipToCircleDoesNotContainAddressOutsideCircle() {
         val threeWordAddress = "jazz.silver.bagels"
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible(), closeSoftKeyboard())
+
+        Espresso.onView(withId(R.id.holderClipToCircle))
+            .perform(waitUntilVisible(), scrollTo())
 
         Espresso.onView(withId(R.id.textClipToCircle))
-            .perform(scrollTo(), click(), typeTextIntoFocusedView(circle))
+            .perform(waitUntilVisible(), click(), typeTextIntoFocusedView(circle))
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress))
+            .perform(
+                waitUntilVisible(),
+                scrollTo(),
+                click(),
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
         Espresso.onView(
             withId(

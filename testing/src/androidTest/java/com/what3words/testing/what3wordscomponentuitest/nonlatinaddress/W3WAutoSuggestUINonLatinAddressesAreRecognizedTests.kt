@@ -31,11 +31,15 @@ class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
 
     @Test
     fun testTextSearch_plainTextSearchWithArabicAddress() {
-
         val threeWordAddress = "القرفة.العامل.أسماك"
+
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible())
+
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
-                scrollTo(), click(), replaceText(threeWordAddress),
+                waitUntilVisible(),
+                click(), replaceText(threeWordAddress),
                 closeSoftKeyboard()
             )
 
@@ -59,8 +63,12 @@ class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
     @Test
     fun testTextSearch_plainTextSearchWithRussianAddress() {
         val threeWordAddress = "обилие.городовой.весенний"
+
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible())
+
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
+            .perform(click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
         Espresso.onView(
             withId(
@@ -82,8 +90,17 @@ class W3WAutoSuggestUINonLatinAddressesAreRecognizedTests {
     @Test
     fun testTextSearch_plainTextSearchWithNonLatinAddress() {
         val threeWordAddress = "postverwaltung.postverwaltung.postverwaltung"
+
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible())
+
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                click(),
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
 
         Espresso.onView(

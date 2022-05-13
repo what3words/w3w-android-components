@@ -34,8 +34,9 @@ inline fun <reified T : View> waitUntilVisibleInParent(
         }
 
         override fun perform(uiController: UiController?, view: View?) {
+            IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
+            IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
             var hasMatched = false
-
             var idlingResourceCallback: IdlingResource.ResourceCallback? = null
             val idlingResource = object : IdlingResource {
                 override fun getName(): String {
@@ -108,9 +109,13 @@ fun waitUntilVisible(
         }
 
         override fun perform(uiController: UiController, view: View) {
+            IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
+            IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
+
             if (!matcher.matches(view)) {
                 var matched = false
                 var idlingResourceCallback: IdlingResource.ResourceCallback? = null
+
                 val idlingResource = object : IdlingResource {
                     override fun getName(): String {
                         return "Layout out change listener"

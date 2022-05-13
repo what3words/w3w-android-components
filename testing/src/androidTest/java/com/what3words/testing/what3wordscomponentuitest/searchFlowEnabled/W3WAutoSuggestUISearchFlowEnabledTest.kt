@@ -35,13 +35,15 @@ class W3WAutoSuggestUISearchFlowEnabledTest {
 
     @Test
     fun testSearchFlowEnabled() {
+        val threeWordAddress = "filled.count.soa"
+
         Espresso.onView(withId(R.id.main))
             .perform(waitUntilVisible())
 
-        val threeWordAddress = "filled.count.soa"
-
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), typeTextIntoFocusedView(threeWordAddress),
+            .perform(
+                waitUntilVisible(),
+                click(), typeTextIntoFocusedView(threeWordAddress),
                 closeSoftKeyboard()
             )
 

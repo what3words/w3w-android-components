@@ -34,13 +34,28 @@ class W3WAutoSuggestUISpecifyNumberOfSuggestionsTests {
         val threeWordAddress = "filled.count.soap"
         val numberOfSuggestions = "5"
 
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible())
+
+        Espresso.onView(withId(R.id.holderSpecifyNumberOfSuggestions))
+            .perform(waitUntilVisible(), scrollTo())
+
         Espresso.onView(withId(R.id.textSpecifyNumberOfSuggestions))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click(), typeTextIntoFocusedView(numberOfSuggestions), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                click(),
+                typeTextIntoFocusedView(numberOfSuggestions),
+                closeSoftKeyboard()
+            )
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
+            .perform(
+                waitUntilVisible(),
+                scrollTo(),
+                click(),
+                replaceText(threeWordAddress),
+                closeSoftKeyboard()
+            )
 
         Espresso.onView(
             withId(
