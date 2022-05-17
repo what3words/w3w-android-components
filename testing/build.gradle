@@ -14,7 +14,7 @@ android {
         versionName "1.0"
 
         buildConfigField 'String', 'W3W_PRE_PROD_URL', findProperty('W3W_PRE_PROD_URL') ? "\"${findProperty('W3W_PRE_PROD_URL')}\"" : "\"PRE_PRO_URL_HERE\""
-        buildConfigField 'String', 'W3W_API_KEY', findProperty('W3W_API_KEY') ? "\"${findProperty('W3W_API_KEY')}\"" : "\"YOUR_API_KEY_HERE\""
+        buildConfigField 'String', 'W3W_API_KEY', findProperty('PRE_PROD_API_KEY') ? "\"${findProperty('PRE_PROD_API_KEY')}\"" : "\"YOUR_API_KEY_HERE\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // The following argument makes the Android Test Orchestrator run its
         // "pm clear" command after each test invocation. This command ensures
@@ -57,7 +57,7 @@ dependencies {
     androidTestUtil 'androidx.test:orchestrator:1.4.1'
     //w3w auto suggest
     // implementation "com.what3words:w3w-android-components:2.1.1"
-    implementation "com.what3words:w3w-android-wrapper:3.1.16"
+    implementation "com.what3words:w3w-android-wrapper:3.1.17"
     implementation project(":lib")
 
 }
