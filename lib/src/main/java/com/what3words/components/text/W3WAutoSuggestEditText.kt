@@ -822,7 +822,10 @@ class W3WAutoSuggestEditText
                 What3WordsV3(
                     key,
                     context,
-                    mapOf("X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})")
+                    mapOf(
+                        "X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})",
+                        "component_session_id" to SESSION_ID
+                    )
                 )
             )
         return this
