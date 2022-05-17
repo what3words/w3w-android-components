@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.RadioButton
+import android.widget.Toast
 import autosuggestsample.util.addOnTextChangedListener
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -173,7 +174,9 @@ class MainActivity : AppCompatActivity() {
             val isValidInput = suggestionsCount.all { Character.isDigit(it) }
 
             if (isValidInput) {
-                binding.suggestionEditText.nResults(suggestionsCount.toInt())
+                if (suggestionsCount.isNotBlank()) binding.suggestionEditText.nResults(
+                    suggestionsCount.toInt()
+                )
             }
         }
         setContentView(binding.root)

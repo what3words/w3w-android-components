@@ -85,7 +85,6 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
             )
 
         Espresso.onView(withId(R.id.selectedInfo))
-            .perform(waitUntilVisible())
             .check(matches(withText(containsStringIgnoringCase(correctThreeWordsAddress))))
 
     }
