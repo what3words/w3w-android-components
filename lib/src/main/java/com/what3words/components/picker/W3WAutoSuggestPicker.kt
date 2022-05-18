@@ -18,7 +18,7 @@ import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.Suggestion
 
 /**
- * A [RecyclerView] to show [W3WSuggestion] returned by w3w auto suggest component
+ * A [RecyclerView] to show [Suggestion] returned by w3w auto suggest component
  * modularized to allow developers to choose picker location on the screen.
  */
 class W3WAutoSuggestPicker
@@ -63,6 +63,9 @@ class W3WAutoSuggestPicker
             defStyleAttr, R.style.W3WAutoSuggestPickerTheme
         ).apply {
             try {
+                if (findViewById<W3WAutoSuggestPicker>(id) == null) id =
+                    R.id.w3wAutoSuggestDefaultPicker
+
                 val linear = LinearLayoutManager(context, attrs, defStyleAttr, 0)
                 layoutManager = linear
                 setHasFixedSize(true)

@@ -168,6 +168,11 @@ internal class IconHolderLayout
                     x -= (binding.voicePulseLayout.height / 2)
                 }
             }
+
+            // in case setVoiceVisibility has been invoked before global layout state
+            // or the visibility of views within the view tree of IconHolderLayout changes
+            setVoiceVisibility(binding.icMic.visibility)
+
             binding.btnClear.updateLayoutParams {
                 width = (this@IconHolderLayout.height * 0.6).toInt()
             }

@@ -5,6 +5,8 @@ import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
+import com.what3words.components.R
+import com.what3words.components.picker.W3WAutoSuggestPicker
 
 /**
  * A [AppCompatTextView] styled and ready to show error messages.
@@ -18,6 +20,10 @@ class W3WAutoSuggestErrorMessage
 
     init {
         visibility = GONE
+        if (findViewById<W3WAutoSuggestErrorMessage>(id) == null) id =
+            R.id.w3wAutoSuggestDefaultErrorMessage
+
+
     }
 }
 

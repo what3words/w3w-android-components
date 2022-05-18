@@ -9,6 +9,8 @@
         <attr name="invalidAddressMessage" format="string" />
         <attr name="correctionMessage" format="string" />
         <attr name="voiceEnabled" format="boolean" />
+        <attr name="searchFlowEnabled" format="boolean" />
+        <attr name="preferLand" format="boolean" />
         <attr name="voiceLanguage" format="string" />
         <attr name="voicePlaceholder" format="string" />
         <attr name="voiceBackgroundColor" format="color" />

@@ -1,4 +1,4 @@
-package com.what3words.autosuggestsample.ui
+package autosuggestsample.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -10,11 +10,11 @@ import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
-import com.what3words.autosuggestsample.BuildConfig
-import com.what3words.autosuggestsample.R
-import com.what3words.autosuggestsample.databinding.ActivityMainBinding
-import com.what3words.autosuggestsample.databinding.ActivityMainBinding.inflate
-import com.what3words.autosuggestsample.util.addOnTextChangedListener
+import autosuggestsample.BuildConfig
+import autosuggestsample.R
+import autosuggestsample.databinding.ActivityMainBinding
+import autosuggestsample.databinding.ActivityMainBinding.inflate
+import autosuggestsample.util.addOnTextChangedListener
 import com.what3words.components.models.VoiceScreenType
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
@@ -47,6 +47,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.checkboxCoordinates.setOnCheckedChangeListener { _, b ->
             binding.suggestionEditText.returnCoordinates(b)
+        }
+
+        binding.checkboxPreferLand.setOnCheckedChangeListener { _, b ->
+            binding.suggestionEditText.preferLand(b)
         }
 
         binding.checkboxAllowInvalidAddress.setOnCheckedChangeListener { _, b ->

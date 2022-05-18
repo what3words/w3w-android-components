@@ -6,6 +6,7 @@
     <string name="customise_the_autosuggest_component">Customise the AutoSuggest Component</string>
     <string name="customise_device_settings">Customise device settings</string>
     <string name="return_coordinates">return coordinates</string>
+    <string name="prefer_land">prefer land</string>
     <string name="placeholder">placeholder</string>
     <string name="language">language</string>
     <string name="language_info">AutoSuggest will search in all languages. However, you can additionally specify a fallback language, to help the API in situations where the input is particularly messy.</string>

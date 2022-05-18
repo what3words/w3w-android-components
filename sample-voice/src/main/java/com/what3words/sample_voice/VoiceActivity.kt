@@ -8,7 +8,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
-import com.what3words.autosuggestsample.util.addOnTextChangedListener
+import autosuggestsample.util.addOnTextChangedListener
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
@@ -47,8 +47,7 @@ class VoiceActivity : AppCompatActivity() {
                 Log.e("MainActivity", "${it.key} - ${it.message}")
                 Snackbar.make(binding.main, "${it.key} - ${it.message}", LENGTH_INDEFINITE).apply {
                     setAction("OK") { dismiss() }
-                    show()
-                }
+                }.show()
             }.onListeningStateChanged {
                 Log.i("MainActivity", "${it.name}")
             }
