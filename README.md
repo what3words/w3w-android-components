@@ -16,7 +16,7 @@ The artifact is available through [![Maven Central](https://img.shields.io/maven
 ### Gradle
 
 ```
-implementation 'com.what3words:w3w-android-components:3.0.0'
+implementation 'com.what3words:w3w-android-components:3.0.1'
 ```
 
 ## Documentation
@@ -140,6 +140,7 @@ If you run our Enterprise Suite API Server yourself, you may specify the URL to 
 |onHomeClick|If DrawableStart is set and it's pressed callback will be called, usage example is to have a back button as drawableStart.|```onHomeClick { }```|
 |allowFlexibleDelimiters|Allow EditText to accept different delimiters than the what3words standard full stop "index.home.raft", i.e  "index home raft" or "index,home,raft".| ```allowFlexibleDelimiters(true)``` |
 |allowInvalid3wa|By default the EditText field will clear an inputted value if a valid 3 word address is not entered. Setting allowInvalid3wa to true stops this behaviour and the value is persisted in the EditText.|```allowInvalid3wa(true)```|
+|preferLand|Makes AutoSuggest prefer results on land to those in the sea. This setting is on by default. Use false to disable this setting and receive more suggestions in the sea.|```preferLand(false)```|
 
 ## Enable voice autosuggest:
 
