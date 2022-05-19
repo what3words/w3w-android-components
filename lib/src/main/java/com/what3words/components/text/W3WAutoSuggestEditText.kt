@@ -841,7 +841,7 @@ class W3WAutoSuggestEditText
     fun apiKey(
         key: String,
         endpoint: String,
-        headers: MutableMap<String, String> = mutableMapOf()
+        headers: Map<String, String> = mapOf()
     ): W3WAutoSuggestEditText {
         viewModel.manager =
             AutosuggestApiManager(
@@ -849,7 +849,7 @@ class W3WAutoSuggestEditText
                     key,
                     endpoint,
                     context,
-                    headers.apply {
+                    headers.toMutableMap().apply {
                         put("component_session_id", SESSION_ID)
                     }
                 )
@@ -869,7 +869,7 @@ class W3WAutoSuggestEditText
         key: String,
         endpoint: String,
         voiceEndpoint: String,
-        headers: MutableMap<String, String> = mutableMapOf()
+        headers: Map<String, String> = mapOf()
     ): W3WAutoSuggestEditText {
         viewModel.manager =
             AutosuggestApiManager(
@@ -878,7 +878,7 @@ class W3WAutoSuggestEditText
                     endpoint,
                     voiceEndpoint,
                     context,
-                    headers.apply {
+                    headers.toMutableMap().apply {
                         put("component_session_id", SESSION_ID)
                     }
                 )
