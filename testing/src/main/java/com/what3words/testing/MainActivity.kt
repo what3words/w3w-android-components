@@ -188,8 +188,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpW3W() {
-        binding.suggestionEditText.requestFocus()
-
         binding.suggestionEditText.apiKey(
             key = apiKey,
             endpoint = BuildConfig.W3W_PRE_PROD_URL

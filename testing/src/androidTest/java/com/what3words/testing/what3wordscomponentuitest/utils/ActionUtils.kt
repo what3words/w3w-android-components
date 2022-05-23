@@ -34,8 +34,6 @@ inline fun <reified T : View> waitUntilVisibleInParent(
         }
 
         override fun perform(uiController: UiController?, view: View?) {
-            IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
-            IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
             var hasMatched = false
             var idlingResourceCallback: IdlingResource.ResourceCallback? = null
             val idlingResource = object : IdlingResource {
@@ -109,9 +107,6 @@ fun waitUntilVisible(
         }
 
         override fun perform(uiController: UiController, view: View) {
-            IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
-            IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
-
             if (!matcher.matches(view)) {
                 var matched = false
                 var idlingResourceCallback: IdlingResource.ResourceCallback? = null
@@ -138,6 +133,10 @@ fun waitUntilVisible(
                 try {
                     IdlingRegistry.getInstance().register(idlingResource)
                     view.addOnLayoutChangeListener(changeListener)
+                    if (matcher.matches(view)) {
+                        matched = true
+                        idlingResourceCallback?.onTransitionToIdle()
+                    }
                     uiController.loopMainThreadUntilIdle()
                 } finally {
                     view.removeOnLayoutChangeListener(changeListener)

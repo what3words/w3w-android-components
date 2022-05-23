@@ -90,10 +90,10 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
             .perform(waitUntilVisible(), scrollTo())
 
         Espresso.onView(withId(R.id.textClipToCountry))
-            .perform(waitUntilVisible(), click(), replaceText(country))
+            .perform(waitUntilVisible(), click(), replaceText(country), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(waitUntilVisible(), scrollTo(), click(), replaceText(threeWordAddress))
+            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
         Espresso.onView(
             withId(
