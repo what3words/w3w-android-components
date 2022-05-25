@@ -133,10 +133,6 @@ fun waitUntilVisible(
                 try {
                     IdlingRegistry.getInstance().register(idlingResource)
                     view.addOnLayoutChangeListener(changeListener)
-                    if (matcher.matches(view)) {
-                        matched = true
-                        idlingResourceCallback?.onTransitionToIdle()
-                    }
                     uiController.loopMainThreadUntilIdle()
                 } finally {
                     view.removeOnLayoutChangeListener(changeListener)
