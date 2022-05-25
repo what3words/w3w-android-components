@@ -41,11 +41,10 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
             .perform(waitUntilVisible(), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.holderClipToCountry))
-            .perform(waitUntilVisible(), scrollTo())
+            .perform(scrollTo())
 
         Espresso.onView(withId(R.id.textClipToCountry))
             .perform(
-                waitUntilVisible(),
                 click(),
                 typeTextIntoFocusedView(country),
                 closeSoftKeyboard()
@@ -53,7 +52,6 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
-                waitUntilVisible(),
                 scrollTo(),
                 click(),
                 replaceText(threeWordAddress),
@@ -87,13 +85,13 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
             .perform(waitUntilVisible(), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.holderClipToCountry))
-            .perform(waitUntilVisible(), scrollTo())
+            .perform(scrollTo())
 
         Espresso.onView(withId(R.id.textClipToCountry))
-            .perform(waitUntilVisible(), click(), replaceText(country), closeSoftKeyboard())
+            .perform(click(), typeTextIntoFocusedView(country), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
+            .perform(scrollTo(), click(), typeTextIntoFocusedView(threeWordAddress), closeSoftKeyboard())
 
         Espresso.onView(
             withId(

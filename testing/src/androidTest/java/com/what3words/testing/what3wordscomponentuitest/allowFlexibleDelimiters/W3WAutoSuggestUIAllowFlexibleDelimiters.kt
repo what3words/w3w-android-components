@@ -41,9 +41,8 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
-                waitUntilVisible(),
                 click(),
-                replaceText(spaceSeparatedThreeWordAddress),
+                typeTextIntoFocusedView(spaceSeparatedThreeWordAddress),
             )
 
         Espresso.onView(withId(R.id.correctionPicker))
@@ -59,7 +58,6 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
-                waitUntilVisible(),
                 scrollTo(),
                 click(),
                 replaceText(spaceSeparatedThreeWordAddress),
