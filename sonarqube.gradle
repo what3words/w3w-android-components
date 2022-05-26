@@ -2,9 +2,10 @@ apply plugin: "org.sonarqube"
 
 sonarqube {
     properties {
-        property "sonar.projectKey", "what3words_w3w-android-components"
-        property "sonar.organization", "what3words"
+        property "sonar.projectKey", "3wandroidcomponent"
+        property "sonar.organization", "3wtest"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.login", "c244c1325f2bd837d067cb08a9d70b1579ce34c8"
         property "sonar.tests", "src/test/java"
         property "sonar.test.inclusions", "**/*Test*/**"
         property "sonar.sourceEncoding", "UTF-8"

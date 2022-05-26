@@ -49,7 +49,7 @@ class W3WAutoSuggestUIClipToRussiaTests {
             .perform(
                 scrollTo(),
                 click(),
-                typeTextIntoFocusedView(threeWordAddress),
+                replaceText(threeWordAddress),
                 closeSoftKeyboard()
             )
 

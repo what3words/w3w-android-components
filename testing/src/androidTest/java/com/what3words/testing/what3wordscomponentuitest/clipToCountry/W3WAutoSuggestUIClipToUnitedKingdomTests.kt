@@ -91,7 +91,7 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
             .perform(click(), typeTextIntoFocusedView(country), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(scrollTo(), click(), typeTextIntoFocusedView(threeWordAddress), closeSoftKeyboard())
+            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
         Espresso.onView(
             withId(
