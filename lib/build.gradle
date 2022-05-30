@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'org.sonarqube' version '3.3'
     id 'maven-publish'
     id 'signing'
     id 'org.jetbrains.dokka' version '1.5.0'
@@ -11,7 +10,6 @@ def libVersion = findProperty('LIBRARY_VERSION') ? findProperty('LIBRARY_VERSION
 
 apply from: 'maven-push.gradle'
 apply from: '../jacoco.gradle'
-apply from: '../sonarqube.gradle'
 
 android {
     compileSdkVersion 31

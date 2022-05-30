@@ -22,6 +22,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import com.what3words.testing.what3wordscomponentuitest.utils.hasItemCountGreaterThanZero
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
+import org.junit.After
 
 
 @RunWith(AndroidJUnit4::class)

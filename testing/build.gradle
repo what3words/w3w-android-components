@@ -3,22 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-android'
     id 'jacoco'
-    id 'org.sonarqube' version '3.3'
 }
-
-sonarqube {
-    properties {
-        property "sonar.projectKey", "3wandroidcomponent"
-        property "sonar.organization", "3wtest"
-        property "sonar.host.url", "https://sonarcloud.io"
-        property "sonar.login", "c244c1325f2bd837d067cb08a9d70b1579ce34c8"
-        property "sonar.sourceEncoding", "UTF-8"
-        property "sonar.sources", "src/main/java"
-        property "sonar.java.coveragePlugin", "jacoco"
-        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/coverage/androidTest/debug/report.xml"
-    }
-}
-
 
 android {
     compileSdk 32
@@ -33,10 +18,6 @@ android {
         buildConfigField 'String', 'W3W_PRE_PROD_URL', findProperty('W3W_PRE_PROD_URL') ? "\"${findProperty('W3W_PRE_PROD_URL')}\"" : "\"PRE_PRO_URL_HERE\""
         buildConfigField 'String', 'W3W_API_KEY', findProperty('PRE_PROD_API_KEY') ? "\"${findProperty('PRE_PROD_API_KEY')}\"" : "\"YOUR_API_KEY_HERE\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        // The following argument makes the Android Test Orchestrator run its
-        // "pm clear" command after each test invocation. This command ensures
-        // that the app's state is completely cleared between tests.
-        //  testInstrumentationRunnerArguments clearPackageData: 'true'
     }
 
     testOptions {
