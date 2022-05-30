@@ -1,7 +1,6 @@
 package com.what3words.testing.what3wordscomponentuitest.allowFlexibleDelimiters
 
 
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.*

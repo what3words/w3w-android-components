@@ -20,7 +20,7 @@ jobs:
           restore-gradle-cache-prefix: v1a
       - android/run-tests:
           test-command: ./gradlew testing:jacocoTestReport
-          max-tries: 3
+          max-tries: 5
       - store_test_results:
           path: testing/build/outputs/androidTest-results
       - android/save-gradle-cache:

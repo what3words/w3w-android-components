@@ -18,6 +18,9 @@ android {
         buildConfigField 'String', 'W3W_PRE_PROD_URL', findProperty('W3W_PRE_PROD_URL') ? "\"${findProperty('W3W_PRE_PROD_URL')}\"" : "\"PRE_PRO_URL_HERE\""
         buildConfigField 'String', 'W3W_API_KEY', findProperty('PRE_PROD_API_KEY') ? "\"${findProperty('PRE_PROD_API_KEY')}\"" : "\"YOUR_API_KEY_HERE\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+       // testInstrumentationRunnerArguments clearPackageData: 'true'
+       // testInstrumentationRunnerArguments useTestStorageService: 'true'
     }
 
     testOptions {
