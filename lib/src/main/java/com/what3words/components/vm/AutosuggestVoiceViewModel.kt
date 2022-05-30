@@ -159,11 +159,9 @@ internal class AutosuggestVoiceViewModel(
                         )
                     )
                 }
-                if (it != null) {
-                    if ((System.currentTimeMillis() - oldTimestamp) > animationRefreshTime) {
-                        oldTimestamp = System.currentTimeMillis()
-                        _volume.emit(transform(it))
-                    }
+                if (it != null && (System.currentTimeMillis() - oldTimestamp) > animationRefreshTime) {
+                    oldTimestamp = System.currentTimeMillis()
+                    _volume.emit(transform(it))
                 }
             }
         }

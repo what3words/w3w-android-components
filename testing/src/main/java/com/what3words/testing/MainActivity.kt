@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.RadioButton
-import android.widget.Toast
 import autosuggestsample.util.addOnTextChangedListener
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -67,7 +66,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.checkboxCustomCorrectionPicker.setOnCheckedChangeListener { _, b ->
-            binding.suggestionEditText.customCorrectionPicker(if (b) binding.correctionPicker else null)
+            when (b) {
+                true -> binding.suggestionEditText.customCorrectionPicker(binding.correctionPicker)
+                false -> binding.suggestionEditText.customCorrectionPicker(null)
+            }
         }
 
         binding.textPlaceholder.setText(R.string.input_hint)
@@ -106,10 +108,14 @@ class MainActivity : AppCompatActivity() {
             val latLong = input.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
             val lat = latLong.getOrNull(0)?.toDoubleOrNull()
             val long = latLong.getOrNull(1)?.toDoubleOrNull()
-            if (lat != null && long != null) {
-                binding.suggestionEditText.focus(Coordinates(lat, long))
-            } else {
-                binding.suggestionEditText.focus(null)
+            when (lat != null && long != null) {
+                true -> binding.suggestionEditText.focus(
+                    Coordinates(
+                        lat,
+                        long
+                    )
+                )
+                false -> binding.suggestionEditText.focus(null)
             }
         }
 
@@ -119,10 +125,9 @@ class MainActivity : AppCompatActivity() {
             val lat = latLong.getOrNull(0)?.toDoubleOrNull()
             val long = latLong.getOrNull(1)?.toDoubleOrNull()
             val km = latLong.getOrNull(2)?.toDoubleOrNull()
-            if (lat != null && long != null) {
-                binding.suggestionEditText.clipToCircle(Coordinates(lat, long), km ?: 0.0)
-            } else {
-                binding.suggestionEditText.clipToCircle(null, null)
+            when (lat != null && long != null) {
+                true -> binding.suggestionEditText.clipToCircle(Coordinates(lat, long), km ?: 0.0)
+                false -> binding.suggestionEditText.clipToCircle(null, null)
             }
         }
 
@@ -133,15 +138,14 @@ class MainActivity : AppCompatActivity() {
             val swLong = latLong.getOrNull(1)?.toDoubleOrNull()
             val neLat = latLong.getOrNull(2)?.toDoubleOrNull()
             val neLong = latLong.getOrNull(3)?.toDoubleOrNull()
-            if (swLat != null && swLong != null && neLat != null && neLong != null) {
-                binding.suggestionEditText.clipToBoundingBox(
+            when (swLat != null && swLong != null && neLat != null && neLong != null) {
+                true -> binding.suggestionEditText.clipToBoundingBox(
                     BoundingBox(
                         Coordinates(swLat, swLong),
                         Coordinates(neLat, neLong)
                     )
                 )
-            } else {
-                binding.suggestionEditText.clipToBoundingBox(null)
+                false -> binding.suggestionEditText.clipToBoundingBox(null)
             }
         }
 
@@ -173,11 +177,9 @@ class MainActivity : AppCompatActivity() {
             val suggestionsCount = input.replace("\\s".toRegex(), "")
             val isValidInput = suggestionsCount.all { Character.isDigit(it) }
 
-            if (isValidInput) {
-                if (suggestionsCount.isNotBlank()) binding.suggestionEditText.nResults(
-                    suggestionsCount.toInt()
-                )
-            }
+            if (isValidInput && suggestionsCount.isNotBlank()) binding.suggestionEditText.nResults(
+                suggestionsCount.toInt()
+            )
         }
         setContentView(binding.root)
     }
