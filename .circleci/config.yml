@@ -115,7 +115,6 @@ workflows:
       - build-ui-test:
           name: build-run-UI-tests
       - build-test-sonar:
-          name: Build, run tests, upload to sonar
           requires: [ build-run-UI-tests ]
           context: SonarCloud
       - deploy-to-sonatype:
