@@ -57,6 +57,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
 
 /**
  * A [AppCompatEditText] to simplify the integration of what3words text and voice auto-suggest API in your app.
@@ -73,6 +74,10 @@ class W3WAutoSuggestEditText
     defStyleAttr
 ),
     OnGlobalLayoutListener {
+
+    companion object {
+        private val SESSION_ID = UUID.randomUUID().toString()
+    }
 
     private var sharedFlowJobs: Job? = null
     private var originalPaddingEnd: Int
@@ -817,7 +822,10 @@ class W3WAutoSuggestEditText
                 What3WordsV3(
                     key,
                     context,
-                    mapOf("X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})")
+                    mapOf(
+                        "X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})",
+                        "component_session_id" to SESSION_ID
+                    )
                 )
             )
         return this
@@ -841,7 +849,9 @@ class W3WAutoSuggestEditText
                     key,
                     endpoint,
                     context,
-                    headers
+                    headers.toMutableMap().apply {
+                        put("component_session_id", SESSION_ID)
+                    }
                 )
             )
         return this
@@ -868,7 +878,9 @@ class W3WAutoSuggestEditText
                     endpoint,
                     voiceEndpoint,
                     context,
-                    headers
+                    headers.toMutableMap().apply {
+                        put("component_session_id", SESSION_ID)
+                    }
                 )
             )
         return this

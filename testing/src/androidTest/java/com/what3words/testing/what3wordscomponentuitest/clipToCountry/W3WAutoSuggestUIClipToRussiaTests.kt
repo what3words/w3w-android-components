@@ -47,7 +47,6 @@ class W3WAutoSuggestUIClipToRussiaTests {
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
-                waitUntilVisible(),
                 scrollTo(),
                 click(),
                 replaceText(threeWordAddress),

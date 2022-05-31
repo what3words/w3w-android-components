@@ -22,6 +22,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import com.what3words.testing.what3wordscomponentuitest.utils.hasItemCountGreaterThanZero
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
+import org.junit.After
 
 
 @RunWith(AndroidJUnit4::class)
@@ -41,11 +42,10 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
             .perform(waitUntilVisible(), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.holderClipToCountry))
-            .perform(waitUntilVisible(), scrollTo())
+            .perform(scrollTo())
 
         Espresso.onView(withId(R.id.textClipToCountry))
             .perform(
-                waitUntilVisible(),
                 click(),
                 typeTextIntoFocusedView(country),
                 closeSoftKeyboard()
@@ -53,7 +53,6 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(
-                waitUntilVisible(),
                 scrollTo(),
                 click(),
                 replaceText(threeWordAddress),
@@ -87,13 +86,13 @@ class W3WAutoSuggestUIClipToUnitedKingdomTests {
             .perform(waitUntilVisible(), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.holderClipToCountry))
-            .perform(waitUntilVisible(), scrollTo())
+            .perform(scrollTo())
 
         Espresso.onView(withId(R.id.textClipToCountry))
-            .perform(waitUntilVisible(), click(), replaceText(country))
+            .perform(click(), typeTextIntoFocusedView(country), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.suggestionEditText))
-            .perform(waitUntilVisible(), scrollTo(), click(), replaceText(threeWordAddress))
+            .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
         Espresso.onView(
             withId(
