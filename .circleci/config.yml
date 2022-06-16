@@ -26,8 +26,9 @@ jobs:
       - android/save-gradle-cache:
           cache-prefix: v1a
   build-test-sonar:
-    docker:
-      - image: circleci/android:api-30
+    executor:
+      name: android/android-machine
+      resource-class: large
     steps:
       - checkout
       - restore_cache:
@@ -69,8 +70,9 @@ jobs:
       - store_artifacts:
           path: advanced-sample/build/outputs/apk/release
   deploy-to-sonatype:
-    docker:
-      - image: circleci/android:api-30
+    executor:
+      name: android/android-machine
+      resource-class: large
     steps:
       - checkout
       - restore_cache:
