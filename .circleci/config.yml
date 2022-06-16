@@ -121,7 +121,7 @@ workflows:
           name: Build, run tests, sonar and push to maven staging
           requires:
             - build-test-sonar
-          filters:
-            branches:
-              only:
-                - dev
+#          filters:
+#            branches:
+#              only:
+#                - dev

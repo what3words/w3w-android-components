@@ -4,6 +4,12 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         jcenter()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/comwhat3words-1230"
+        }
+        maven {
+            url "https://oss.sonatype.org/content/repositories/comwhat3words-1231"
+        }
     }
 }
 

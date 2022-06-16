@@ -1351,5 +1351,17 @@ class W3WAutoSuggestEditText
         return this
     }
 
+    /**
+     * Makes AutoSuggest prefer results on land to those in the sea.
+     * This setting is on by default. Use false to disable this setting and receive more suggestions in the sea.                                                                                                                                                                             t to keep any text user types, default is false, by default EditText will be cleared if not a valid 3 word address, set to true to ignore this default behaviour.
+     *
+     * @param isPreferred if true, autosuggest results will be restricted to land and vice-versa
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun setSuggestionWithCoordinates(suggestion: SuggestionWithCoordinates): W3WAutoSuggestEditText {
+        viewModel.onSuggestionSet(suggestion)
+        return this
+    }
+
     //endregion
 }
