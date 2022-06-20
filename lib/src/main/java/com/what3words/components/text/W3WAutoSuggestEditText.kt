@@ -79,6 +79,7 @@ class W3WAutoSuggestEditText
         private val SESSION_ID = UUID.randomUUID().toString()
     }
 
+    private var suggestionSetManually: Boolean = false
     private var sharedFlowJobs: Job? = null
     private var originalPaddingEnd: Int
     private var drawableStartCallback: (() -> Unit)? = null
@@ -631,8 +632,12 @@ class W3WAutoSuggestEditText
         } else {
             text = null
         }
-        oldCallback?.accept(suggestion?.backwardCompatible())
-        callback?.accept(suggestion)
+        if (!suggestionSetManually) {
+            oldCallback?.accept(suggestion?.backwardCompatible())
+            callback?.accept(suggestion)
+        } else {
+            suggestionSetManually = false
+        }
     }
     //endregion
 
@@ -1352,13 +1357,13 @@ class W3WAutoSuggestEditText
     }
 
     /**
-     * Makes AutoSuggest prefer results on land to those in the sea.
-     * This setting is on by default. Use false to disable this setting and receive more suggestions in the sea.                                                                                                                                                                             t to keep any text user types, default is false, by default EditText will be cleared if not a valid 3 word address, set to true to ignore this default behaviour.
+     * Allow suggestion to be set by one of our other components, i.e: map-component. This will make the integration between both easier making giving a way to select by search text/voice or map click.
      *
-     * @param isPreferred if true, autosuggest results will be restricted to land and vice-versa
+     * @param suggestion [SuggestionWithCoordinates] returned by other components, i.e.: map-components
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun setSuggestionWithCoordinates(suggestion: SuggestionWithCoordinates): W3WAutoSuggestEditText {
+        suggestionSetManually = true
         viewModel.onSuggestionSet(suggestion)
         return this
     }
