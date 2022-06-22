@@ -33,7 +33,7 @@ internal open class AutosuggestViewModel(
     var options: AutosuggestOptions = AutosuggestOptions()
 
     fun display(suggestionWithCoordinates: SuggestionWithCoordinates) {
-        io(dispatchers) { _selectedSuggestion.emit(suggestionWithCoordinates) }
+        main(dispatchers) { _selectedSuggestion.emit(suggestionWithCoordinates) }
     }
 
     fun onSuggestionClicked(rawQuery: String, suggestion: Suggestion?, returnCoordinates: Boolean) {
