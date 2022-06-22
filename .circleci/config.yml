@@ -100,14 +100,6 @@ jobs:
           name: Publish to Maven
           command: ./gradlew assemble publish
 workflows:
-  build-test-sonar:
-    jobs:
-      - build-ui-test:
-          name: build-run-UI-tests
-      - build-test-sonar:
-          name: Build, run tests, upload to sonar
-          requires: [ build-run-UI-tests ]
-          context: SonarCloud
   build-test-sonar-publish:
     jobs:
       - build-ui-test:
