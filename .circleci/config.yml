@@ -102,24 +102,24 @@ jobs:
 workflows:
   build-test-sonar:
     jobs:
-#      - build-ui-test:
-#          name: build-run-UI-tests
+      - build-ui-test:
+          name: build-run-UI-tests
       - build-test-sonar:
           name: Build, run tests, upload to sonar
-         # requires: [ build-run-UI-tests ]
+          requires: [ build-run-UI-tests ]
           context: SonarCloud
   build-test-sonar-publish:
     jobs:
-#      - build-ui-test:
-#          name: build-run-UI-tests
+      - build-ui-test:
+          name: build-run-UI-tests
       - build-test-sonar:
-         # requires: [ build-run-UI-tests ]
+          requires: [ build-run-UI-tests ]
           context: SonarCloud
       - deploy-to-sonatype:
           name: Build, run tests, sonar and push to maven staging
           requires:
             - build-test-sonar
-#          filters:
-#            branches:
-#              only:
-#                - dev
+          filters:
+            branches:
+              only:
+                - dev

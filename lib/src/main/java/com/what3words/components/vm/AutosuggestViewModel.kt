@@ -32,7 +32,7 @@ internal open class AutosuggestViewModel(
 
     var options: AutosuggestOptions = AutosuggestOptions()
 
-    fun onSuggestionSet(suggestionWithCoordinates: SuggestionWithCoordinates) {
+    fun display(suggestionWithCoordinates: SuggestionWithCoordinates) {
         io(dispatchers) { _selectedSuggestion.emit(suggestionWithCoordinates) }
     }
 
