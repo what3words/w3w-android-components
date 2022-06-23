@@ -26,10 +26,9 @@ jobs:
       - android/save-gradle-cache:
           cache-prefix: v1a
   build-test-sonar:
-    docker:
-      - image: circleci/android:api-30
-    environment:
-      JVM_OPTS: -Xmx3200m
+    executor:
+      name: android/android-machine
+      resource-class: large
     steps:
       - checkout
       - restore_cache:
@@ -71,10 +70,9 @@ jobs:
       - store_artifacts:
           path: advanced-sample/build/outputs/apk/release
   deploy-to-sonatype:
-    docker:
-      - image: circleci/android:api-30
-    environment:
-      JVM_OPTS: -Xmx3200m
+    executor:
+      name: android/android-machine
+      resource-class: large
     steps:
       - checkout
       - restore_cache:
@@ -102,14 +100,6 @@ jobs:
           name: Publish to Maven
           command: ./gradlew assemble publish
 workflows:
-  build-test-sonar:
-    jobs:
-      - build-ui-test:
-          name: build-run-UI-tests
-      - build-test-sonar:
-          name: Build, run tests, upload to sonar
-          requires: [ build-run-UI-tests ]
-          context: SonarCloud
   build-test-sonar-publish:
     jobs:
       - build-ui-test:

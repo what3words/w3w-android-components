@@ -79,6 +79,7 @@ class W3WAutoSuggestEditText
         private val SESSION_ID = UUID.randomUUID().toString()
     }
 
+    private var isDisplayOnly: Boolean = false
     private var sharedFlowJobs: Job? = null
     private var originalPaddingEnd: Int
     private var drawableStartCallback: (() -> Unit)? = null
@@ -631,8 +632,12 @@ class W3WAutoSuggestEditText
         } else {
             text = null
         }
-        oldCallback?.accept(suggestion?.backwardCompatible())
-        callback?.accept(suggestion)
+        if (!isDisplayOnly) {
+            oldCallback?.accept(suggestion?.backwardCompatible())
+            callback?.accept(suggestion)
+        } else {
+            isDisplayOnly = false
+        }
     }
     //endregion
 
@@ -1348,6 +1353,18 @@ class W3WAutoSuggestEditText
      */
     fun preferLand(isPreferred: Boolean): W3WAutoSuggestEditText {
         viewModel.options.preferLand = isPreferred
+        return this
+    }
+
+    /**
+     * Display a suggestion selected by one of our other components, i.e: map-component. This will make the integration between both easier making giving a way to select by search text/voice or map click.
+     *
+     * @param suggestion [SuggestionWithCoordinates] returned by other components, i.e.: map-components
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun display(suggestion: SuggestionWithCoordinates): W3WAutoSuggestEditText {
+        isDisplayOnly = true
+        viewModel.display(suggestion)
         return this
     }
 

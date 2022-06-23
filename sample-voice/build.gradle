@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId "com.what3words.sample_voice"
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode 5
         versionName "1.4"
         multiDexEnabled true
@@ -49,11 +49,11 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.material:material:1.6.1'
 
-    //implementation "com.what3words:w3w-android-components:2.1.1"
-    implementation "com.what3words:w3w-android-wrapper:3.1.15"
+    //implementation "com.what3words:w3w-android-components:3.0.2"
+    implementation "com.what3words:w3w-android-wrapper:3.1.18"
     implementation project(":lib")
 }
