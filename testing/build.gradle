@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-android'
+    id 'jacoco'
 }
 
 android {
@@ -16,19 +18,31 @@ android {
         buildConfigField 'String', 'W3W_PRE_PROD_URL', findProperty('W3W_PRE_PROD_URL') ? "\"${findProperty('W3W_PRE_PROD_URL')}\"" : "\"PRE_PRO_URL_HERE\""
         buildConfigField 'String', 'W3W_API_KEY', findProperty('PRE_PROD_API_KEY') ? "\"${findProperty('PRE_PROD_API_KEY')}\"" : "\"YOUR_API_KEY_HERE\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        // The following argument makes the Android Test Orchestrator run its
-        // "pm clear" command after each test invocation. This command ensures
-        // that the app's state is completely cleared between tests.
-        testInstrumentationRunnerArguments clearPackageData: 'true'
+
+       // testInstrumentationRunnerArguments clearPackageData: 'true'
+       // testInstrumentationRunnerArguments useTestStorageService: 'true'
     }
 
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        unitTests.all {
+            jacoco {
+                includeNoLocationClasses = true
+            }
+        }
+        unitTests.returnDefaultValues = true
+    }
+
+    jacoco {
+        version = '0.8.7'
     }
 
     buildTypes {
+        debug {
+            testCoverageEnabled = true
+        }
         release {
-            minifyEnabled  true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -46,18 +60,55 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.test.ext:junit-ktx:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha05'
-    implementation 'androidx.test.espresso:espresso-contrib:3.5.0-alpha05'
-    androidTestImplementation 'androidx.test:rules:1.4.1-alpha05'
-    androidTestImplementation 'androidx.test:runner:1.4.1'
+
+    implementation 'androidx.test.espresso:espresso-contrib:3.4.0'
+    debugImplementation 'androidx.test:rules:1.4.0'
+    debugImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    debugImplementation 'androidx.test:runner:1.4.0'
     androidTestUtil 'androidx.test:orchestrator:1.4.1'
+
     //w3w auto suggest
-    // implementation "com.what3words:w3w-android-components:2.1.1"
-    implementation "com.what3words:w3w-android-wrapper:3.1.17"
+    //implementation "com.what3words:w3w-android-components:3.0.2"
+    implementation "com.what3words:w3w-android-wrapper:3.1.18"
     implementation project(":lib")
+
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['createDebugCoverageReport']) {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports for Debug build"
+
+    reports {
+        xml.enabled(true)
+        html.enabled(true)
+    }
+
+    def fileFilter = ['android/databinding/**/*.class',
+                      '**/*databinding.*',
+                      '**/android/databinding/*',
+                      '**/androidx/databinding/*',
+                      '**/BR.*',
+                      '**/R.class',
+                      '**/R$*.class',
+                      '**/BuildConfig.*',
+                      '**/Manifest*.*',
+                      '**/*Test*.*',
+                      'android/**/*.*',
+                      'androidx/**/*.*',
+                      'autosuggestsample/**/*.*']
+    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories.setFrom(files([mainSrc]))
+    classDirectories.setFrom(files([debugTree]))
+    executionData.setFrom(fileTree(dir: "$buildDir", includes: [
+            "jacoco/testDebugUnitTest.exec",
+            "outputs/code-coverage/connected/*coverage.ec"
+    ]))
 
 }

@@ -76,7 +76,7 @@ class W3WAutoSuggestUIClipToBoundingBoxTests {
     @Test
     fun testTextSearch_clipToBoundingBoxDoesNotContainAddressOutsideBox() {
         Espresso.onView(withId(R.id.main))
-            .perform(waitUntilVisible())
+            .perform(waitUntilVisible(), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.holderClipToBoundingBox))
             .perform(waitUntilVisible(), scrollTo())

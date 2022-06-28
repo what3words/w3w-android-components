@@ -1,13 +1,34 @@
-version: '2.1'
+version: 2.1
 orbs:
   gradle: circleci/gradle@2.2.0
+  android: circleci/android@1.0
 
 jobs:
+  build-ui-test:
+    executor:
+      name: android/android-machine
+      resource-class: large
+    steps:
+      - checkout
+      - android/create-avd:
+          avd-name: testDevice
+          system-image: system-images;android-30;google_apis;x86
+          install: true
+      - android/start-emulator:
+          avd-name: testDevice
+          no-window: true
+          restore-gradle-cache-prefix: v1a
+      - android/run-tests:
+          test-command: ./gradlew testing:jacocoTestReport
+          max-tries: 5
+      - store_test_results:
+          path: testing/build/outputs/androidTest-results
+      - android/save-gradle-cache:
+          cache-prefix: v1a
   build-test-sonar:
-    docker:
-      - image: circleci/android:api-30
-    environment:
-      JVM_OPTS: -Xmx3200m
+    executor:
+      name: android/android-machine
+      resource-class: large
     steps:
       - checkout
       - restore_cache:
@@ -27,7 +48,10 @@ jobs:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "lib/build.gradle" }}
       - run:
           name: Run Tests
-          command: ./gradlew lib:testDebugUnitTest jacocoTestReport sonarqube
+          command: ./gradlew lib:testDebugUnitTest lib:jacocoTestReport
+      - run:
+          name: Upload Coverage Report to SonarCloud
+          command: ./gradlew sonarqube
       - run:
           name: Assemble sample release build
           command: ./gradlew sample:assembleRelease
@@ -46,10 +70,9 @@ jobs:
       - store_artifacts:
           path: advanced-sample/build/outputs/apk/release
   deploy-to-sonatype:
-    docker:
-      - image: circleci/android:api-30
-    environment:
-      JVM_OPTS: -Xmx3200m
+    executor:
+      name: android/android-machine
+      resource-class: large
     steps:
       - checkout
       - restore_cache:
@@ -77,14 +100,12 @@ jobs:
           name: Publish to Maven
           command: ./gradlew assemble publish
 workflows:
-  build-test-sonar:
-    jobs:
-      - build-test-sonar:
-          name: Build, run tests, upload to sonar
-          context: SonarCloud
   build-test-sonar-publish:
     jobs:
+      - build-ui-test:
+          name: build-run-UI-tests
       - build-test-sonar:
+          requires: [ build-run-UI-tests ]
           context: SonarCloud
       - deploy-to-sonatype:
           name: Build, run tests, sonar and push to maven staging

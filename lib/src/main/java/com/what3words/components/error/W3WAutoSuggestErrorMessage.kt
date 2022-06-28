@@ -6,7 +6,6 @@ import android.os.Looper
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.what3words.components.R
-import com.what3words.components.picker.W3WAutoSuggestPicker
 
 /**
  * A [AppCompatTextView] styled and ready to show error messages.

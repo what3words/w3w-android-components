@@ -57,6 +57,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
 
 /**
  * A [AppCompatEditText] to simplify the integration of what3words text and voice auto-suggest API in your app.
@@ -74,6 +75,11 @@ class W3WAutoSuggestEditText
 ),
     OnGlobalLayoutListener {
 
+    companion object {
+        private val SESSION_ID = UUID.randomUUID().toString()
+    }
+
+    private var isDisplayOnly: Boolean = false
     private var sharedFlowJobs: Job? = null
     private var originalPaddingEnd: Int
     private var drawableStartCallback: (() -> Unit)? = null
@@ -626,8 +632,12 @@ class W3WAutoSuggestEditText
         } else {
             text = null
         }
-        oldCallback?.accept(suggestion?.backwardCompatible())
-        callback?.accept(suggestion)
+        if (!isDisplayOnly) {
+            oldCallback?.accept(suggestion?.backwardCompatible())
+            callback?.accept(suggestion)
+        } else {
+            isDisplayOnly = false
+        }
     }
     //endregion
 
@@ -817,7 +827,10 @@ class W3WAutoSuggestEditText
                 What3WordsV3(
                     key,
                     context,
-                    mapOf("X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})")
+                    mapOf(
+                        "X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})",
+                        "component_session_id" to SESSION_ID
+                    )
                 )
             )
         return this
@@ -841,7 +854,9 @@ class W3WAutoSuggestEditText
                     key,
                     endpoint,
                     context,
-                    headers
+                    headers.toMutableMap().apply {
+                        put("component_session_id", SESSION_ID)
+                    }
                 )
             )
         return this
@@ -868,7 +883,9 @@ class W3WAutoSuggestEditText
                     endpoint,
                     voiceEndpoint,
                     context,
-                    headers
+                    headers.toMutableMap().apply {
+                        put("component_session_id", SESSION_ID)
+                    }
                 )
             )
         return this
@@ -1336,6 +1353,18 @@ class W3WAutoSuggestEditText
      */
     fun preferLand(isPreferred: Boolean): W3WAutoSuggestEditText {
         viewModel.options.preferLand = isPreferred
+        return this
+    }
+
+    /**
+     * Display a suggestion selected by one of our other components, i.e: map-component. This will make the integration between both easier making giving a way to select by search text/voice or map click.
+     *
+     * @param suggestion [SuggestionWithCoordinates] returned by other components, i.e.: map-components
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun display(suggestion: SuggestionWithCoordinates): W3WAutoSuggestEditText {
+        isDisplayOnly = true
+        viewModel.display(suggestion)
         return this
     }
 
