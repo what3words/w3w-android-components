@@ -30,7 +30,7 @@
         app:layout_constraintEnd_toEndOf="@id/w3wLogo"
         app:layout_constraintStart_toStartOf="@id/w3wLogo"
         app:layout_constraintTop_toTopOf="@id/w3wLogo"
-        app:layout_constraintWidth_percent="0.44" />
+        app:layout_constraintWidth_percent="0.04" />
 
     <ImageView
         android:id="@+id/midCircleView"
@@ -43,7 +43,7 @@
         app:layout_constraintEnd_toEndOf="@id/w3wLogo"
         app:layout_constraintStart_toStartOf="@id/w3wLogo"
         app:layout_constraintTop_toTopOf="@id/w3wLogo"
-        app:layout_constraintWidth_percent="0.48" />
+        app:layout_constraintWidth_percent="0.08" />
 
     <ImageView
         android:id="@+id/outerCircleView"
@@ -56,7 +56,7 @@
         app:layout_constraintEnd_toEndOf="@id/w3wLogo"
         app:layout_constraintStart_toStartOf="@id/w3wLogo"
         app:layout_constraintTop_toTopOf="@id/w3wLogo"
-        app:layout_constraintWidth_percent="0.52" />
+        app:layout_constraintWidth_percent="0.12" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"
@@ -71,6 +71,6 @@
         app:layout_constraintWidth_percent="0.4"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/lf20_5onlrrsf" />
+        app:lottie_rawRes="@raw/lf30_mu04sekt" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
