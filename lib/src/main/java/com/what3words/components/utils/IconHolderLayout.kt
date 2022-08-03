@@ -142,7 +142,7 @@ internal class IconHolderLayout
                 .options(options)
                 .returnCoordinates(returnCoordinates)
                 .voiceLanguage(voiceLanguage)
-                .animationEnabled(false)
+                .animationEnabled(true)
                 .start()
         } else {
             setIsVoiceRunning(false)
