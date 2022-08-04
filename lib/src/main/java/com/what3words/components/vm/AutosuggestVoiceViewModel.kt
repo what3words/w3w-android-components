@@ -8,7 +8,6 @@ import com.what3words.components.models.VoiceAutosuggestManager
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.utils.io
 import com.what3words.components.utils.main
-import com.what3words.components.utils.transform
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
@@ -161,7 +160,7 @@ internal class AutosuggestVoiceViewModel(
                 }
                 if (it != null && (System.currentTimeMillis() - oldTimestamp) > animationRefreshTime) {
                     oldTimestamp = System.currentTimeMillis()
-                    _volume.emit(transform(it))
+                    _volume.emit(it)
                 }
             }
         }

@@ -74,7 +74,7 @@ dependencies {
 
     //w3w auto suggest
     //implementation "com.what3words:w3w-android-components:3.0.2"
-    implementation "com.what3words:w3w-android-wrapper:3.1.18"
+    implementation "com.what3words:w3w-android-wrapper:3.1.19"
     implementation project(":lib")
 
 }

@@ -46,6 +46,7 @@ import com.what3words.components.utils.VoicePulseLayoutFullScreen
 import com.what3words.components.utils.W3WSuggestion
 import com.what3words.components.utils.backwardCompatible
 import com.what3words.components.vm.AutosuggestTextViewModel
+import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
@@ -1365,6 +1366,11 @@ class W3WAutoSuggestEditText
     fun display(suggestion: SuggestionWithCoordinates): W3WAutoSuggestEditText {
         isDisplayOnly = true
         viewModel.display(suggestion)
+        return this
+    }
+
+    fun options(options: AutosuggestOptions): W3WAutoSuggestEditText {
+        viewModel.options = options
         return this
     }
 

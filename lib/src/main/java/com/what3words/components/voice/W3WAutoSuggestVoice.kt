@@ -76,6 +76,7 @@ class W3WAutoSuggestVoice
     private lateinit var voicePulseEndListener: Animator.AnimatorListener
 
     private var errorMessageText: String? = null
+    private var animationEnabled: Boolean = true
     private var callback: Consumer<List<SuggestionWithCoordinates>>? =
         null
     private var internalCallback: Consumer<List<Suggestion>>? =
@@ -153,15 +154,22 @@ class W3WAutoSuggestVoice
                     height = resources.getDimensionPixelSize(R.dimen.voice_button_min_width)
                 }
             }
+
             initialSizeList = arrayListOf(
                 binding.innerCircleView.measuredWidth,
                 binding.midCircleView.measuredWidth,
                 binding.outerCircleView.measuredWidth
             )
+
+            val inner =
+                binding.w3wLogo.measuredWidth.toFloat() + (binding.w3wLogo.measuredWidth * 0.15f)
+            val mid = inner + (inner * 0.33f)
+            val outer = mid + (mid * 0.33f)
+
             pulseAnimator = PulseAnimator(
-                binding.innerCircleView.measuredWidth * 1.18f,
-                binding.midCircleView.measuredWidth * 1.32f,
-                binding.outerCircleView.measuredWidth * 1.48f,
+                inner,
+                mid,
+                outer,
                 binding.innerCircleView,
                 binding.midCircleView,
                 binding.outerCircleView,
@@ -278,7 +286,9 @@ class W3WAutoSuggestVoice
     }
 
     private fun volumeObserver(volume: Float?) {
-        volume?.let { onSignalUpdate(it) }
+        volume?.let {
+            if (animationEnabled) onSignalUpdate(it)
+        }
     }
 
     //endregion
@@ -681,6 +691,19 @@ class W3WAutoSuggestVoice
      */
     fun onResults(callback: Consumer<List<SuggestionWithCoordinates>>): W3WAutoSuggestVoice {
         this.callback = callback
+        // this.suggestionsPicker = null
+        return this
+    }
+
+
+    /**
+     * onResults without [W3WAutoSuggestPicker] will provide a list of 3 word addresses found using our voice API.
+     *
+     * @param callback will return a list of [SuggestionWithCoordinates].
+     * @return same [W3WAutoSuggestVoice] instance
+     */
+    internal fun animationEnabled(enabled: Boolean): W3WAutoSuggestVoice {
+        this.animationEnabled = enabled
         // this.suggestionsPicker = null
         return this
     }

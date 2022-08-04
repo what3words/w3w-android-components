@@ -4,8 +4,10 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.res.Resources
+import android.util.Log
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
+import kotlin.math.min
 
 internal class PulseAnimator(
     innerMaxSizePixel: Float,
@@ -72,15 +74,9 @@ internal class PulseAnimator(
 
     private fun getTargetSize(signalStrength: Float, index: Int): Int {
         if (initialSizeList.isEmpty()) return 0
-        val targetSize = initialSizeList[index] * signalStrength
-        if (targetSize > maxSizeList[index]) {
-            return maxSizeList[index].toInt()
-        } else {
-            if (targetSize < initialSizeList[index]) {
-                return initialSizeList[index]
-            }
-        }
-        return (initialSizeList[index] * signalStrength).toInt()
+        val minSize = initialSizeList[index].toFloat()
+        val maxSize = maxSizeList[index]
+        return getScaledSignal(signalStrength, minSize, maxSize).toInt()
     }
 
     fun getInitialSize() = initialSizeList
@@ -110,54 +106,11 @@ internal class PulseAnimator(
     }
 }
 
-internal object DisplayMetricsConverter {
-
-    /**
-     * This method converts dp unit to equivalent pixels, depending on device density.
-     *
-     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
-     * @param context Context to get resources and device specific display metrics
-     * @return A float value to represent px equivalent to dp depending on device density
-     */
-    fun convertDpToPixel(dp: Float): Float {
-        return dp * Resources.getSystem().displayMetrics.density
-    }
-
-    /**
-     * This method converts device specific pixels to density independent pixels.
-     *
-     * @param px A value in px (pixels) unit. Which we need to convert into db
-     * @param context Context to get resources and device specific display metrics
-     * @return A float value to represent dp equivalent to px value
-     */
-    fun convertPixelsToDp(px: Float): Float {
-        return px / Resources.getSystem().displayMetrics.density
-    }
-}
 
 internal fun getScaledSignal(
     valueIn: Float,
     minScaled: Float,
     maxScaled: Float
 ): Float {
-    return (maxScaled - minScaled) * (valueIn - MIN_SIGNAL_LEVEL) / (MAX_SIGNAL_LEVEL - MIN_SIGNAL_LEVEL) + minScaled
+    return (maxScaled - minScaled) * (valueIn - 0.0f) / (1.0f - 0.0f) + minScaled
 }
-
-internal fun transform(
-    dBValue: Float,
-    minScaled: Float = MIN_SCALED_LEVEL,
-    maxScaled: Float = MAX_SCALED_LEVEL
-) =
-    when {
-        dBValue < MIN_SIGNAL_LEVEL -> minScaled
-        dBValue > MAX_SIGNAL_LEVEL -> maxScaled
-        getScaledSignal(dBValue, minScaled, maxScaled) < minScaled -> minScaled
-        getScaledSignal(dBValue, minScaled, maxScaled) > maxScaled -> maxScaled
-        else -> getScaledSignal(dBValue, minScaled, maxScaled)
-    }
-
-private val MIN_SIGNAL_LEVEL = 0.0f
-private val MAX_SIGNAL_LEVEL = 1.0f
-
-private val MIN_SCALED_LEVEL = 0f
-private val MAX_SCALED_LEVEL = 2.25f
