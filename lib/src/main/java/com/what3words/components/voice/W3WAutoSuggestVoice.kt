@@ -4,6 +4,7 @@ import android.Manifest
 import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.res.ColorStateList
 import android.media.AudioFormat
 import android.media.MediaRecorder
 import android.os.Build
@@ -13,10 +14,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.ImageView
+import androidx.annotation.ColorRes
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import androidx.core.view.updateLayoutParams
+import androidx.core.widget.ImageViewCompat
 import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
@@ -61,6 +66,7 @@ class W3WAutoSuggestVoice
 ),
     OnGlobalLayoutListener {
 
+    private var voiceIconsColor: Int = 0
     private var sharedFlowJobs: Job? = null
 
     private var isVoiceRunning: Boolean = false
@@ -114,6 +120,13 @@ class W3WAutoSuggestVoice
                         ?: "en"
                 displayUnits =
                     DisplayUnits.values()[getInt(R.styleable.W3WAutoSuggestEditText_displayUnit, 0)]
+                voiceIconsColor = getColor(
+                    R.styleable.W3WAutoSuggestEditText_voiceIconsColor,
+                    ContextCompat.getColor(
+                        context,
+                        R.color.voiceInactiveColor
+                    )
+                )
             } finally {
                 recycle()
             }
@@ -142,6 +155,14 @@ class W3WAutoSuggestVoice
         // Add a viewTreeObserver to obtain the initial size of the circle overlays
         viewTreeObserver.addOnGlobalLayoutListener(this)
         viewModel.manager = AutosuggestApiManager(What3WordsV3("", context))
+    }
+
+    fun ImageView.setTint(color: Int?) {
+        if (color == null) {
+            ImageViewCompat.setImageTintList(this, null)
+        } else {
+            ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(color))
+        }
     }
 
     override fun onGlobalLayout() {
@@ -370,19 +391,13 @@ class W3WAutoSuggestVoice
         binding.animationView.visibility = INVISIBLE
         if (isVoiceRunning) {
             handler?.removeCallbacks(changeBackIcon)
+            binding.w3wLogo.setTint(null)
             binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_active)
             View.VISIBLE
         } else {
             resetLayout()
-            if (withError) {
-                binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_error)
-                handler?.postDelayed(
-                    changeBackIcon,
-                    5000
-                ) ?: run {
-                    changeBackIcon.run()
-                }
-            } else binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive)
+            binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive)
+            binding.w3wLogo.setTint(voiceIconsColor)
             View.INVISIBLE
         }.let {
             binding.innerCircleView.visibility = it
