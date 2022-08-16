@@ -2,7 +2,7 @@
 
 An Android library to use the [what3words v3 API autosuggest](https://developer.what3words.com/public-api/docs#autosuggest).
 
-<img src="https://github.com/what3words/w3w-android-components/blob/master/assets/components-1.gif" width=30% height=30%>
+<img src="https://github.com/what3words/w3w-android-components/blob/dev/assets/components-1.gif" width=30% height=30%>
 
 To obtain an API key, please visit [https://what3words.com/select-plan](https://what3words.com/select-plan) and sign up for an account.
 
