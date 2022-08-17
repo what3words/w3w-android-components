@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/autosuggestVoiceHolder"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
@@ -24,7 +24,6 @@
         android:src="@drawable/ic_mic"
         app:layout_constraintBottom_toBottomOf="@+id/autosuggestVoiceHolder"
         app:layout_constraintEnd_toEndOf="@+id/autosuggestVoiceHolder"
-        app:layout_constraintHeight_percent="0.6"
         app:layout_constraintStart_toStartOf="@+id/autosuggestVoiceHolder"
         app:layout_constraintTop_toTopOf="@+id/autosuggestVoiceHolder" />
 

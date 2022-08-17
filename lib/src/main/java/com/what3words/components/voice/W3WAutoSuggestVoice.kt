@@ -4,6 +4,7 @@ import android.Manifest
 import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.res.ColorStateList
 import android.media.AudioFormat
 import android.media.MediaRecorder
 import android.os.Build
@@ -13,10 +14,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.ImageView
+import androidx.annotation.ColorRes
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import androidx.core.view.updateLayoutParams
+import androidx.core.widget.ImageViewCompat
 import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
@@ -61,6 +66,7 @@ class W3WAutoSuggestVoice
 ),
     OnGlobalLayoutListener {
 
+    private var voiceIconsColor: Int = 0
     private var sharedFlowJobs: Job? = null
 
     private var isVoiceRunning: Boolean = false
@@ -76,6 +82,7 @@ class W3WAutoSuggestVoice
     private lateinit var voicePulseEndListener: Animator.AnimatorListener
 
     private var errorMessageText: String? = null
+    private var animationEnabled: Boolean = true
     private var callback: Consumer<List<SuggestionWithCoordinates>>? =
         null
     private var internalCallback: Consumer<List<Suggestion>>? =
@@ -113,6 +120,13 @@ class W3WAutoSuggestVoice
                         ?: "en"
                 displayUnits =
                     DisplayUnits.values()[getInt(R.styleable.W3WAutoSuggestEditText_displayUnit, 0)]
+                voiceIconsColor = getColor(
+                    R.styleable.W3WAutoSuggestEditText_voiceIconsColor,
+                    ContextCompat.getColor(
+                        context,
+                        R.color.voiceInactiveColor
+                    )
+                )
             } finally {
                 recycle()
             }
@@ -143,6 +157,14 @@ class W3WAutoSuggestVoice
         viewModel.manager = AutosuggestApiManager(What3WordsV3("", context))
     }
 
+    fun ImageView.setTint(color: Int?) {
+        if (color == null) {
+            ImageViewCompat.setImageTintList(this, null)
+        } else {
+            ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(color))
+        }
+    }
+
     override fun onGlobalLayout() {
         if (!isRendered && binding.innerCircleView.measuredWidth != 0) {
             isRendered = true
@@ -153,15 +175,22 @@ class W3WAutoSuggestVoice
                     height = resources.getDimensionPixelSize(R.dimen.voice_button_min_width)
                 }
             }
+
             initialSizeList = arrayListOf(
                 binding.innerCircleView.measuredWidth,
                 binding.midCircleView.measuredWidth,
                 binding.outerCircleView.measuredWidth
             )
+
+            val inner =
+                binding.w3wLogo.measuredWidth.toFloat() + (binding.w3wLogo.measuredWidth * 0.15f)
+            val mid = inner + (inner * 0.33f)
+            val outer = mid + (mid * 0.33f)
+
             pulseAnimator = PulseAnimator(
-                binding.innerCircleView.measuredWidth * 1.18f,
-                binding.midCircleView.measuredWidth * 1.32f,
-                binding.outerCircleView.measuredWidth * 1.48f,
+                inner,
+                mid,
+                outer,
                 binding.innerCircleView,
                 binding.midCircleView,
                 binding.outerCircleView,
@@ -278,7 +307,9 @@ class W3WAutoSuggestVoice
     }
 
     private fun volumeObserver(volume: Float?) {
-        volume?.let { onSignalUpdate(it) }
+        volume?.let {
+            if (animationEnabled) onSignalUpdate(it)
+        }
     }
 
     //endregion
@@ -360,19 +391,13 @@ class W3WAutoSuggestVoice
         binding.animationView.visibility = INVISIBLE
         if (isVoiceRunning) {
             handler?.removeCallbacks(changeBackIcon)
+            binding.w3wLogo.setTint(null)
             binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_active)
             View.VISIBLE
         } else {
             resetLayout()
-            if (withError) {
-                binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_error)
-                handler?.postDelayed(
-                    changeBackIcon,
-                    5000
-                ) ?: run {
-                    changeBackIcon.run()
-                }
-            } else binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive)
+            binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive)
+            binding.w3wLogo.setTint(voiceIconsColor)
             View.INVISIBLE
         }.let {
             binding.innerCircleView.visibility = it
@@ -681,6 +706,19 @@ class W3WAutoSuggestVoice
      */
     fun onResults(callback: Consumer<List<SuggestionWithCoordinates>>): W3WAutoSuggestVoice {
         this.callback = callback
+        // this.suggestionsPicker = null
+        return this
+    }
+
+
+    /**
+     * onResults without [W3WAutoSuggestPicker] will provide a list of 3 word addresses found using our voice API.
+     *
+     * @param callback will return a list of [SuggestionWithCoordinates].
+     * @return same [W3WAutoSuggestVoice] instance
+     */
+    internal fun animationEnabled(enabled: Boolean): W3WAutoSuggestVoice {
+        this.animationEnabled = enabled
         // this.suggestionsPicker = null
         return this
     }

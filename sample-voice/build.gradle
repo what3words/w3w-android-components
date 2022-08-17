@@ -54,6 +54,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.6.1'
 
     //implementation "com.what3words:w3w-android-components:3.0.2"
-    implementation "com.what3words:w3w-android-wrapper:3.1.18"
+    implementation "com.what3words:w3w-android-wrapper:3.1.20"
     implementation project(":lib")
 }
