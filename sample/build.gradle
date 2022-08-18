@@ -19,8 +19,8 @@ android {
         applicationId "com.what3words.autosuggest"
         minSdkVersion 23
         targetSdkVersion 31
-        versionCode 18
-        versionName "1.17"
+        versionCode 310
+        versionName "3.1.0"
         multiDexEnabled true
         buildConfigField 'String', 'W3W_API_KEY', findProperty('W3W_API_KEY') ? "\"${findProperty('W3W_API_KEY')}\"" : "\"YOUR_API_KEY_HERE\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
