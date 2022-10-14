@@ -14,9 +14,12 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintLayoutScope
 import androidx.constraintlayout.compose.Dimension
 import com.what3words.components.R
+import com.what3words.components.compose.components.W3WAutoSuggestPicker
+import com.what3words.components.compose.components.W3WCorrectionPicker
+import com.what3words.components.compose.components.W3WErrorMessage
+import com.what3words.components.compose.components.W3WInvalidAddressMessage
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
-import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
@@ -39,7 +42,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     state: W3WAutoSuggestTextFieldState,
     ref: ConstrainedLayoutReference,
     micIcon: Drawable? = null,
-    suggestionPicker: W3WAutoSuggestPicker? = null,
+    suggestionPicker: com.what3words.components.picker.W3WAutoSuggestPicker? = null,
     errorView: AppCompatTextView? = null,
     invalidAddressMessageView: AppCompatTextView? = null,
     correctionPicker: W3WAutoSuggestCorrectionPicker? = null,
@@ -132,7 +135,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     // invalid address message view
     if (invalidAddressMessageView == null) {
         val defaultInvalidAddressMessageView = createRef()
-        W3WInvalidAddressMessageView(state = state,
+        W3WInvalidAddressMessage(state = state,
             modifier = Modifier
                 .zIndex(Float.MAX_VALUE)
                 .constrainAs(defaultInvalidAddressMessageView) {
