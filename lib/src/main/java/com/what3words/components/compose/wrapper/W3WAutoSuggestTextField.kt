@@ -18,6 +18,10 @@ import com.what3words.components.compose.components.W3WAutoSuggestPicker
 import com.what3words.components.compose.components.W3WCorrectionPicker
 import com.what3words.components.compose.components.W3WErrorMessage
 import com.what3words.components.compose.components.W3WInvalidAddressMessage
+import com.what3words.components.compose.utils.AttachCorrectionPicker
+import com.what3words.components.compose.utils.AttachErrorView
+import com.what3words.components.compose.utils.AttachSuggestionPickerAndInvalidMessageView
+import com.what3words.components.compose.utils.ConfigureAutoSuggest
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
