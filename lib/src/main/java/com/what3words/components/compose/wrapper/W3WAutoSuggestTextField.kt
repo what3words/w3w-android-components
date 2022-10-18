@@ -6,6 +6,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
@@ -103,7 +104,9 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                 },
         )
     } else {
-        state.defaultSuggestionPicker = suggestionPicker
+        LaunchedEffect(key1 = true, block = {
+            state.defaultSuggestionPicker = suggestionPicker
+        })
     }
 
     // error view
@@ -118,7 +121,9 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                     width = Dimension.fillToConstraints
                 })
     } else {
-        state.defaultErrorView = errorView
+        LaunchedEffect(key1 = true, block = {
+            state.defaultErrorView = errorView
+        })
     }
 
     // correction picker
@@ -133,7 +138,9 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                     width = Dimension.fillToConstraints
                 })
     } else {
-        state.defaultCorrectionPicker = correctionPicker
+        LaunchedEffect(key1 = true, block = {
+            state.defaultCorrectionPicker = correctionPicker
+        })
     }
 
     // invalid address message view
@@ -148,6 +155,8 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                     width = Dimension.fillToConstraints
                 })
     } else {
-        state.defaultInvalidAddressMessageView = invalidAddressMessageView
+        LaunchedEffect(key1 = true, block = {
+            state.defaultInvalidAddressMessageView = invalidAddressMessageView
+        })
     }
 }
