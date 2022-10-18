@@ -3,7 +3,12 @@ package com.what3words.components.compose.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextFieldState
+import com.what3words.components.text.W3WAutoSuggestEditText
 
+/**
+ * a composable that observes changes to the state attributes in the [W3WAutoSuggestTextFieldState]
+ * and uses those values to configure the internal [W3WAutoSuggestEditText]
+ * **/
 @Composable
 internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
     LaunchedEffect(
