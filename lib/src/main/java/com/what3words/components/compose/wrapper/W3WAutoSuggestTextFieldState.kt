@@ -13,9 +13,11 @@ import com.what3words.components.models.VoiceScreenType
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
+import com.what3words.javawrapper.request.AutosuggestInputType
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
+import com.what3words.javawrapper.request.SourceApi
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
 
 
@@ -81,36 +83,6 @@ class W3WAutoSuggestTextFieldState(
     var searchFlowEnabled: Boolean by mutableStateOf(value = false)
 
     /**
-     * see [W3WAutoSuggestEditText.nResults]
-     **/
-    var nResults: Int by mutableStateOf(value = 3)
-
-    /**
-     * see [W3WAutoSuggestEditText.focus]
-     * **/
-    var focus: Coordinates? by mutableStateOf(value = null)
-
-    /**
-     * see [W3WAutoSuggestEditText.nFocusResults]
-     * **/
-    var nFocusResults: Int by mutableStateOf(value = nResults)
-
-    /**
-     * see [W3WAutoSuggestEditText.clipToCountry]
-     * **/
-    var clipToCountry: List<String> by mutableStateOf(value = listOf())
-
-    /**
-     * see [W3WAutoSuggestEditText.clipToPolygon]
-     * **/
-    var clipToPolygon: List<Coordinates> by mutableStateOf(value = listOf())
-
-    /**
-     * see [W3WAutoSuggestEditText.clipToBoundingBox]
-     * **/
-    var clipToBoundingBox: BoundingBox? by mutableStateOf(value = null)
-
-    /**
      * see [W3WAutoSuggestEditText.returnCoordinates]
      * **/
     var returnCoordinates: Boolean by mutableStateOf(value = false)
@@ -130,10 +102,6 @@ class W3WAutoSuggestTextFieldState(
      * **/
     var hideSelectedIcon: Boolean by mutableStateOf(value = false)
 
-    /**
-     * see [W3WAutoSuggestEditText.preferLand]
-     * **/
-    var preferLand: Boolean by mutableStateOf(value = true)
 
     /**
      * used to save text state for [W3WAutoSuggestEditText] in the case of a recomposition/configuration change
@@ -141,21 +109,12 @@ class W3WAutoSuggestTextFieldState(
     internal var defaultText: String? = null
 
     internal var options: AutosuggestOptions? by mutableStateOf(value = null)
-    internal var clipToCircle: Pair<Coordinates?, Double?>? by mutableStateOf(value = null)
     internal var toggleVoice: Boolean by mutableStateOf(value = false)
     internal var errorMessage: String? by mutableStateOf(value = null)
     internal var correctionMessage: String? by mutableStateOf(value = null)
     internal var displayUnit: DisplayUnits? by mutableStateOf(value = null)
     internal var display: SuggestionWithCoordinates? by mutableStateOf(value = null)
     internal var voicePlaceHolder: String? by mutableStateOf(value = null)
-
-
-    /**
-     * see [W3WAutoSuggestEditText.clipToCircle]
-     * **/
-    fun clipToCircle(centre: Coordinates?, radius: Double?) {
-        this.clipToCircle = Pair(first = centre, second = radius)
-    }
 
     /**
      * see [W3WAutoSuggestEditText.toggleVoice]
@@ -216,45 +175,80 @@ class W3WAutoSuggestTextFieldState(
                     it.allowFlexibleDelimiters,
                     it.allowInvalid3wa,
                     it.searchFlowEnabled,
-                    it.nResults,
-                    it.nFocusResults,
-                    it.clipToCountry,
                     it.returnCoordinates,
                     it.voiceEnabled,
                     it.invalidSelectionMessage,
                     it.hideSelectedIcon,
-                    it.preferLand,
                     it.toggleVoice,
                     it.errorMessage,
                     it.correctionMessage,
                     it.displayUnit,
                     it.voicePlaceHolder,
-                    if (it.internalW3WAutoSuggestEditText != null) it.internalW3WAutoSuggestEditText!!.text.toString() else null
+                    if (it.internalW3WAutoSuggestEditText != null) it.internalW3WAutoSuggestEditText!!.text.toString() else null,
+                    it.options?.language,
+                    it.options?.nResults,
+                    it.options?.nFocusResults,
+                    it.options?.clipToCountry,
+                    it.options?.preferLand,
+                    it.options?.inputType,
+                    it.options?.clipToCircleRadius,
+                    it.options?.source,
+                    it.options?.clipToCircle?.lat,
+                    it.options?.clipToCircle?.lng,
+                    it.options?.clipToBoundingBox?.sw?.lat,
+                    it.options?.clipToBoundingBox?.sw?.lng,
+                    it.options?.clipToBoundingBox?.ne?.lat,
+                    it.options?.clipToBoundingBox?.ne?.lng,
+                    it.options?.focus?.lat,
+                    it.options?.focus?.lng
                 )
             },
-            restore = {
+            restore = { savedList: List<Any?> ->
                 W3WAutoSuggestTextFieldState(
-                    apiKey = it[0] as String,
-                    voiceEnabledByDefault = it[1] as Boolean,
-                    voiceScreenType = it[2] as VoiceScreenType
+                    apiKey = savedList[0] as String,
+                    voiceEnabledByDefault = savedList[1] as Boolean,
+                    voiceScreenType = savedList[2] as VoiceScreenType
                 ).apply {
-                    allowFlexibleDelimiters = it[3] as Boolean
-                    allowInvalid3wa = it[4] as Boolean
-                    searchFlowEnabled = it[5] as Boolean
-                    nResults = it[6] as Int
-                    nFocusResults = it[7] as Int
-                    clipToCountry = it[8] as List<String>
-                    returnCoordinates = it[9] as Boolean
-                    voiceEnabled = it[10] as Boolean
-                    invalidSelectionMessage = it[11] as String?
-                    hideSelectedIcon = it[12] as Boolean
-                    preferLand = it[13] as Boolean
-                    toggleVoice = it[14] as Boolean
-                    errorMessage = it[15] as String?
-                    correctionMessage = it[16] as String?
-                    displayUnit = it[17] as DisplayUnits?
-                    voicePlaceHolder = it[18] as String?
-                    defaultText = it[19] as String?
+                    allowFlexibleDelimiters = savedList[3] as Boolean
+                    allowInvalid3wa = savedList[4] as Boolean
+                    searchFlowEnabled = savedList[5] as Boolean
+                    returnCoordinates = savedList[6] as Boolean
+                    voiceEnabled = savedList[7] as Boolean
+                    invalidSelectionMessage = savedList[8] as String?
+                    hideSelectedIcon = savedList[9] as Boolean
+                    toggleVoice = savedList[10] as Boolean
+                    errorMessage = savedList[11] as String?
+                    correctionMessage = savedList[12] as String?
+                    displayUnit = savedList[13] as DisplayUnits?
+                    voicePlaceHolder = savedList[14] as String?
+                    defaultText = savedList[15] as String?
+
+                    val options: AutosuggestOptions = AutosuggestOptions()
+                    (savedList[16] as String?)?.let { options.language = it }
+                    (savedList[17] as Int?)?.let { options.nResults = it }
+                    (savedList[18] as Int?)?.let { options.nFocusResults = it }
+                    (savedList[19] as List<String>?)?.let { options.clipToCountry = it }
+                    (savedList[20] as Boolean?)?.let { options.preferLand = it }
+                    (savedList[21] as AutosuggestInputType?)?.let { options.inputType = it }
+                    (savedList[22] as Double?)?.let { options.clipToCircleRadius = it }
+                    (savedList[23] as SourceApi?)?.let { options.source = it }
+                    if (savedList[24] != null && savedList[25] != null) {
+                        options.clipToCircle =
+                            Coordinates(savedList[24] as Double, savedList[25] as Double)
+                    }
+                    if (savedList[25] != null && savedList[26] != null && savedList[27] != null && savedList[28] != null) {
+                        options.clipToBoundingBox = BoundingBox(
+                            Coordinates(
+                                savedList[25] as Double,
+                                savedList[26] as Double
+                            ), Coordinates(savedList[27] as Double, savedList[28] as Double)
+                        )
+                    }
+                    if (savedList[29] != null && savedList[30] != null) {
+                        options.focus =
+                            Coordinates(savedList[29] as Double, savedList[30] as Double)
+                    }
+                    options(options = options)
                 }
             }
         )
