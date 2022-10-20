@@ -12,7 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.dimensionResource
+import com.what3words.compose.sample.R
 
 @Composable
 fun LabelCheckBox(
@@ -30,8 +31,8 @@ fun LabelCheckBox(
     ) {
         Checkbox(
             checked = checked, onCheckedChange = onCheckedChange,
+            modifier = Modifier.size(size = dimensionResource(id = R.dimen.normal_200)),
             interactionSource = interactionSource,
-            colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colors.primary)
         )
         Text(text = text, style = MaterialTheme.typography.body2,
             modifier = Modifier.clickable(
