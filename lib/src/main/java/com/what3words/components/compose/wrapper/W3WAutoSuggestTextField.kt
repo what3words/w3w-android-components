@@ -33,12 +33,12 @@ import com.what3words.javawrapper.response.SuggestionWithCoordinates
  * @param modifier Modifier to be applied to the W3WAutoSuggestEditText.
  * @param state the state object to be used to set-up the W3WAutoSuggestEditText.
  * @param ref Represents the [ConstrainedLayoutReference] that was used to constrain the [W3WAutoSuggestTextField] within a [ConstraintLayout].
+ * @param onSuggestionWithCoordinates will return the [SuggestionWithCoordinates] picked by the end-user, coordinates will be null if returnCoordinates = false.
  * @param micIcon drawable to use as Mic Icon
  * @param suggestionPicker instance of [W3WAutoSuggestPicker] to replace the default picker
  * @param errorView custom error view can be any [AppCompatTextView] or [W3WAutoSuggestErrorMessage], default view will show below [W3WAutoSuggestEditText] (this will only show end-user error friendly message or message provided on [W3WAutoSuggestEditText.errorMessage])
  * @param invalidAddressMessageView custom invalid address view can be any [AppCompatTextView] or [W3WAutoSuggestErrorMessage], default view will show below [W3WAutoSuggestEditText]
  * @param correctionPicker custom correct picker view.
- * @param onSuggestionWithCoordinates will return the [SuggestionWithCoordinates] picked by the end-user, coordinates will be null if returnCoordinates = false.
  * @param onError will provide any errors [APIResponse.What3WordsError] that might happen during the API call
  * **/
 @Composable
@@ -46,12 +46,12 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     modifier: Modifier,
     state: W3WAutoSuggestTextFieldState,
     ref: ConstrainedLayoutReference,
+    onSuggestionWithCoordinates: ((SuggestionWithCoordinates?) -> Unit),
     micIcon: Drawable? = null,
     suggestionPicker: com.what3words.components.picker.W3WAutoSuggestPicker? = null,
     errorView: AppCompatTextView? = null,
     invalidAddressMessageView: AppCompatTextView? = null,
     correctionPicker: W3WAutoSuggestCorrectionPicker? = null,
-    onSuggestionWithCoordinates: ((SuggestionWithCoordinates?) -> Unit)? = null,
     onError: ((APIResponse.What3WordsError) -> Unit)? = null,
 ) {
     // setUp auto suggest functions
@@ -71,6 +71,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
         .fillMaxWidth(),
         factory = {
             FrameLayout(it).apply {
+                state.micIcon = micIcon
                 state.internalW3WAutoSuggestEditText =
                     W3WAutoSuggestEditText(
                         ContextThemeWrapper(
@@ -81,7 +82,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                         .apiKey(key = state.apiKey)
                         .voiceEnabled(
                             enabled = state.voiceEnabledByDefault,
-                            type = state.voiceScreenType,
+                            type = state.voiceScreenTypeByDefault,
                             micIcon = micIcon
                         ).apply {
                             if (!state.defaultText.isNullOrEmpty()) this.setText(state.defaultText!!)

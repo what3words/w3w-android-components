@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">compose-sample</string>
+    <string name="txt_label_allow_flexible_delimiters">allow flexible delimiters</string>
+    <string name="txt_label_allow_invalid_3wa">allow invalid 3wa</string>
+    <string name="txt_label_prefer_land">prefer land</string>
+    <string name="txt_label_return_coordinates">return coordinates</string>
+    <string name="txt_label_customize_the_autosuggest_component">Customize the Autosuggest Component</string>
+    <string name="txt_label_welcome_to_autosuggest_sample">Welcome to Autosuggest sample in Jetpack Compose</string>
+    <string name="suggestion_info_placeholder">words: %1$s\ncountry: %2$s\nnear: %3$s\ndistance: %4$s\nlatitude: %5$s\nlongitude: %6$s</string>
 </resources>

@@ -27,6 +27,8 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
         state.invalidSelectionMessage,
         state.voiceEnabled,
         state.returnCoordinates,
+        state.voiceScreenType,
+        state.micIcon,
         block = {
             state.internalW3WAutoSuggestEditText?.apply {
                 allowFlexibleDelimiters(isAllowed = state.allowFlexibleDelimiters)
@@ -34,7 +36,11 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                 allowInvalid3wa(isAllowed = state.allowInvalid3wa)
                 hideSelectedIcon(b = state.hideSelectedIcon)
                 returnCoordinates(enabled = state.returnCoordinates)
-                voiceEnabled(enabled = state.voiceEnabled)
+                voiceEnabled(
+                    enabled = state.voiceEnabled,
+                    type = state.voiceScreenType,
+                    micIcon = state.micIcon
+                )
                 hideSelectedIcon(b = state.hideSelectedIcon)
                 state.invalidSelectionMessage?.let { invalidSelectionMessage(message = state.invalidSelectionMessage!!) }
                 state.correctionMessage?.let { correctionMessage(message = state.correctionMessage!!) }

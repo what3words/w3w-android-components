@@ -20,6 +20,7 @@ import com.what3words.compose.sample.ui.components.LabelCheckBox
 import com.what3words.compose.sample.ui.components.MultiLabelTextField
 import com.what3words.compose.sample.ui.components.RadioGroup
 import com.what3words.compose.sample.ui.components.RadioGroupState
+import com.what3words.compose.sample.ui.screen.W3WTextFieldInConstraintLayoutScreen
 import com.what3words.compose.sample.ui.theme.What3wordscomponentsTheme
 
 class MainActivity : ComponentActivity() {
@@ -32,34 +33,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    val radioGroupState = remember {
-                        RadioGroupState(
-                            items = listOf(
-                                "disable voice",
-                                "enable voice with inline animation",
-                                "enable voice with pop-up animation"
-                            ),
-                            selectedItemIndex = 0
-                        )
-                    }
-                    RadioGroup(state = radioGroupState)
-
+                    W3WTextFieldInConstraintLayoutScreen()
                 }
             }
         }
-    }
-}
-
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    What3wordscomponentsTheme {
-        Greeting("Android")
     }
 }

@@ -1,5 +1,6 @@
 package com.what3words.components.compose.wrapper
 
+import android.graphics.drawable.Drawable
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,7 +42,7 @@ fun rememberW3WAutoSuggestTextFieldState(
         W3WAutoSuggestTextFieldState(
             apiKey = apiKey,
             voiceEnabledByDefault = voiceEnabledByDefault,
-            voiceScreenType = voiceScreenType
+            voiceScreenTypeByDefault = voiceScreenType
         )
     }
 }
@@ -51,12 +52,12 @@ fun rememberW3WAutoSuggestTextFieldState(
  *
  * @property apiKey your API key from what3words developer dashboard
  * @property voiceEnabledByDefault if voice should be enabled
- * @property voiceScreenType can choose among [VoiceScreenType.Fullscreen], [VoiceScreenType.AnimatedPopup] and [VoiceScreenType.Inline]
+ * @property voiceScreenTypeByDefault can choose among [VoiceScreenType.Fullscreen], [VoiceScreenType.AnimatedPopup] and [VoiceScreenType.Inline]
  */
 class W3WAutoSuggestTextFieldState(
     internal val apiKey: String,
     internal val voiceEnabledByDefault: Boolean = false,
-    internal val voiceScreenType: VoiceScreenType = VoiceScreenType.Fullscreen
+    internal val voiceScreenTypeByDefault: VoiceScreenType = VoiceScreenType.Fullscreen
 ) {
     // ui variables
     internal var internalW3WAutoSuggestEditText: W3WAutoSuggestEditText? by mutableStateOf(value = null)
@@ -88,11 +89,6 @@ class W3WAutoSuggestTextFieldState(
     var returnCoordinates: Boolean by mutableStateOf(value = false)
 
     /**
-     * see [W3WAutoSuggestEditText.voiceEnabled]
-     * **/
-    var voiceEnabled: Boolean by mutableStateOf(value = voiceEnabledByDefault)
-
-    /**
      * see [W3WAutoSuggestEditText.invalidSelectionMessageText]
      * **/
     var invalidSelectionMessage: String? by mutableStateOf(value = null)
@@ -115,6 +111,9 @@ class W3WAutoSuggestTextFieldState(
     internal var displayUnit: DisplayUnits? by mutableStateOf(value = null)
     internal var display: SuggestionWithCoordinates? by mutableStateOf(value = null)
     internal var voicePlaceHolder: String? by mutableStateOf(value = null)
+    internal var voiceEnabled: Boolean by mutableStateOf(value = voiceEnabledByDefault)
+    internal var voiceScreenType: VoiceScreenType by mutableStateOf(voiceScreenTypeByDefault)
+    internal var micIcon: Drawable? by mutableStateOf(null)
 
     /**
      * see [W3WAutoSuggestEditText.toggleVoice]
@@ -165,6 +164,19 @@ class W3WAutoSuggestTextFieldState(
         this.voicePlaceHolder = placeholder
     }
 
+    /**
+     * see [W3WAutoSuggestEditText.voiceEnabled]
+     * **/
+    fun voiceEnabled(
+        enabled: Boolean,
+        type: VoiceScreenType = VoiceScreenType.Fullscreen,
+        micIcon: Drawable? = null
+    ) {
+        this.voiceEnabled = enabled
+        this.voiceScreenType = type
+        this.micIcon = micIcon
+    }
+
 
     internal companion object {
         val Saver: Saver<W3WAutoSuggestTextFieldState, Any> = mapSaver(
@@ -172,7 +184,7 @@ class W3WAutoSuggestTextFieldState(
                 mapOf(
                     Keys.API_KEY to it.apiKey,
                     Keys.VOICE_ENABLED_BY_DEFAULT to it.voiceEnabledByDefault,
-                    Keys.VOICE_SCREEN_TYPE to it.voiceScreenType,
+                    Keys.VOICE_SCREEN_TYPE_BY_DEFAULT to it.voiceScreenTypeByDefault,
                     Keys.ALLOW_FLEXIBLE_DELIMITERS to it.allowFlexibleDelimiters,
                     Keys.ALLOW_INVALID_3WA to it.allowInvalid3wa,
                     Keys.SEARCH_FLOW_ENABLED to it.searchFlowEnabled,
@@ -185,6 +197,7 @@ class W3WAutoSuggestTextFieldState(
                     Keys.CORRECTION_MESSAGE to it.correctionMessage,
                     Keys.DISPLAY_UNIT to it.displayUnit,
                     Keys.VOICE_PLACEHOLDER to it.voicePlaceHolder,
+                    Keys.VOICE_SCREEN_TYPE to it.voiceScreenType,
                     Keys.DEFAULT_TEXT to if (it.internalW3WAutoSuggestEditText != null) it.internalW3WAutoSuggestEditText!!.text.toString() else null,
                     Keys.AutoSuggestOptionsKey.LANGUAGE to it.options?.language,
                     Keys.AutoSuggestOptionsKey.N_RESULTS to it.options?.nResults,
@@ -209,7 +222,7 @@ class W3WAutoSuggestTextFieldState(
                 W3WAutoSuggestTextFieldState(
                     apiKey = savedMap[Keys.API_KEY] as String,
                     voiceEnabledByDefault = savedMap[Keys.VOICE_ENABLED_BY_DEFAULT] as Boolean,
-                    voiceScreenType = savedMap[Keys.VOICE_SCREEN_TYPE] as VoiceScreenType
+                    voiceScreenTypeByDefault = savedMap[Keys.VOICE_SCREEN_TYPE_BY_DEFAULT] as VoiceScreenType
                 ).apply {
                     allowFlexibleDelimiters = savedMap[Keys.ALLOW_FLEXIBLE_DELIMITERS] as Boolean
                     allowInvalid3wa = savedMap[Keys.ALLOW_INVALID_3WA] as Boolean
@@ -224,6 +237,7 @@ class W3WAutoSuggestTextFieldState(
                     displayUnit = savedMap[Keys.DISPLAY_UNIT] as DisplayUnits?
                     voicePlaceHolder = savedMap[Keys.VOICE_PLACEHOLDER] as String?
                     defaultText = savedMap[Keys.DEFAULT_TEXT] as String
+                    voiceScreenType = savedMap[Keys.VOICE_SCREEN_TYPE] as VoiceScreenType
 
                     val options: AutosuggestOptions = AutosuggestOptions()
                     (savedMap[Keys.AutoSuggestOptionsKey.LANGUAGE] as String?)?.let {
@@ -284,7 +298,7 @@ class W3WAutoSuggestTextFieldState(
         private object Keys {
             const val API_KEY = "apiKey"
             const val VOICE_ENABLED_BY_DEFAULT = "voiceEnabledByDefault"
-            const val VOICE_SCREEN_TYPE = "voiceScreenType"
+            const val VOICE_SCREEN_TYPE_BY_DEFAULT = "voiceScreenTypeByDefault"
             const val ALLOW_FLEXIBLE_DELIMITERS = "allowFlexibleDelimiters"
             const val ALLOW_INVALID_3WA = "allowInvalid3WordsAddress"
             const val SEARCH_FLOW_ENABLED = "searchFlowEnabled"
@@ -298,6 +312,7 @@ class W3WAutoSuggestTextFieldState(
             const val DISPLAY_UNIT = "displayUnit"
             const val VOICE_PLACEHOLDER = "voicePlaceHolder"
             const val DEFAULT_TEXT = "editTextText"
+            const val VOICE_SCREEN_TYPE = "voiceScreenType"
 
             // keys for attributes in AutoSuggestOptions
             object AutoSuggestOptionsKey {
@@ -312,9 +327,9 @@ class W3WAutoSuggestTextFieldState(
                 const val CLIP_TO_CIRCLE_LAT = "clipToCircleLat"
                 const val CLIP_TO_CIRCLE_LNG = "clipToCircleLng"
                 const val CLIP_TO_BOUNDING_BOX_SW_LAT = "clipToBoundingBoxSWLat"
-                const val CLIP_TO_BOUNDING_BOX_SW_LNG = "clipToBoundingBoxSWLNG"
-                const val CLIP_TO_BOUNDING_BOX_NE_LAT = "clipToBoundingBoxNELAT"
-                const val CLIP_TO_BOUNDING_BOX_NE_LNG = "clipToBoundingBoxNELNG"
+                const val CLIP_TO_BOUNDING_BOX_SW_LNG = "clipToBoundingBoxSWLng"
+                const val CLIP_TO_BOUNDING_BOX_NE_LAT = "clipToBoundingBoxNELat"
+                const val CLIP_TO_BOUNDING_BOX_NE_LNG = "clipToBoundingBoxNELng"
                 const val FOCUS_LAT = "focusLat"
                 const val FOCUS_LNG = "focusLng"
             }
