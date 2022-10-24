@@ -1,5 +1,6 @@
 package com.what3words.components.compose.utils
 
+import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextFieldState
@@ -48,17 +49,20 @@ internal fun AttachSuggestionPickerAndInvalidMessageView(
     onSuggestionWithCoordinates: ((SuggestionWithCoordinates?) -> Unit)?
 ) {
     LaunchedEffect(
-        key1 = state.defaultSuggestionPicker,
-        key2 = state.defaultInvalidAddressMessageView,
-        key3 = state.internalW3WAutoSuggestEditText,
+        state.defaultSuggestionPicker,
+        state.defaultInvalidAddressMessageView,
+        state.internalW3WAutoSuggestEditText,
+        state.customSuggestionPicker,
         block = {
-            if (state.defaultSuggestionPicker != null || state.defaultInvalidAddressMessageView != null) {
+            if (state.defaultSuggestionPicker != null || state.defaultInvalidAddressMessageView != null || state.customSuggestionPicker != null) {
                 state.internalW3WAutoSuggestEditText?.onSuggestionSelected(
-                    picker = state.defaultSuggestionPicker,
+                    picker = state.customSuggestionPicker ?: state.defaultSuggestionPicker,
                     invalidAddressMessageView = state.defaultInvalidAddressMessageView
                 ) {
                     onSuggestionWithCoordinates?.invoke(it)
                 }
+                if (state.customSuggestionPicker != null) state.defaultSuggestionPicker?.visibility =
+                    View.GONE
             }
         })
 }

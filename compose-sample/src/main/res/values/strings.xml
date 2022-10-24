@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">compose-sample</string>
+    <string name="txt_label_focus">focus, i.e: 51.508354, -0.12549861</string>
+    <string name="txt_label_focus_info">Comma separated lat/lng of point to focus on. Example value:51.521251,-0.203586</string>
+    <string name="txt_label_clip_to_country">clip to country</string>
+    <string name="txt_label_clip_to_country_info">Confine results to a given country or comma separated list of countries. Example value: GB,US</string>
+    <string name="txt_label_use_custom_picker">use custom picker</string>
     <string name="txt_label_allow_flexible_delimiters">allow flexible delimiters</string>
     <string name="txt_label_allow_invalid_3wa">allow invalid 3wa</string>
     <string name="txt_label_prefer_land">prefer land</string>

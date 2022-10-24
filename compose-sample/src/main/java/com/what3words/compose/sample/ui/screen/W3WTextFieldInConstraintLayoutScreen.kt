@@ -6,27 +6,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextField
 import com.what3words.components.compose.wrapper.rememberW3WAutoSuggestTextFieldState
+import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.compose.sample.BuildConfig
 import com.what3words.compose.sample.R
+import com.what3words.compose.sample.databinding.CustomSuggestionPickerBinding
 
 /**
  * A jetpack compose screen that's intends to be replica of the W3WAutoSuggestComponent Sample(view-specific) app.
@@ -37,7 +40,10 @@ fun W3WTextFieldInConstraintLayoutScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val selectedInfo: MutableState<String?> = remember { mutableStateOf(null) }
+    var selectedInfo: String? by remember { mutableStateOf(null) }
+    var customPicker: W3WAutoSuggestPicker? by remember { mutableStateOf(value = null) }
+    val customizeAutoSuggestSettingsScreenState: CustomizeAutoSuggestSettingsScreenState =
+        remember { CustomizeAutoSuggestSettingsScreenState() }
 
     ConstraintLayout(
         modifier = modifier
@@ -46,41 +52,39 @@ fun W3WTextFieldInConstraintLayoutScreen(
             .verticalScroll(state = rememberScrollState())
             .padding(horizontal = dimensionResource(id = R.dimen.normal_100))
     ) {
-        val (headerTxt, w3wTextField, selectedInfoTxt, settingsColumn) = createRefs()
+        val (headerTxtRef, w3wTextFieldRef, selectedInfoTxtRef, settingsColumnRef, customPickerRef) = createRefs()
 
         // welcome header
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                text = stringResource(R.string.txt_label_welcome_to_autosuggest_sample),
-                modifier = Modifier
-                    .padding(
-                        top = dimensionResource(id = R.dimen.normal_125),
-                        bottom = dimensionResource(
-                            id = R.dimen.small_25
-                        )
+        Text(
+            text = stringResource(id = R.string.txt_label_welcome_to_autosuggest_sample),
+            modifier = Modifier
+                .padding(
+                    top = dimensionResource(id = R.dimen.normal_125),
+                    bottom = dimensionResource(
+                        id = R.dimen.small_25
                     )
-                    .constrainAs(headerTxt) {
-                        linkTo(start = parent.start, end = parent.end)
-                        top.linkTo(anchor = parent.top)
-                        width = Dimension.fillToConstraints
-                    },
-                style = MaterialTheme.typography.body2
-            )
-        }
+                )
+                .constrainAs(ref = headerTxtRef) {
+                    linkTo(start = parent.start, end = parent.end)
+                    top.linkTo(anchor = parent.top)
+                    width = Dimension.fillToConstraints
+                },
+            style = MaterialTheme.typography.body2.copy(color = LocalContentColor.current.copy(alpha = 0.5f))
+        )
 
         //  what3words autosuggest text component for compose
         val w3wTextFieldState = rememberW3WAutoSuggestTextFieldState(apiKey = BuildConfig.W3W_API_KEY)
 
         W3WAutoSuggestTextField(
-            modifier = Modifier.constrainAs(w3wTextField) {
+            modifier = Modifier.constrainAs(ref = w3wTextFieldRef) {
                 linkTo(start = parent.start, end = parent.end)
-                top.linkTo(anchor = headerTxt.bottom)
+                top.linkTo(anchor = headerTxtRef.bottom)
             },
             state = w3wTextFieldState,
-            ref = w3wTextField,
+            ref = w3wTextFieldRef,
             onSuggestionWithCoordinates = {
                 if (it != null) {
-                    selectedInfo.value = context.resources.getString(
+                    selectedInfo = context.resources.getString(
                         R.string.suggestion_info_placeholder,
                         it.words,
                         it.country,
@@ -90,36 +94,51 @@ fun W3WTextFieldInConstraintLayoutScreen(
                         it.coordinates?.lng.toString()
                     )
                 } else {
-                    selectedInfo.value = ""
+                    selectedInfo = ""
                 }
             }
         )
 
         // selected address info text
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                text = selectedInfo.value ?: "",
-                modifier = Modifier
-                    .defaultMinSize(minHeight = dimensionResource(id = R.dimen.large_200))
-                    .constrainAs(selectedInfoTxt) {
-                        linkTo(start = parent.start, end = parent.end)
-                        top.linkTo(w3wTextField.bottom)
-                        width = Dimension.fillToConstraints
-                    },
-                fontWeight = FontWeight.Bold
-            )
-        }
+        Text(
+            text = selectedInfo ?: "",
+            modifier = Modifier
+                .defaultMinSize(minHeight = dimensionResource(id = R.dimen.large_200))
+                .constrainAs(ref = selectedInfoTxtRef) {
+                    linkTo(start = parent.start, end = parent.end)
+                    top.linkTo(w3wTextFieldRef.bottom)
+                    width = Dimension.fillToConstraints
+                },
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.body1.copy(color = LocalContentColor.current.copy(alpha = 0.7f))
+        )
+
 
         // group of components to configure the settings of the auto suggest edit text
         CustomizeAutoSuggestSettingsScreen(
             autoSuggestTextFieldState = w3wTextFieldState,
+            state = customizeAutoSuggestSettingsScreenState,
             modifier = Modifier
                 .padding(top = dimensionResource(id = R.dimen.normal_200))
-                .constrainAs(settingsColumn) {
+                .constrainAs(ref = settingsColumnRef) {
                     linkTo(start = parent.start, end = parent.end)
-                    linkTo(top = selectedInfoTxt.bottom, bottom = parent.bottom)
+                    linkTo(top = selectedInfoTxtRef.bottom, bottom = parent.bottom)
                     height = Dimension.fillToConstraints
                 }
         )
+
+        // custom autosuggest picker
+        if (customizeAutoSuggestSettingsScreenState.useCustomPicker) {
+            AndroidViewBinding(factory = CustomSuggestionPickerBinding::inflate,
+                modifier = Modifier.constrainAs(ref = customPickerRef) {
+                    linkTo(start = w3wTextFieldRef.start, end = w3wTextFieldRef.end)
+                    top.linkTo(anchor = w3wTextFieldRef.bottom, margin = 10.dp)
+                }, update = {
+                    customPicker = suggestionPicker
+                    w3wTextFieldState.customSuggestionPicker = customPicker
+                })
+        } else {
+            w3wTextFieldState.customSuggestionPicker = null
+        }
     }
 }
