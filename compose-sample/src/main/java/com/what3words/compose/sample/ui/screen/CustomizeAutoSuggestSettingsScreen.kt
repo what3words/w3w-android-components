@@ -27,8 +27,9 @@ import com.what3words.javawrapper.request.Coordinates
 
 
 class CustomizeAutoSuggestSettingsScreenState() {
-    // use custom picker
-    var useCustomPicker: Boolean by mutableStateOf(value = false)
+    var useCustomSuggestionPicker: Boolean by mutableStateOf(value = false)
+
+    var useCustomCorrectionPicker: Boolean by mutableStateOf(value = false)
 
     var clipToCountry: String by mutableStateOf(value = "")
 
@@ -118,11 +119,21 @@ fun CustomizeAutoSuggestSettingsScreen(
         // use custom picker
         LabelCheckBox(
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
-            checked = state.useCustomPicker,
+            checked = state.useCustomSuggestionPicker,
             onCheckedChange = {
-                state.useCustomPicker = it
+                state.useCustomSuggestionPicker = it
             },
             text = stringResource(id = R.string.txt_label_use_custom_picker)
+        )
+
+        // use custom correction picker
+        LabelCheckBox(
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
+            checked = state.useCustomCorrectionPicker,
+            onCheckedChange = {
+                state.useCustomCorrectionPicker = it
+            },
+            text = stringResource(id = R.string.txt_label_use_custom_correction_picker)
         )
 
         // allow invalid 3wa

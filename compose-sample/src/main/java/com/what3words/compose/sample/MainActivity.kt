@@ -30,7 +30,6 @@ class MainActivity : ComponentActivity() {
             What3wordscomponentsTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
                     W3WTextFieldInConstraintLayoutScreen()

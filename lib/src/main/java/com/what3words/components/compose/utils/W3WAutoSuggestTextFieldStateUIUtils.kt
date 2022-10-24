@@ -10,13 +10,17 @@ import com.what3words.javawrapper.response.SuggestionWithCoordinates
 @Composable
 internal fun AttachCorrectionPicker(state: W3WAutoSuggestTextFieldState) {
     LaunchedEffect(
-        key1 = state.defaultCorrectionPicker,
-        key2 = state.internalW3WAutoSuggestEditText,
+        state.defaultCorrectionPicker,
+        state.internalW3WAutoSuggestEditText,
+        state.customCorrectionPicker,
         block = {
-            if (state.defaultCorrectionPicker != null) {
+            if (state.defaultCorrectionPicker != null || state.customCorrectionPicker != null) {
                 state.internalW3WAutoSuggestEditText?.customCorrectionPicker(
-                    customCorrectionPicker = state.defaultCorrectionPicker
+                    customCorrectionPicker = state.customCorrectionPicker
+                        ?: state.defaultCorrectionPicker
                 )
+                if (state.customCorrectionPicker != null) state.defaultCorrectionPicker?.visibility =
+                    View.GONE
             }
         }
     )
