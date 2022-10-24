@@ -25,10 +25,12 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextField
 import com.what3words.components.compose.wrapper.rememberW3WAutoSuggestTextFieldState
+import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.compose.sample.BuildConfig
 import com.what3words.compose.sample.R
+import com.what3words.compose.sample.databinding.CustomCorrectionPickerBinding
 import com.what3words.compose.sample.databinding.CustomSuggestionPickerBinding
 
 /**
@@ -42,6 +44,7 @@ fun W3WTextFieldInConstraintLayoutScreen(
     val context = LocalContext.current
     var selectedInfo: String? by remember { mutableStateOf(null) }
     var customPicker: W3WAutoSuggestPicker? by remember { mutableStateOf(value = null) }
+    var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? by remember { mutableStateOf(value = null) }
     val customizeAutoSuggestSettingsScreenState: CustomizeAutoSuggestSettingsScreenState =
         remember { CustomizeAutoSuggestSettingsScreenState() }
 
@@ -52,7 +55,7 @@ fun W3WTextFieldInConstraintLayoutScreen(
             .verticalScroll(state = rememberScrollState())
             .padding(horizontal = dimensionResource(id = R.dimen.normal_100))
     ) {
-        val (headerTxtRef, w3wTextFieldRef, selectedInfoTxtRef, settingsColumnRef, customPickerRef) = createRefs()
+        val (headerTxtRef, w3wTextFieldRef, selectedInfoTxtRef, settingsColumnRef, customPickerRef, customCorrectionPickerRef) = createRefs()
 
         // welcome header
         Text(
@@ -123,12 +126,12 @@ fun W3WTextFieldInConstraintLayoutScreen(
                 .constrainAs(ref = settingsColumnRef) {
                     linkTo(start = parent.start, end = parent.end)
                     linkTo(top = selectedInfoTxtRef.bottom, bottom = parent.bottom)
-                    height = Dimension.fillToConstraints
+                    height = Dimension.wrapContent
                 }
         )
 
         // custom autosuggest picker
-        if (customizeAutoSuggestSettingsScreenState.useCustomPicker) {
+        if (customizeAutoSuggestSettingsScreenState.useCustomSuggestionPicker) {
             AndroidViewBinding(factory = CustomSuggestionPickerBinding::inflate,
                 modifier = Modifier.constrainAs(ref = customPickerRef) {
                     linkTo(start = w3wTextFieldRef.start, end = w3wTextFieldRef.end)
@@ -139,6 +142,20 @@ fun W3WTextFieldInConstraintLayoutScreen(
                 })
         } else {
             w3wTextFieldState.customSuggestionPicker = null
+        }
+
+        // custom correction picker
+        if (customizeAutoSuggestSettingsScreenState.useCustomCorrectionPicker) {
+            AndroidViewBinding(factory = CustomCorrectionPickerBinding::inflate,
+                modifier = Modifier.constrainAs(ref = customCorrectionPickerRef) {
+                    linkTo(start = w3wTextFieldRef.start, end = w3wTextFieldRef.end)
+                    top.linkTo(anchor = w3wTextFieldRef.bottom, margin = 10.dp)
+                }, update = {
+                    customCorrectionPicker = correctionPicker
+                    w3wTextFieldState.customCorrectionPicker = customCorrectionPicker
+                })
+        } else {
+            w3wTextFieldState.customCorrectionPicker = null
         }
     }
 }
