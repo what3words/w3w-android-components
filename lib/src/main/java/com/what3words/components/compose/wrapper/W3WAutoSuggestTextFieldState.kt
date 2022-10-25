@@ -66,6 +66,7 @@ class W3WAutoSuggestTextFieldState(
     internal var defaultErrorView: AppCompatTextView? by mutableStateOf(value = null)
     internal var defaultInvalidAddressMessageView: AppCompatTextView? by mutableStateOf(value = null)
     internal var defaultCorrectionPicker: W3WAutoSuggestCorrectionPicker? by mutableStateOf(value = null)
+    var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? by mutableStateOf(value = null)
 
     // auto suggest properties
     /**
