@@ -1,5 +1,6 @@
 package com.what3words.compose.sample.ui.screen
 
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -45,6 +47,9 @@ fun W3WTextFieldInConstraintLayoutScreen(
     var selectedInfo: String? by remember { mutableStateOf(null) }
     var customPicker: W3WAutoSuggestPicker? by remember { mutableStateOf(value = null) }
     var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? by remember { mutableStateOf(value = null) }
+    var customErrorView: AppCompatTextView? by remember {
+        mutableStateOf(value = null)
+    }
     val customizeAutoSuggestSettingsScreenState: CustomizeAutoSuggestSettingsScreenState =
         remember { CustomizeAutoSuggestSettingsScreenState() }
 
@@ -76,7 +81,8 @@ fun W3WTextFieldInConstraintLayoutScreen(
         )
 
         //  what3words autosuggest text component for compose
-        val w3wTextFieldState = rememberW3WAutoSuggestTextFieldState(apiKey = BuildConfig.W3W_API_KEY)
+        val w3wTextFieldState =
+            rememberW3WAutoSuggestTextFieldState(apiKey = BuildConfig.W3W_API_KEY)
 
         W3WAutoSuggestTextField(
             modifier = Modifier.constrainAs(ref = w3wTextFieldRef) {
@@ -85,6 +91,10 @@ fun W3WTextFieldInConstraintLayoutScreen(
             },
             state = w3wTextFieldState,
             ref = w3wTextFieldRef,
+            suggestionPicker = customPicker,
+            correctionPicker = customCorrectionPicker,
+            invalidAddressMessageView = customErrorView,
+            errorView = customErrorView,
             onSuggestionWithCoordinates = {
                 if (it != null) {
                     selectedInfo = context.resources.getString(
@@ -123,10 +133,10 @@ fun W3WTextFieldInConstraintLayoutScreen(
             state = customizeAutoSuggestSettingsScreenState,
             modifier = Modifier
                 .padding(top = dimensionResource(id = R.dimen.normal_200))
+                .fillMaxSize()
                 .constrainAs(ref = settingsColumnRef) {
                     linkTo(start = parent.start, end = parent.end)
                     linkTo(top = selectedInfoTxtRef.bottom, bottom = parent.bottom)
-                    height = Dimension.wrapContent
                 }
         )
 
@@ -138,10 +148,9 @@ fun W3WTextFieldInConstraintLayoutScreen(
                     top.linkTo(anchor = w3wTextFieldRef.bottom, margin = 10.dp)
                 }, update = {
                     customPicker = suggestionPicker
-                    w3wTextFieldState.customSuggestionPicker = customPicker
                 })
         } else {
-            w3wTextFieldState.customSuggestionPicker = null
+            customPicker = null
         }
 
         // custom correction picker
@@ -152,10 +161,20 @@ fun W3WTextFieldInConstraintLayoutScreen(
                     top.linkTo(anchor = w3wTextFieldRef.bottom, margin = 10.dp)
                 }, update = {
                     customCorrectionPicker = correctionPicker
-                    w3wTextFieldState.customCorrectionPicker = customCorrectionPicker
                 })
         } else {
-            w3wTextFieldState.customCorrectionPicker = null
+            customCorrectionPicker = null
+        }
+
+        // custom error message view
+        if (customizeAutoSuggestSettingsScreenState.useCustomErrorMessageView) {
+            AndroidView(factory = {
+                AppCompatTextView(it)
+            }, update = {
+                customErrorView = it
+            })
+        } else {
+            customErrorView = null
         }
     }
 }

@@ -6,7 +6,6 @@ import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
@@ -92,8 +91,8 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
         })
 
     // suggestion picker
+    val defaultPicker = createRef()
     if (suggestionPicker == null) {
-        val defaultPicker = createRef()
         W3WAutoSuggestPicker(
             state = state,
             modifier = Modifier
@@ -105,14 +104,12 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                 },
         )
     } else {
-        LaunchedEffect(key1 = true, block = {
-            state.defaultSuggestionPicker = suggestionPicker
-        })
+        state.defaultSuggestionPicker = suggestionPicker
     }
 
     // error view
+    val defaultErrorView = createRef()
     if (errorView == null) {
-        val defaultErrorView = createRef()
         W3WErrorMessage(state = state,
             modifier = Modifier
                 .zIndex(zIndex = Float.MAX_VALUE)
@@ -122,14 +119,12 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                     width = Dimension.fillToConstraints
                 })
     } else {
-        LaunchedEffect(key1 = true, block = {
-            state.defaultErrorView = errorView
-        })
+        state.defaultErrorView = errorView
     }
 
     // correction picker
+    val defaultCorrectionPicker = createRef()
     if (correctionPicker == null) {
-        val defaultCorrectionPicker = createRef()
         W3WCorrectionPicker(state = state,
             modifier = Modifier
                 .zIndex(zIndex = Float.MAX_VALUE)
@@ -139,14 +134,12 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                     width = Dimension.fillToConstraints
                 })
     } else {
-        LaunchedEffect(key1 = true, block = {
-            state.defaultCorrectionPicker = correctionPicker
-        })
+        state.defaultCorrectionPicker = correctionPicker
     }
 
     // invalid address message view
+    val defaultInvalidAddressMessageView = createRef()
     if (invalidAddressMessageView == null) {
-        val defaultInvalidAddressMessageView = createRef()
         W3WInvalidAddressMessage(state = state,
             modifier = Modifier
                 .zIndex(Float.MAX_VALUE)
@@ -156,8 +149,6 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                     width = Dimension.fillToConstraints
                 })
     } else {
-        LaunchedEffect(key1 = true, block = {
-            state.defaultInvalidAddressMessageView = invalidAddressMessageView
-        })
+        state.defaultInvalidAddressMessageView = invalidAddressMessageView
     }
 }

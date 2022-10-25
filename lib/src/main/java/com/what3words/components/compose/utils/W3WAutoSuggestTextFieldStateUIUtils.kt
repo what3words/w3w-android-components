@@ -1,6 +1,5 @@
 package com.what3words.components.compose.utils
 
-import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextFieldState
@@ -12,15 +11,11 @@ internal fun AttachCorrectionPicker(state: W3WAutoSuggestTextFieldState) {
     LaunchedEffect(
         state.defaultCorrectionPicker,
         state.internalW3WAutoSuggestEditText,
-        state.customCorrectionPicker,
         block = {
-            if (state.defaultCorrectionPicker != null || state.customCorrectionPicker != null) {
+            if (state.defaultCorrectionPicker != null) {
                 state.internalW3WAutoSuggestEditText?.customCorrectionPicker(
-                    customCorrectionPicker = state.customCorrectionPicker
-                        ?: state.defaultCorrectionPicker
+                    customCorrectionPicker = state.defaultCorrectionPicker
                 )
-                if (state.customCorrectionPicker != null) state.defaultCorrectionPicker?.visibility =
-                    View.GONE
             }
         }
     )
@@ -32,8 +27,8 @@ internal fun AttachErrorView(
     onError: ((APIResponse.What3WordsError) -> Unit)?
 ) {
     LaunchedEffect(
-        key1 = state.defaultErrorView,
-        key2 = state.internalW3WAutoSuggestEditText,
+        state.defaultErrorView,
+        state.internalW3WAutoSuggestEditText,
         block = {
             if (state.defaultErrorView != null) {
                 state.internalW3WAutoSuggestEditText?.onError(
@@ -56,17 +51,14 @@ internal fun AttachSuggestionPickerAndInvalidMessageView(
         state.defaultSuggestionPicker,
         state.defaultInvalidAddressMessageView,
         state.internalW3WAutoSuggestEditText,
-        state.customSuggestionPicker,
         block = {
-            if (state.defaultSuggestionPicker != null || state.defaultInvalidAddressMessageView != null || state.customSuggestionPicker != null) {
+            if (state.defaultSuggestionPicker != null || state.defaultInvalidAddressMessageView != null) {
                 state.internalW3WAutoSuggestEditText?.onSuggestionSelected(
-                    picker = state.customSuggestionPicker ?: state.defaultSuggestionPicker,
+                    picker = state.defaultSuggestionPicker,
                     invalidAddressMessageView = state.defaultInvalidAddressMessageView
                 ) {
                     onSuggestionWithCoordinates?.invoke(it)
                 }
-                if (state.customSuggestionPicker != null) state.defaultSuggestionPicker?.visibility =
-                    View.GONE
             }
         })
 }

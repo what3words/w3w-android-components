@@ -31,6 +31,8 @@ class CustomizeAutoSuggestSettingsScreenState() {
 
     var useCustomCorrectionPicker: Boolean by mutableStateOf(value = false)
 
+    var useCustomErrorMessageView: Boolean by mutableStateOf(value = false)
+
     var clipToCountry: String by mutableStateOf(value = "")
 
     var focus: String by mutableStateOf(value = "")
@@ -124,6 +126,16 @@ fun CustomizeAutoSuggestSettingsScreen(
                 state.useCustomSuggestionPicker = it
             },
             text = stringResource(id = R.string.txt_label_use_custom_picker)
+        )
+
+        // use custom error message view check box
+        LabelCheckBox(
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
+            checked = state.useCustomErrorMessageView,
+            onCheckedChange = {
+                state.useCustomErrorMessageView = it
+            },
+            text = stringResource(id = R.string.txt_label_use_custom_error_message_view)
         )
 
         // use custom correction picker
