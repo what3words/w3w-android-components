@@ -8,8 +8,6 @@
     <string name="txt_label_voice_placeholder">voice placeholder</string>
     <string name="txt_label_voice_language">voice language</string>
     <string name="txt_label_voice_language_info">The voice language request parameter is defaulted to "en". The language code provided is used to configure both the Speechmatics ASR, and the what3words AutoSuggest algorithm.</string>
-
-
     <string name="txt_label_focus">focus, i.e: 51.508354, -0.12549861</string>
     <string name="txt_label_focus_info">Comma separated lat/lng of point to focus on. Example value:51.521251,-0.203586</string>
     <string name="txt_label_clip_to_country">clip to country</string>

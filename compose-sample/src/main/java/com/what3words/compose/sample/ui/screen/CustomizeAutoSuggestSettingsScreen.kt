@@ -72,11 +72,13 @@ fun CustomizeAutoSuggestSettingsScreen(
         state.placeHolder,
         state.voicePlaceHolder,
         state.voiceLanguage,
+        state.language,
         block = {
             with(autoSuggestTextFieldState) {
                 voicePlaceholder(placeholder = state.voicePlaceHolder)
                 hint = state.placeHolder
-                autoSuggestOptions.language = state.voiceLanguage
+                voiceLanguage = state.voiceLanguage
+                autoSuggestOptions.language = state.language
                 options(options = autoSuggestOptions)
             }
         }
@@ -197,6 +199,7 @@ fun CustomizeAutoSuggestSettingsScreen(
 
         // placeholder
         MultiLabelTextField(
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
             text = state.placeHolder,
             onTextChanged = {
                 state.placeHolder = it
@@ -204,8 +207,20 @@ fun CustomizeAutoSuggestSettingsScreen(
             primaryLabel = stringResource(id = R.string.txt_label_placeholder)
         )
 
+        // language
+        MultiLabelTextField(
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
+            text = state.language,
+            onTextChanged = {
+                state.language = it
+            },
+            primaryLabel = stringResource(id = R.string.txt_label_language),
+            secondaryLabel = stringResource(id = R.string.txt_label_language_info)
+        )
+
         // voice placeholder
         MultiLabelTextField(
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
             text = state.voicePlaceHolder,
             onTextChanged = {
                 state.voicePlaceHolder = it
@@ -215,6 +230,7 @@ fun CustomizeAutoSuggestSettingsScreen(
 
         // voice language
         MultiLabelTextField(
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
             text = state.voiceLanguage,
             onTextChanged = {
                 state.voiceLanguage = it
@@ -225,6 +241,7 @@ fun CustomizeAutoSuggestSettingsScreen(
 
         // focus
         MultiLabelTextField(
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
             text = state.focus,
             onTextChanged = {
                 state.focus = it
@@ -245,6 +262,7 @@ fun CustomizeAutoSuggestSettingsScreen(
 
         // clip to country 
         MultiLabelTextField(
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
             text = state.clipToCountry,
             onTextChanged = {
                 state.clipToCountry = it
@@ -259,6 +277,7 @@ fun CustomizeAutoSuggestSettingsScreen(
 
         // clip to circle
         MultiLabelTextField(
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
             text = state.clipToCircle,
             onTextChanged = {
                 state.clipToCircle = it
@@ -281,6 +300,7 @@ fun CustomizeAutoSuggestSettingsScreen(
         )
         // clip to box
         MultiLabelTextField(
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
             text = state.clipToBox,
             onTextChanged = {
                 state.clipToBox = it
@@ -306,6 +326,7 @@ fun CustomizeAutoSuggestSettingsScreen(
         )
         // clip to polygon
         MultiLabelTextField(
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
             text = state.clipToCountry,
             onTextChanged = {
                 state.clipToPolygon = it

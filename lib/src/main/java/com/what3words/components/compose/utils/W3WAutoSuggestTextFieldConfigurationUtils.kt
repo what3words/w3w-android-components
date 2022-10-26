@@ -30,6 +30,7 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
         state.voiceScreenType,
         state.micIcon,
         state.hint,
+        state.voiceLanguage,
         block = {
             state.internalW3WAutoSuggestEditText?.apply {
                 allowFlexibleDelimiters(isAllowed = state.allowFlexibleDelimiters)
@@ -55,6 +56,7 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                     voicePlaceholder(placeholder = state.voicePlaceHolder!!)
                 }
                 state.hint?.let { state.internalW3WAutoSuggestEditText?.hint = state.hint }
+                state.voiceLanguage?.let { state.voiceLanguage = state.voiceLanguage }
                 if (state.toggleVoice) {
                     toggleVoice()
                     state.toggleVoice = false

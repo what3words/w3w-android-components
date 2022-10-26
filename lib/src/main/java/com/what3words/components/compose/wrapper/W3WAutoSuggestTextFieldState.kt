@@ -98,6 +98,11 @@ class W3WAutoSuggestTextFieldState(
      * **/
     var hideSelectedIcon: Boolean by mutableStateOf(value = false)
 
+    /**
+     * see [W3WAutoSuggestEditText.voiceLanguage]
+     * **/
+    var voiceLanguage: String? by mutableStateOf(value = null)
+
     var hint: String? by mutableStateOf(value = null)
 
     /**
@@ -241,6 +246,7 @@ class W3WAutoSuggestTextFieldState(
                     defaultText = savedMap[Keys.DEFAULT_TEXT] as String
                     hint = savedMap[Keys.HINT] as String?
                     voiceScreenType = savedMap[Keys.VOICE_SCREEN_TYPE] as VoiceScreenType
+                    voiceLanguage = savedMap[Keys.VOICE_LANGUAGE] as String?
 
                     val options: AutosuggestOptions = AutosuggestOptions()
                     (savedMap[Keys.AutoSuggestOptionsKey.LANGUAGE] as String?)?.let {
@@ -317,6 +323,7 @@ class W3WAutoSuggestTextFieldState(
             const val DEFAULT_TEXT = "editTextText"
             const val VOICE_SCREEN_TYPE = "voiceScreenType"
             const val HINT = "hint"
+            const val VOICE_LANGUAGE = "voiceLanguage"
 
             // keys for attributes in AutoSuggestOptions
             object AutoSuggestOptionsKey {
