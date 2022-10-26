@@ -66,7 +66,6 @@ class W3WAutoSuggestTextFieldState(
     internal var defaultErrorView: AppCompatTextView? by mutableStateOf(value = null)
     internal var defaultInvalidAddressMessageView: AppCompatTextView? by mutableStateOf(value = null)
     internal var defaultCorrectionPicker: W3WAutoSuggestCorrectionPicker? by mutableStateOf(value = null)
-    var customCorrectionPicker: W3WAutoSuggestCorrectionPicker? by mutableStateOf(value = null)
 
     // auto suggest properties
     /**
@@ -99,6 +98,7 @@ class W3WAutoSuggestTextFieldState(
      * **/
     var hideSelectedIcon: Boolean by mutableStateOf(value = false)
 
+    var hint: String? by mutableStateOf(value = null)
 
     /**
      * used to save text state for [W3WAutoSuggestEditText] in the case of a recomposition/configuration change
@@ -199,6 +199,7 @@ class W3WAutoSuggestTextFieldState(
                     Keys.DISPLAY_UNIT to it.displayUnit,
                     Keys.VOICE_PLACEHOLDER to it.voicePlaceHolder,
                     Keys.VOICE_SCREEN_TYPE to it.voiceScreenType,
+                    Keys.HINT to it.hint,
                     Keys.DEFAULT_TEXT to if (it.internalW3WAutoSuggestEditText != null) it.internalW3WAutoSuggestEditText!!.text.toString() else null,
                     Keys.AutoSuggestOptionsKey.LANGUAGE to it.options?.language,
                     Keys.AutoSuggestOptionsKey.N_RESULTS to it.options?.nResults,
@@ -238,6 +239,7 @@ class W3WAutoSuggestTextFieldState(
                     displayUnit = savedMap[Keys.DISPLAY_UNIT] as DisplayUnits?
                     voicePlaceHolder = savedMap[Keys.VOICE_PLACEHOLDER] as String?
                     defaultText = savedMap[Keys.DEFAULT_TEXT] as String
+                    hint = savedMap[Keys.HINT] as String?
                     voiceScreenType = savedMap[Keys.VOICE_SCREEN_TYPE] as VoiceScreenType
 
                     val options: AutosuggestOptions = AutosuggestOptions()
@@ -314,6 +316,7 @@ class W3WAutoSuggestTextFieldState(
             const val VOICE_PLACEHOLDER = "voicePlaceHolder"
             const val DEFAULT_TEXT = "editTextText"
             const val VOICE_SCREEN_TYPE = "voiceScreenType"
+            const val HINT = "hint"
 
             // keys for attributes in AutoSuggestOptions
             object AutoSuggestOptionsKey {

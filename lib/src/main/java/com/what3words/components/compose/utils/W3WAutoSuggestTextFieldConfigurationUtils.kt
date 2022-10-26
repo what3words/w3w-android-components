@@ -29,6 +29,7 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
         state.returnCoordinates,
         state.voiceScreenType,
         state.micIcon,
+        state.hint,
         block = {
             state.internalW3WAutoSuggestEditText?.apply {
                 allowFlexibleDelimiters(isAllowed = state.allowFlexibleDelimiters)
@@ -50,7 +51,10 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                 state.correctionMessage?.let { correctionMessage(message = state.correctionMessage!!) }
                 state.displayUnit?.let { displayUnit(units = state.displayUnit!!) }
                 state.display?.let { display(suggestion = state.display!!) }
-                state.voicePlaceHolder?.let { voicePlaceholder(placeholder = state.voicePlaceHolder!!) }
+                state.voicePlaceHolder?.let {
+                    voicePlaceholder(placeholder = state.voicePlaceHolder!!)
+                }
+                state.hint?.let { state.internalW3WAutoSuggestEditText?.hint = state.hint }
                 if (state.toggleVoice) {
                     toggleVoice()
                     state.toggleVoice = false
