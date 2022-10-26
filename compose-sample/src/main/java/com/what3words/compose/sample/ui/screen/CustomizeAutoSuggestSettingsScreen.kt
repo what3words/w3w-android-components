@@ -1,5 +1,6 @@
 package com.what3words.compose.sample.ui.screen
 
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,10 +24,11 @@ import com.what3words.compose.sample.ui.components.RadioGroup
 import com.what3words.compose.sample.ui.components.RadioGroupState
 import com.what3words.compose.sample.ui.model.VoiceOption
 import com.what3words.javawrapper.request.AutosuggestOptions
+import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 
 
-class CustomizeAutoSuggestSettingsScreenState() {
+class CustomizeAutoSuggestSettingsScreenState(context: Context) {
     var useCustomSuggestionPicker: Boolean by mutableStateOf(value = false)
 
     var useCustomCorrectionPicker: Boolean by mutableStateOf(value = false)
@@ -35,7 +37,21 @@ class CustomizeAutoSuggestSettingsScreenState() {
 
     var clipToCountry: String by mutableStateOf(value = "")
 
+    var clipToCircle: String by mutableStateOf(value = "")
+
+    var clipToBox: String by mutableStateOf(value = "")
+
+    var clipToPolygon: String by mutableStateOf(value = "")
+
     var focus: String by mutableStateOf(value = "")
+
+    var voiceLanguage: String by mutableStateOf(value = "en")
+
+    var language: String by mutableStateOf(value = "")
+
+    var voicePlaceHolder: String by mutableStateOf(value = "Say a 3 word address...")
+
+    var placeHolder: String by mutableStateOf(value = context.getString(R.string.txt_label_3word_hint))
 }
 
 // a group of ui components that is used to configure the w3w autosuggestion settings
@@ -48,12 +64,23 @@ fun CustomizeAutoSuggestSettingsScreen(
     val autoSuggestOptions = remember {
         (AutosuggestOptions().apply {
             preferLand = true
+            language = state.language
         })
     }
 
-    LaunchedEffect(key1 = true, block = {
-        autoSuggestTextFieldState.options(options = autoSuggestOptions)
-    })
+    LaunchedEffect(
+        state.placeHolder,
+        state.voicePlaceHolder,
+        state.voiceLanguage,
+        block = {
+            with(autoSuggestTextFieldState) {
+                voicePlaceholder(placeholder = state.voicePlaceHolder)
+                hint = state.placeHolder
+                autoSuggestOptions.language = state.voiceLanguage
+                options(options = autoSuggestOptions)
+            }
+        }
+    )
 
     Column(modifier = modifier.fillMaxWidth()) {
         // customize the autosuggest component label
@@ -168,6 +195,34 @@ fun CustomizeAutoSuggestSettingsScreen(
             text = stringResource(id = R.string.txt_label_allow_flexible_delimiters)
         )
 
+        // placeholder
+        MultiLabelTextField(
+            text = state.placeHolder,
+            onTextChanged = {
+                state.placeHolder = it
+            },
+            primaryLabel = stringResource(id = R.string.txt_label_placeholder)
+        )
+
+        // voice placeholder
+        MultiLabelTextField(
+            text = state.voicePlaceHolder,
+            onTextChanged = {
+                state.voicePlaceHolder = it
+            },
+            primaryLabel = stringResource(id = R.string.txt_label_voice_placeholder)
+        )
+
+        // voice language
+        MultiLabelTextField(
+            text = state.voiceLanguage,
+            onTextChanged = {
+                state.voiceLanguage = it
+            },
+            primaryLabel = stringResource(id = R.string.txt_label_voice_language),
+            secondaryLabel = stringResource(id = R.string.txt_label_voice_language_info)
+        )
+
         // focus
         MultiLabelTextField(
             text = state.focus,
@@ -200,6 +255,82 @@ fun CustomizeAutoSuggestSettingsScreen(
             },
             primaryLabel = stringResource(id = R.string.txt_label_clip_to_country),
             secondaryLabel = stringResource(id = R.string.txt_label_clip_to_country_info)
+        )
+
+        // clip to circle
+        MultiLabelTextField(
+            text = state.clipToCircle,
+            onTextChanged = {
+                state.clipToCircle = it
+                val latLong = state.clipToCircle.replace("\\s".toRegex(), "").split(",")
+                    .filter { it.isNotEmpty() }
+                val lat = latLong.getOrNull(0)?.toDoubleOrNull()
+                val long = latLong.getOrNull(1)?.toDoubleOrNull()
+                val km = latLong.getOrNull(2)?.toDoubleOrNull()
+                if (lat != null && long != null) {
+                    autoSuggestOptions.clipToCircle = Coordinates(lat, long)
+                    autoSuggestOptions.clipToCircleRadius = km ?: 0.0
+                } else {
+                    autoSuggestOptions.clipToCircle = null
+                    autoSuggestOptions.clipToCircleRadius = null
+                }
+                autoSuggestTextFieldState.options(options = autoSuggestOptions)
+            },
+            primaryLabel = stringResource(id = R.string.txt_label_clip_to_circle),
+            secondaryLabel = stringResource(id = R.string.txt_label_clip_to_circle_info)
+        )
+        // clip to box
+        MultiLabelTextField(
+            text = state.clipToBox,
+            onTextChanged = {
+                state.clipToBox = it
+                val latLong = state.clipToBox.replace("\\s".toRegex(), "").split(",")
+                    .filter { it.isNotEmpty() }
+                val swLat = latLong.getOrNull(0)?.toDoubleOrNull()
+                val swLong = latLong.getOrNull(1)?.toDoubleOrNull()
+                val neLat = latLong.getOrNull(2)?.toDoubleOrNull()
+                val neLong = latLong.getOrNull(3)?.toDoubleOrNull()
+                if (swLat != null && swLong != null && neLat != null && neLong != null) {
+                    autoSuggestOptions.clipToBoundingBox =
+                        BoundingBox(
+                            Coordinates(swLat, swLong),
+                            Coordinates(neLat, neLong)
+                        )
+                } else {
+                    autoSuggestOptions.clipToBoundingBox = null
+                }
+                autoSuggestTextFieldState.options(options = autoSuggestOptions)
+            },
+            primaryLabel = stringResource(id = R.string.txt_label_clip_to_box),
+            secondaryLabel = stringResource(id = R.string.txt_label_clip_to_box_info)
+        )
+        // clip to polygon
+        MultiLabelTextField(
+            text = state.clipToCountry,
+            onTextChanged = {
+                state.clipToPolygon = it
+                val latLong = state.clipToPolygon.replace("\\s".toRegex(), "").split(",")
+                    .filter { it.isNotEmpty() }
+                val listCoordinates = mutableListOf<Coordinates>()
+                if (latLong.count() % 2 == 0) {
+                    for (x in 0 until latLong.count() step 2) {
+                        if (latLong[x].toDoubleOrNull() != null &&
+                            latLong[x + 1].toDoubleOrNull() != null
+                        ) {
+                            listCoordinates.add(
+                                Coordinates(
+                                    latLong[x].toDouble(),
+                                    latLong[x + 1].toDouble()
+                                )
+                            )
+                        }
+                    }
+                }
+                autoSuggestOptions.clipToPolygon = listCoordinates
+                autoSuggestTextFieldState.options(options = autoSuggestOptions)
+            },
+            primaryLabel = stringResource(id = R.string.txt_label_clip_to_polygon),
+            secondaryLabel = stringResource(id = R.string.txt_label_clip_to_polygon_info)
         )
 
     }

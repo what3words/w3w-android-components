@@ -51,7 +51,7 @@ fun W3WTextFieldInConstraintLayoutScreen(
         mutableStateOf(value = null)
     }
     val customizeAutoSuggestSettingsScreenState: CustomizeAutoSuggestSettingsScreenState =
-        remember { CustomizeAutoSuggestSettingsScreenState() }
+        remember { CustomizeAutoSuggestSettingsScreenState(context = context) }
 
     ConstraintLayout(
         modifier = modifier
