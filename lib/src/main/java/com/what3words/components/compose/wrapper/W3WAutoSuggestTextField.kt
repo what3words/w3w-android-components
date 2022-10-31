@@ -81,7 +81,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                     W3WAutoSuggestEditText(
                         ContextThemeWrapper(
                             it,
-                            R.style.W3WAutoSuggestEditTextTheme
+                            styles.autoSuggestEditTextStyle()
                         )
                     )
                         .apiKey(key = state.apiKey)
@@ -101,6 +101,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     if (suggestionPicker == null) {
         W3WAutoSuggestPicker(
             state = state,
+            style = styles.autoSuggestPickerStyle(),
             modifier = Modifier
                 .zIndex(zIndex = Float.MAX_VALUE)
                 .constrainAs(defaultPicker) {
@@ -117,6 +118,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     val defaultErrorView = createRef()
     if (errorView == null) {
         W3WErrorMessage(state = state,
+            style = styles.autoSuggestErrorMessageStyle(),
             modifier = Modifier
                 .zIndex(zIndex = Float.MAX_VALUE)
                 .constrainAs(defaultErrorView) {
@@ -132,6 +134,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     val defaultCorrectionPicker = createRef()
     if (correctionPicker == null) {
         W3WCorrectionPicker(state = state,
+            style = styles.autoSuggestCorrectionPickerStyle(),
             modifier = Modifier
                 .zIndex(zIndex = Float.MAX_VALUE)
                 .constrainAs(defaultCorrectionPicker) {
@@ -147,6 +150,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     val defaultInvalidAddressMessageView = createRef()
     if (invalidAddressMessageView == null) {
         W3WInvalidAddressMessage(state = state,
+            style = styles.autoSuggestInvalidAddressMessageStyle(),
             modifier = Modifier
                 .zIndex(Float.MAX_VALUE)
                 .constrainAs(defaultInvalidAddressMessageView) {
@@ -165,12 +169,14 @@ object W3WAutoSuggestTextFieldDefaults {
         @StyleRes autoSuggestEditTextStyle: Int = R.style.W3WAutoSuggestEditTextTheme,
         @StyleRes autoSuggestPickerStyle: Int = R.style.W3WAutoSuggestPickerTheme,
         @StyleRes autoSuggestCorrectionPickerStyle: Int = R.style.W3WAutoSuggestCorrectionPickerTheme,
-        @StyleRes autoSuggestErrorMessageStyle: Int = R.style.W3WAutoSuggestErrorMessage
+        @StyleRes autoSuggestErrorMessageStyle: Int = R.style.W3WAutoSuggestErrorMessage,
+        @StyleRes autoSuggestInvalidAddressMessageStyle: Int = R.style.W3WAutoSuggestErrorMessage
     ): W3WAutoSuggestTextFieldStyles = DefaultW3WAutoSuggestTextFieldStyles(
         autoSuggestEditTextStyle = autoSuggestEditTextStyle,
         autoSuggestPickerStyle = autoSuggestPickerStyle,
         autoSuggestCorrectionPickerStyle = autoSuggestCorrectionPickerStyle,
-        autoSuggestErrorMessageStyle = autoSuggestErrorMessageStyle
+        autoSuggestErrorMessageStyle = autoSuggestErrorMessageStyle,
+        autoSuggestInvalidAddressMessageStyle = autoSuggestInvalidAddressMessageStyle
     )
 }
 
@@ -180,6 +186,7 @@ private class DefaultW3WAutoSuggestTextFieldStyles(
     @StyleRes private val autoSuggestPickerStyle: Int,
     @StyleRes private val autoSuggestCorrectionPickerStyle: Int,
     @StyleRes private val autoSuggestErrorMessageStyle: Int,
+    @StyleRes private val autoSuggestInvalidAddressMessageStyle: Int,
 ) : W3WAutoSuggestTextFieldStyles {
     override fun autoSuggestEditTextStyle(): Int {
         return autoSuggestEditTextStyle
@@ -196,17 +203,63 @@ private class DefaultW3WAutoSuggestTextFieldStyles(
     override fun autoSuggestErrorMessageStyle(): Int {
         return autoSuggestErrorMessageStyle
     }
+
+    override fun autoSuggestInvalidAddressMessageStyle(): Int {
+        return autoSuggestInvalidAddressMessageStyle
+    }
+
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as DefaultW3WAutoSuggestTextFieldStyles
+
+        if (autoSuggestEditTextStyle != other.autoSuggestEditTextStyle) return false
+        if (autoSuggestPickerStyle != other.autoSuggestPickerStyle) return false
+        if (autoSuggestCorrectionPickerStyle != other.autoSuggestCorrectionPickerStyle) return false
+        if (autoSuggestErrorMessageStyle != other.autoSuggestErrorMessageStyle) return false
+        if (autoSuggestInvalidAddressMessageStyle != other.autoSuggestInvalidAddressMessageStyle) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = autoSuggestEditTextStyle.hashCode()
+        result = 31 * result + autoSuggestPickerStyle.hashCode()
+        result = 31 * result + autoSuggestCorrectionPickerStyle.hashCode()
+        result = 31 * result + autoSuggestErrorMessageStyle.hashCode()
+        result = 31 * result + autoSuggestInvalidAddressMessageStyle.hashCode()
+        return result
+    }
 }
 
 
 @Stable
 interface W3WAutoSuggestTextFieldStyles {
 
+    /**
+     * returns the resource ID of the style to be applied on the [W3WAutoSuggestEditText] used in the [W3WAutoSuggestTextField]
+     * **/
     fun autoSuggestEditTextStyle(): Int
 
+    /**
+     * returns the resource ID of the style to be applied on the default [W3WAutoSuggestPicker] used in the [W3WAutoSuggestTextField]
+     * **/
     fun autoSuggestPickerStyle(): Int
 
+    /**
+     * returns the resource ID of the style to be applied on the default [W3WAutoSuggestCorrectionPicker] used in the [W3WAutoSuggestTextField]
+     * **/
     fun autoSuggestCorrectionPickerStyle(): Int
 
+    /**
+     * returns the resource ID of the style to be applied on the default [W3WAutoSuggestErrorMessage] used in the [W3WAutoSuggestTextField]
+     * **/
     fun autoSuggestErrorMessageStyle(): Int
+
+    /**
+     * returns the resource ID of the style to be applied on the default [W3WAutoSuggestErrorMessage] used as an InvalidAddress View in the [W3WAutoSuggestTextField]
+     * **/
+    fun autoSuggestInvalidAddressMessageStyle(): Int
 }
