@@ -1,6 +1,7 @@
 package com.what3words.compose.sample.ui.screen
 
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextField
+import com.what3words.components.compose.wrapper.W3WAutoSuggestTextFieldDefaults
 import com.what3words.components.compose.wrapper.rememberW3WAutoSuggestTextFieldState
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.picker.W3WAutoSuggestPicker
@@ -109,7 +111,11 @@ fun W3WTextFieldInConstraintLayoutScreen(
                 } else {
                     selectedInfo = ""
                 }
-            }
+            },
+            styles = W3WAutoSuggestTextFieldDefaults.styles(
+                autoSuggestEditTextStyle = R.style.W3WAutoSuggestEditTextDayNightTheme,
+                autoSuggestPickerStyle = R.style.W3WAutoSuggestPickerDayNight
+            )
         )
 
         // selected address info text
