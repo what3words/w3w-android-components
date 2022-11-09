@@ -1,8 +1,23 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
+    }
+
+    versionCatalogs {
+        // declares an additional catalog, named 'testLibs', from the 'test-libs.versionstoml' file
+        testLibs {
+            from(files('gradle/testLibs.versions.toml'))
+        }
     }
 }
 
