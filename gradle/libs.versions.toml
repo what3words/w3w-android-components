@@ -1,0 +1,42 @@
+[versions]
+compose = "1.2.1"
+kotlin = "1.7.10"
+kotlinx-coroutine = "1.3.0"
+dokka = "0.9.17"
+playServices = "17.0.0"
+junit = "4.13.2"
+espresso = "3.4.0"
+androidGradlePlugin = "7.0.4"
+
+
+[plugins]
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+klint = {id = "org.jlleitschuh.gradle.ktlint", version = "10.1.0"}
+sonarqube = {id = "org.sonarqube", version = "3.3"}
+
+dokka = { id = "org.jetbrains.dokka", version = "1.5.0" }
+errorprone = { id = "net.ltgt.errorprone", version = "2.0.2" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.18.0" }
+protobuf = { id = "com.google.protobuf", version = "0.8.17" }
+animalsniffer = { id = "ru.vyarus.animalsniffer", version = "1.5.0" }
+googleJavaFormat = { id = "com.github.sherter.google-java-format", version = "0.9" }
+
+[libraries]
+compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
+compose-constraint-layout = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.0.1" }
+compose-view-binding = { module = "androidx.compose.ui:ui-viewbinding", version = "1.2.1" }
+
+androidx-core = { module = "androidx.core:core-ktx", version = "1.9.0" }
+androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version = "2.3.1" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.3.1" }
+
+google-android-material = { module = "com.google.android.material:material", version = "1.6.1" }
+
+[bundles]
+compose-application = ['compose-ui', 'compose-material', 'androidx-activity-compose', 'androidx-lifecycle-runtime', 'compose-constraint-layout', 'compose-ui-tooling-preview']
