@@ -16,6 +16,7 @@ buildscript {
     }
 
     dependencies {
+        classpath "org.jacoco:org.jacoco.core:0.8.7"
         classpath files(libs.class.superclass.protectionDomain.codeSource.location)
         classpath files(testLibs.class.superclass.protectionDomain.codeSource.location)
     }
