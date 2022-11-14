@@ -26,10 +26,23 @@ import com.what3words.components.compose.utils.AttachErrorView
 import com.what3words.components.compose.utils.AttachSuggestionPickerAndInvalidMessageView
 import com.what3words.components.compose.utils.ConfigureAutoSuggest
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
+import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
+
+sealed class InternalAutoSuggestConfiguration {
+    /**
+     * @property apiKey your API key from what3words developer dashboard
+     * */
+    data class Api(val apiKey: String) : InternalAutoSuggestConfiguration()
+
+    /**
+     * @property logicManager manager created using SDK instead of API
+     * **/
+    data class Sdk(val logicManager: AutosuggestLogicManager) : InternalAutoSuggestConfiguration()
+}
 
 /**
  * @param modifier Modifier to be applied to the W3WAutoSuggestEditText.
@@ -50,6 +63,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     modifier: Modifier,
     state: W3WAutoSuggestTextFieldState,
     ref: ConstrainedLayoutReference,
+    configuration: InternalAutoSuggestConfiguration,
     onSuggestionWithCoordinates: ((SuggestionWithCoordinates?) -> Unit),
     styles: W3WAutoSuggestTextFieldStyles = W3WAutoSuggestTextFieldDefaults.styles(),
     micIcon: Drawable? = null,
@@ -78,21 +92,23 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
         factory = {
             FrameLayout(it).apply {
                 state.micIcon = micIcon
-                state.internalW3WAutoSuggestEditText =
-                    W3WAutoSuggestEditText(
-                        ContextThemeWrapper(
-                            it,
-                            styles.autoSuggestEditTextStyle()
+                // first instantiate the internal W3WAutoSuggestEditText before adding it to the frame layout
+                when (configuration) {
+                    is InternalAutoSuggestConfiguration.Api -> {
+                        state.configureW3WAutoSuggestEditText(
+                            apiKey = configuration.apiKey,
+                            context = it,
+                            style = styles.autoSuggestEditTextStyle()
                         )
-                    )
-                        .apiKey(key = state.apiKey)
-                        .voiceEnabled(
-                            enabled = state.voiceEnabledByDefault,
-                            type = state.voiceScreenTypeByDefault,
-                            micIcon = micIcon
-                        ).apply {
-                            if (!state.defaultText.isNullOrEmpty()) this.setText(state.defaultText!!)
-                        }
+                    }
+                    is InternalAutoSuggestConfiguration.Sdk -> {
+                        state.configureW3WAutoSuggestEditText(
+                            sdk = configuration.logicManager,
+                            context = it,
+                            style = styles.autoSuggestEditTextStyle()
+                        )
+                    }
+                }
                 addView(state.internalW3WAutoSuggestEditText)
                 onW3WAutoSuggestEditTextReady?.invoke(state.internalW3WAutoSuggestEditText!!)
             }

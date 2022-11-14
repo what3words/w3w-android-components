@@ -26,6 +26,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.what3words.components.compose.wrapper.InternalAutoSuggestConfiguration
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextField
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextFieldDefaults
 import com.what3words.components.compose.wrapper.rememberW3WAutoSuggestTextFieldState
@@ -84,7 +85,7 @@ fun W3WTextFieldInConstraintLayoutScreen(
 
         //  what3words autosuggest text component for compose
         val w3wTextFieldState =
-            rememberW3WAutoSuggestTextFieldState(apiKey = BuildConfig.W3W_API_KEY)
+            rememberW3WAutoSuggestTextFieldState()
 
         W3WAutoSuggestTextField(
             modifier = Modifier.constrainAs(ref = w3wTextFieldRef) {
@@ -93,6 +94,7 @@ fun W3WTextFieldInConstraintLayoutScreen(
             },
             state = w3wTextFieldState,
             ref = w3wTextFieldRef,
+            configuration = InternalAutoSuggestConfiguration.Api(apiKey = BuildConfig.W3W_API_KEY),
             suggestionPicker = customPicker,
             correctionPicker = customCorrectionPicker,
             invalidAddressMessageView = customErrorView,

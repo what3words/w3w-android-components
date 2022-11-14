@@ -76,8 +76,8 @@ fun CustomizeAutoSuggestSettingsScreen(
         block = {
             with(autoSuggestTextFieldState) {
                 voicePlaceholder(placeholder = state.voicePlaceHolder)
-                hint = state.placeHolder
-                voiceLanguage = state.voiceLanguage
+                hint(state.placeHolder)
+                voiceLanguage(state.voiceLanguage)
                 autoSuggestOptions.language = state.language
                 options(options = autoSuggestOptions)
             }
@@ -96,7 +96,7 @@ fun CustomizeAutoSuggestSettingsScreen(
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
             checked = autoSuggestTextFieldState.returnCoordinates,
             onCheckedChange = {
-                autoSuggestTextFieldState.returnCoordinates = it
+                autoSuggestTextFieldState.returnCoordinates(it)
             },
             text = stringResource(id = R.string.txt_label_return_coordinates)
         )
@@ -182,7 +182,7 @@ fun CustomizeAutoSuggestSettingsScreen(
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
             checked = autoSuggestTextFieldState.allowInvalid3wa,
             onCheckedChange = {
-                autoSuggestTextFieldState.allowInvalid3wa = it
+                autoSuggestTextFieldState.allowInvalid3wa(it)
             },
             text = stringResource(id = R.string.txt_label_allow_invalid_3wa)
         )
@@ -192,7 +192,7 @@ fun CustomizeAutoSuggestSettingsScreen(
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
             checked = autoSuggestTextFieldState.allowFlexibleDelimiters,
             onCheckedChange = {
-                autoSuggestTextFieldState.allowFlexibleDelimiters = it
+                autoSuggestTextFieldState.allowFlexibleDelimiters(it)
             },
             text = stringResource(id = R.string.txt_label_allow_flexible_delimiters)
         )
