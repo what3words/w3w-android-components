@@ -31,6 +31,16 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
         state.micIcon,
         state.hint,
         state.voiceLanguage,
+        state.language,
+        state.focus,
+        state.nFocusResults,
+        state.nResults,
+        state.clipToCircle,
+        state.clipToCountry,
+        state.clipToCircleRadius,
+        state.clipToBoundingBox,
+        state.clipToPolygon,
+        state.preferLand,
         block = {
             state.internalW3WAutoSuggestEditText?.apply {
                 allowFlexibleDelimiters(isAllowed = state.allowFlexibleDelimiters)
@@ -44,6 +54,13 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                     micIcon = state.micIcon
                 )
                 hideSelectedIcon(b = state.hideSelectedIcon)
+                clipToCircle(centre = state.clipToCircle, radius = state.clipToCircleRadius)
+                clipToCountry(countryCodes = state.clipToCountry ?: listOf())
+                clipToBoundingBox(boundingBox = state.clipToBoundingBox)
+                clipToPolygon(polygon = state.clipToPolygon ?: listOf())
+                returnCoordinates(enabled = state.returnCoordinates)
+                preferLand(isPreferred = state.preferLand)
+
                 state.invalidSelectionMessage?.let { invalidSelectionMessage(message = state.invalidSelectionMessage!!) }
                 state.correctionMessage?.let { correctionMessage(message = state.correctionMessage!!) }
                 state.displayUnit?.let { displayUnit(units = state.displayUnit!!) }
