@@ -144,78 +144,89 @@ class W3WAutoSuggestTextFieldState(
     /**
      * see [W3WAutoSuggestEditText.allowFlexibleDelimiters]
      * **/
-    fun allowFlexibleDelimiters(isAllowed: Boolean) {
+    fun allowFlexibleDelimiters(isAllowed: Boolean): W3WAutoSuggestTextFieldState {
         this.allowFlexibleDelimiters = isAllowed
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.allowInvalid3wa]
      * **/
-    fun allowInvalid3wa(isAllowed: Boolean) {
+    fun allowInvalid3wa(isAllowed: Boolean): W3WAutoSuggestTextFieldState {
         this.allowInvalid3wa = isAllowed
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.searchFlowEnabled]
      * **/
-    fun searchFlowEnabled(isEnabled: Boolean) {
+    fun searchFlowEnabled(isEnabled: Boolean): W3WAutoSuggestTextFieldState {
         this.searchFlowEnabled = isEnabled
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.returnCoordinates]
      * **/
-    fun returnCoordinates(enabled: Boolean) {
+    fun returnCoordinates(enabled: Boolean): W3WAutoSuggestTextFieldState {
         this.returnCoordinates = enabled
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.hideSelectedIcon]
      * **/
-    fun hideSelectedIcon(isHidden: Boolean) {
+    fun hideSelectedIcon(isHidden: Boolean): W3WAutoSuggestTextFieldState {
         this.hideSelectedIcon = isHidden
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.voiceLanguage]
      * **/
-    fun voiceLanguage(language: String) {
+    fun voiceLanguage(language: String): W3WAutoSuggestTextFieldState {
         this.voiceLanguage = language
+        return this
     }
 
     /**
      * see [AppCompatTextView.setHint]
      * **/
-    fun hint(chars: String) {
+    fun hint(chars: String): W3WAutoSuggestTextFieldState {
         this.hint = chars
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.focus]
      * **/
-    fun focus(coordinates: Coordinates?) {
+    fun focus(coordinates: Coordinates?): W3WAutoSuggestTextFieldState {
         this.focus = coordinates
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.nResults]
      * **/
-    fun nResults(n: Int?) {
+    fun nResults(n: Int?): W3WAutoSuggestTextFieldState {
         this.nResults = n
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.nFocusResults]
      * **/
-    fun nFocusResults(n: Int?) {
+    fun nFocusResults(n: Int?): W3WAutoSuggestTextFieldState {
         this.nFocusResults = n
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.clipToCountry]
      * **/
-    fun clipToCountry(countryCodes: List<String>) {
+    fun clipToCountry(countryCodes: List<String>): W3WAutoSuggestTextFieldState {
         this.clipToCountry = countryCodes
+        return this
     }
 
 
@@ -225,94 +236,107 @@ class W3WAutoSuggestTextFieldState(
     fun clipToCircle(
         centre: Coordinates?,
         radius: Double?
-    ) {
+    ): W3WAutoSuggestTextFieldState {
         this.clipToCircle = centre
         this.clipToCircleRadius = radius
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.clipToBoundingBox]
      * **/
-    fun clipToBoundingBox(boundingBox: BoundingBox?) {
+    fun clipToBoundingBox(boundingBox: BoundingBox?): W3WAutoSuggestTextFieldState {
         this.clipToBoundingBox = boundingBox
+        return this
     }
 
 
     /**
      * see [W3WAutoSuggestEditText.clipToPolygon]
      * **/
-    fun clipToPolygon(polygon: List<Coordinates>) {
+    fun clipToPolygon(polygon: List<Coordinates>): W3WAutoSuggestTextFieldState {
         this.clipToPolygon = polygon
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.language]
      * **/
-    fun language(language: String) {
+    fun language(language: String): W3WAutoSuggestTextFieldState {
         this.language = language
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.preferLand]
      * **/
-    fun preferLand(isPreferred: Boolean) {
+    fun preferLand(isPreferred: Boolean): W3WAutoSuggestTextFieldState {
         this.preferLand = isPreferred
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.invalidSelectionMessage]
      * **/
-    fun invalidSelectionMessage(message: String) {
+    fun invalidSelectionMessage(message: String): W3WAutoSuggestTextFieldState {
         invalidSelectionMessage = message
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.toggleVoice]
      * **/
-    fun toggleVoice() {
+    fun toggleVoice(): W3WAutoSuggestTextFieldState {
         this.toggleVoice = true
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.correctionMessage]
      * **/
-    fun correctionMessage(message: String) {
+    fun correctionMessage(message: String): W3WAutoSuggestTextFieldState {
         this.correctionMessage = message
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.displayUnits]
      **/
-    fun displayUnit(units: DisplayUnits) {
+    fun displayUnit(units: DisplayUnits): W3WAutoSuggestTextFieldState {
         this.displayUnit = units
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.errorMessage]
      * */
-    fun errorMessage(message: String) {
+    fun errorMessage(message: String): W3WAutoSuggestTextFieldState {
         this.errorMessage = message
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.display]
      * **/
-    fun display(suggestion: SuggestionWithCoordinates) {
+    fun display(suggestion: SuggestionWithCoordinates): W3WAutoSuggestTextFieldState {
         this.display = suggestion
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.options]
      * **/
-    fun options(options: AutosuggestOptions) {
+    fun options(options: AutosuggestOptions): W3WAutoSuggestTextFieldState {
         this.options = options
+        return this
     }
 
     /**
      * see [W3WAutoSuggestEditText.voicePlaceholder]
      * **/
-    fun voicePlaceholder(placeholder: String) {
+    fun voicePlaceholder(placeholder: String): W3WAutoSuggestTextFieldState {
         this.voicePlaceHolder = placeholder
+        return this
     }
 
     /**
@@ -322,10 +346,11 @@ class W3WAutoSuggestTextFieldState(
         enabled: Boolean,
         type: VoiceScreenType = VoiceScreenType.Fullscreen,
         micIcon: Drawable? = null
-    ) {
+    ): W3WAutoSuggestTextFieldState {
         this.voiceEnabled = enabled
         this.voiceScreenType = type
         this.micIcon = micIcon
+        return this
     }
 
     /**
@@ -334,7 +359,7 @@ class W3WAutoSuggestTextFieldState(
      * @param style the resource ID of the theme to be applied on top of
      *                   the base context's theme
      * **/
-    fun configureW3WAutoSuggestEditText(
+    internal fun configureW3WAutoSuggestEditText(
         apiKey: String,
         context: Context,
         style: Int
@@ -362,7 +387,7 @@ class W3WAutoSuggestTextFieldState(
      * @param style the resource ID of the theme to be applied on top of
      *                   the base context's theme
      * **/
-    fun configureW3WAutoSuggestEditText(
+    internal fun configureW3WAutoSuggestEditText(
         sdk: AutosuggestLogicManager,
         context: Context,
         style: Int
