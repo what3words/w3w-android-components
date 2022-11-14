@@ -38,6 +38,7 @@ fun rememberW3WAutoSuggestTextFieldState(
     voiceEnabledByDefault: Boolean = false,
     voiceScreenType: VoiceScreenType = VoiceScreenType.Fullscreen
 ): W3WAutoSuggestTextFieldState {
+
     return rememberSaveable(saver = W3WAutoSuggestTextFieldState.Saver) {
         W3WAutoSuggestTextFieldState(
             apiKey = apiKey,
@@ -61,55 +62,40 @@ class W3WAutoSuggestTextFieldState(
 ) {
     // ui variables
     internal var internalW3WAutoSuggestEditText: W3WAutoSuggestEditText? by mutableStateOf(value = null)
-
     internal var defaultSuggestionPicker: W3WAutoSuggestPicker? by mutableStateOf(value = null)
     internal var defaultErrorView: AppCompatTextView? by mutableStateOf(value = null)
     internal var defaultInvalidAddressMessageView: AppCompatTextView? by mutableStateOf(value = null)
     internal var defaultCorrectionPicker: W3WAutoSuggestCorrectionPicker? by mutableStateOf(value = null)
 
     // auto suggest properties
-    /**
-     * see [W3WAutoSuggestEditText.allowFlexibleDelimiters]
-     * **/
     var allowFlexibleDelimiters: Boolean by mutableStateOf(value = false)
+        private set
 
-    /**
-     * see [W3WAutoSuggestEditText.allowInvalid3wa]
-     * **/
     var allowInvalid3wa: Boolean by mutableStateOf(value = false)
+        private set
 
-    /**
-     * see [W3WAutoSuggestEditText.searchFlowEnabled]
-     * **/
     var searchFlowEnabled: Boolean by mutableStateOf(value = false)
+        private set
 
-    /**
-     * see [W3WAutoSuggestEditText.returnCoordinates]
-     * **/
     var returnCoordinates: Boolean by mutableStateOf(value = false)
+        private set
 
-    /**
-     * see [W3WAutoSuggestEditText.invalidSelectionMessageText]
-     * **/
     var invalidSelectionMessage: String? by mutableStateOf(value = null)
+        private set
 
-    /**
-     * see [W3WAutoSuggestEditText.hideSelectedIcon]
-     * **/
     var hideSelectedIcon: Boolean by mutableStateOf(value = false)
+        private set
 
-    /**
-     * see [W3WAutoSuggestEditText.voiceLanguage]
-     * **/
     var voiceLanguage: String? by mutableStateOf(value = null)
+        private set
 
     var hint: String? by mutableStateOf(value = null)
+        private set
 
     /**
      * used to save text state for [W3WAutoSuggestEditText] in the case of a recomposition/configuration change
      * **/
     internal var defaultText: String? = null
-
     internal var options: AutosuggestOptions? by mutableStateOf(value = null)
     internal var toggleVoice: Boolean by mutableStateOf(value = false)
     internal var errorMessage: String? by mutableStateOf(value = null)
@@ -120,6 +106,63 @@ class W3WAutoSuggestTextFieldState(
     internal var voiceEnabled: Boolean by mutableStateOf(value = voiceEnabledByDefault)
     internal var voiceScreenType: VoiceScreenType by mutableStateOf(voiceScreenTypeByDefault)
     internal var micIcon: Drawable? by mutableStateOf(null)
+
+    /**
+     * see [W3WAutoSuggestEditText.allowFlexibleDelimiters]
+     * **/
+    fun allowFlexibleDelimiters(isAllowed: Boolean) {
+        allowFlexibleDelimiters = isAllowed
+    }
+
+    /**
+     * see [W3WAutoSuggestEditText.allowInvalid3wa]
+     * **/
+    fun allowInvalid3wa(isAllowed: Boolean) {
+        allowInvalid3wa = isAllowed
+    }
+
+    /**
+     * see [W3WAutoSuggestEditText.searchFlowEnabled]
+     * **/
+    fun searchFlowEnabled(isEnabled: Boolean) {
+        searchFlowEnabled = isEnabled
+    }
+
+    /**
+     * see [W3WAutoSuggestEditText.returnCoordinates]
+     * **/
+    fun returnCoordinates(enabled: Boolean) {
+        returnCoordinates = enabled
+    }
+
+    /**
+     * see [W3WAutoSuggestEditText.hideSelectedIcon]
+     * **/
+    fun hideSelectedIcon(isHidden: Boolean) {
+        hideSelectedIcon = isHidden
+    }
+
+    /**
+     * see [W3WAutoSuggestEditText.voiceLanguage]
+     * **/
+    fun voiceLanguage(language: String) {
+        voiceLanguage = language
+    }
+
+    /**
+     * see [AppCompatTextView.setHint]
+     * **/
+    fun hint(chars: String) {
+        hint = chars
+    }
+
+
+    /**
+     * see [W3WAutoSuggestEditText.invalidSelectionMessage]
+     * **/
+    fun invalidSelectionMessage(message: String) {
+        invalidSelectionMessage = message
+    }
 
     /**
      * see [W3WAutoSuggestEditText.toggleVoice]
@@ -248,7 +291,7 @@ class W3WAutoSuggestTextFieldState(
                     voiceScreenType = savedMap[Keys.VOICE_SCREEN_TYPE] as VoiceScreenType
                     voiceLanguage = savedMap[Keys.VOICE_LANGUAGE] as String?
 
-                    val options: AutosuggestOptions = AutosuggestOptions()
+                    val options = AutosuggestOptions()
                     (savedMap[Keys.AutoSuggestOptionsKey.LANGUAGE] as String?)?.let {
                         options.language = it
                     }
