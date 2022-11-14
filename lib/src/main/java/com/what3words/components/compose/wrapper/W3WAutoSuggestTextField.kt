@@ -30,7 +30,6 @@ import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
-import java.time.format.TextStyle
 
 /**
  * @param modifier Modifier to be applied to the W3WAutoSuggestEditText.
@@ -44,6 +43,7 @@ import java.time.format.TextStyle
  * @param invalidAddressMessageView custom invalid address view can be any [AppCompatTextView] or [W3WAutoSuggestErrorMessage], default view will show below [W3WAutoSuggestEditText]
  * @param correctionPicker custom correct picker view.
  * @param onError will provide any errors [APIResponse.What3WordsError] that might happen during the API call
+ * @param onW3WAutoSuggestEditTextReady callback that exposes [W3WAutoSuggestTextFieldState.internalW3WAutoSuggestEditText] for direct use
  * **/
 @Composable
 fun ConstraintLayoutScope.W3WAutoSuggestTextField(
@@ -58,6 +58,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     invalidAddressMessageView: AppCompatTextView? = null,
     correctionPicker: W3WAutoSuggestCorrectionPicker? = null,
     onError: ((APIResponse.What3WordsError) -> Unit)? = null,
+    onW3WAutoSuggestEditTextReady: ((W3WAutoSuggestEditText) -> Unit)? = null
 ) {
     // setUp auto suggest functions
     ConfigureAutoSuggest(state = state)
@@ -93,6 +94,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                             if (!state.defaultText.isNullOrEmpty()) this.setText(state.defaultText!!)
                         }
                 addView(state.internalW3WAutoSuggestEditText)
+                onW3WAutoSuggestEditTextReady?.invoke(state.internalW3WAutoSuggestEditText!!)
             }
         })
 
