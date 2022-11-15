@@ -23,7 +23,6 @@ import com.what3words.compose.sample.ui.components.MultiLabelTextField
 import com.what3words.compose.sample.ui.components.RadioGroup
 import com.what3words.compose.sample.ui.components.RadioGroupState
 import com.what3words.compose.sample.ui.model.VoiceOption
-import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
 
@@ -61,12 +60,7 @@ fun CustomizeAutoSuggestSettingsScreen(
     state: CustomizeAutoSuggestSettingsScreenState,
     modifier: Modifier = Modifier
 ) {
-    val autoSuggestOptions = remember {
-        (AutosuggestOptions().apply {
-            preferLand = true
-            language = state.language
-        })
-    }
+
 
     LaunchedEffect(
         state.placeHolder,
@@ -78,8 +72,7 @@ fun CustomizeAutoSuggestSettingsScreen(
                 voicePlaceholder(placeholder = state.voicePlaceHolder)
                 hint(state.placeHolder)
                 voiceLanguage(state.voiceLanguage)
-                autoSuggestOptions.language = state.language
-                options(options = autoSuggestOptions)
+                language(language = state.language)
             }
         }
     )
@@ -96,7 +89,7 @@ fun CustomizeAutoSuggestSettingsScreen(
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.small_50)),
             checked = autoSuggestTextFieldState.returnCoordinates,
             onCheckedChange = {
-                autoSuggestTextFieldState.returnCoordinates(it)
+                autoSuggestTextFieldState.returnCoordinates(enabled = it)
             },
             text = stringResource(id = R.string.txt_label_return_coordinates)
         )
@@ -108,8 +101,7 @@ fun CustomizeAutoSuggestSettingsScreen(
             checked = preferLand,
             onCheckedChange = {
                 preferLand = it
-                autoSuggestOptions.preferLand = preferLand
-                autoSuggestTextFieldState.options(options = autoSuggestOptions)
+                autoSuggestTextFieldState.preferLand(isPreferred = preferLand)
             },
             text = stringResource(id = R.string.txt_label_prefer_land)
         )
@@ -248,13 +240,12 @@ fun CustomizeAutoSuggestSettingsScreen(
                 val latLong =
                     state.focus.replace("\\s".toRegex(), "").split(",").filter { it.isNotEmpty() }
                 val lat = latLong.getOrNull(0)?.toDoubleOrNull()
-                val long = latLong.getOrNull(1)?.toDoubleOrNull()
-                if (lat != null && long != null) {
-                    autoSuggestOptions.focus = Coordinates(lat, long)
+                val lng = latLong.getOrNull(1)?.toDoubleOrNull()
+                if (lat != null && lng != null) {
+                    autoSuggestTextFieldState.focus(coordinates = Coordinates(lat, lng))
                 } else {
-                    autoSuggestOptions.focus = null
+                    autoSuggestTextFieldState.focus(coordinates = null)
                 }
-                autoSuggestTextFieldState.options(options = autoSuggestOptions)
             },
             primaryLabel = stringResource(id = R.string.txt_label_focus),
             secondaryLabel = stringResource(id = R.string.txt_label_focus_info)
@@ -266,10 +257,11 @@ fun CustomizeAutoSuggestSettingsScreen(
             text = state.clipToCountry,
             onTextChanged = {
                 state.clipToCountry = it
-                autoSuggestOptions.clipToCountry =
-                    state.clipToCountry.replace("\\s".toRegex(), "").split(",")
-                        .filter { it.isNotEmpty() }
-                autoSuggestTextFieldState.options(options = autoSuggestOptions)
+                autoSuggestTextFieldState.clipToCountry(countryCodes = state.clipToCountry.replace(
+                    "\\s".toRegex(),
+                    ""
+                ).split(",")
+                    .filter { it.isNotEmpty() })
             },
             primaryLabel = stringResource(id = R.string.txt_label_clip_to_country),
             secondaryLabel = stringResource(id = R.string.txt_label_clip_to_country_info)
@@ -287,13 +279,16 @@ fun CustomizeAutoSuggestSettingsScreen(
                 val long = latLong.getOrNull(1)?.toDoubleOrNull()
                 val km = latLong.getOrNull(2)?.toDoubleOrNull()
                 if (lat != null && long != null) {
-                    autoSuggestOptions.clipToCircle = Coordinates(lat, long)
-                    autoSuggestOptions.clipToCircleRadius = km ?: 0.0
+                    autoSuggestTextFieldState.clipToCircle(
+                        centre = Coordinates(lat, long),
+                        radius = km ?: 0.0
+                    )
                 } else {
-                    autoSuggestOptions.clipToCircle = null
-                    autoSuggestOptions.clipToCircleRadius = null
+                    autoSuggestTextFieldState.clipToCircle(
+                        centre = null,
+                        radius = null
+                    )
                 }
-                autoSuggestTextFieldState.options(options = autoSuggestOptions)
             },
             primaryLabel = stringResource(id = R.string.txt_label_clip_to_circle),
             secondaryLabel = stringResource(id = R.string.txt_label_clip_to_circle_info)
@@ -311,15 +306,15 @@ fun CustomizeAutoSuggestSettingsScreen(
                 val neLat = latLong.getOrNull(2)?.toDoubleOrNull()
                 val neLong = latLong.getOrNull(3)?.toDoubleOrNull()
                 if (swLat != null && swLong != null && neLat != null && neLong != null) {
-                    autoSuggestOptions.clipToBoundingBox =
-                        BoundingBox(
+                    autoSuggestTextFieldState.clipToBoundingBox(
+                        boundingBox = BoundingBox(
                             Coordinates(swLat, swLong),
                             Coordinates(neLat, neLong)
                         )
+                    )
                 } else {
-                    autoSuggestOptions.clipToBoundingBox = null
+                    autoSuggestTextFieldState.clipToBoundingBox(boundingBox = null)
                 }
-                autoSuggestTextFieldState.options(options = autoSuggestOptions)
             },
             primaryLabel = stringResource(id = R.string.txt_label_clip_to_box),
             secondaryLabel = stringResource(id = R.string.txt_label_clip_to_box_info)
@@ -347,12 +342,10 @@ fun CustomizeAutoSuggestSettingsScreen(
                         }
                     }
                 }
-                autoSuggestOptions.clipToPolygon = listCoordinates
-                autoSuggestTextFieldState.options(options = autoSuggestOptions)
+                autoSuggestTextFieldState.clipToPolygon(polygon = listCoordinates)
             },
             primaryLabel = stringResource(id = R.string.txt_label_clip_to_polygon),
             secondaryLabel = stringResource(id = R.string.txt_label_clip_to_polygon_info)
         )
-
     }
 }
