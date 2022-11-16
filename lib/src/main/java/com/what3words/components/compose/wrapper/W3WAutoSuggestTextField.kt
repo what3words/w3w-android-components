@@ -1,7 +1,6 @@
 package com.what3words.components.compose.wrapper
 
 import android.graphics.drawable.Drawable
-import androidx.appcompat.view.ContextThemeWrapper
 import android.widget.FrameLayout
 import androidx.annotation.StyleRes
 import androidx.appcompat.widget.AppCompatTextView
@@ -16,6 +15,7 @@ import androidx.constraintlayout.compose.ConstrainedLayoutReference
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintLayoutScope
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.util.Consumer
 import com.what3words.components.R
 import com.what3words.components.compose.components.W3WAutoSuggestPicker
 import com.what3words.components.compose.components.W3WCorrectionPicker
@@ -25,6 +25,7 @@ import com.what3words.components.compose.utils.AttachCorrectionPicker
 import com.what3words.components.compose.utils.AttachErrorView
 import com.what3words.components.compose.utils.AttachSuggestionPickerAndInvalidMessageView
 import com.what3words.components.compose.utils.ConfigureAutoSuggest
+import com.what3words.components.compose.utils.createW3WAutoSuggestEditText
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
@@ -46,9 +47,9 @@ sealed class InternalAutoSuggestConfiguration {
 
 /**
  * @param modifier Modifier to be applied to the W3WAutoSuggestEditText.
- * @param state the state object to be used to set-up the W3WAutoSuggestEditText.
  * @param ref Represents the [ConstrainedLayoutReference] that was used to constrain the [W3WAutoSuggestTextField] within a [ConstraintLayout].
  * @param onSuggestionWithCoordinates will return the [SuggestionWithCoordinates] picked by the end-user, coordinates will be null if returnCoordinates = false.
+ * @param state the state object to be used to set-up the W3WAutoSuggestEditText.
  * @param styles [W3WAutoSuggestTextFieldStyles] that will be used to resolve the styling of this W3WAutoSuggestTextField default components. See [W3WAutoSuggestTextFieldDefaults.styles].
  * @param micIcon drawable to use as Mic Icon
  * @param suggestionPicker instance of [W3WAutoSuggestPicker] to replace the default picker
@@ -56,15 +57,17 @@ sealed class InternalAutoSuggestConfiguration {
  * @param invalidAddressMessageView custom invalid address view can be any [AppCompatTextView] or [W3WAutoSuggestErrorMessage], default view will show below [W3WAutoSuggestEditText]
  * @param correctionPicker custom correct picker view.
  * @param onError will provide any errors [APIResponse.What3WordsError] that might happen during the API call
+ * @param onHomeClick see [W3WAutoSuggestEditText.onHomeClick]
+ * @param onDisplaySuggestions see [W3WAutoSuggestEditText.onDisplaySuggestions]
  * @param onW3WAutoSuggestEditTextReady callback that exposes [W3WAutoSuggestTextFieldState.internalW3WAutoSuggestEditText] for direct use
  * **/
 @Composable
 fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     modifier: Modifier,
-    state: W3WAutoSuggestTextFieldState,
     ref: ConstrainedLayoutReference,
     configuration: InternalAutoSuggestConfiguration,
     onSuggestionWithCoordinates: ((SuggestionWithCoordinates?) -> Unit),
+    state: W3WAutoSuggestTextFieldState = rememberW3WAutoSuggestTextFieldState(),
     styles: W3WAutoSuggestTextFieldStyles = W3WAutoSuggestTextFieldDefaults.styles(),
     micIcon: Drawable? = null,
     suggestionPicker: com.what3words.components.picker.W3WAutoSuggestPicker? = null,
@@ -72,6 +75,8 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     invalidAddressMessageView: AppCompatTextView? = null,
     correctionPicker: W3WAutoSuggestCorrectionPicker? = null,
     onError: ((APIResponse.What3WordsError) -> Unit)? = null,
+    onHomeClick: (() -> Unit)? = null,
+    onDisplaySuggestions: (Consumer<Boolean>)? = null,
     onW3WAutoSuggestEditTextReady: ((W3WAutoSuggestEditText) -> Unit)? = null
 ) {
     // setUp auto suggest functions
@@ -93,22 +98,26 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
             FrameLayout(it).apply {
                 state.micIcon = micIcon
                 // first instantiate the internal W3WAutoSuggestEditText before adding it to the frame layout
-                when (configuration) {
+                state.internalW3WAutoSuggestEditText = when (configuration) {
                     is InternalAutoSuggestConfiguration.Api -> {
-                        state.configureW3WAutoSuggestEditText(
+                        state.createW3WAutoSuggestEditText(
                             apiKey = configuration.apiKey,
                             context = it,
                             style = styles.autoSuggestEditTextStyle()
                         )
                     }
                     is InternalAutoSuggestConfiguration.Sdk -> {
-                        state.configureW3WAutoSuggestEditText(
+                        state.createW3WAutoSuggestEditText(
                             sdk = configuration.logicManager,
                             context = it,
                             style = styles.autoSuggestEditTextStyle()
                         )
                     }
+                }.apply {
+                    onHomeClick?.let { onHomeClick(onHomeClickCallback = onHomeClick) }
+                    onDisplaySuggestions?.let { onDisplaySuggestions(onDisplaySuggestions) }
                 }
+
                 addView(state.internalW3WAutoSuggestEditText)
                 onW3WAutoSuggestEditTextReady?.invoke(state.internalW3WAutoSuggestEditText!!)
             }

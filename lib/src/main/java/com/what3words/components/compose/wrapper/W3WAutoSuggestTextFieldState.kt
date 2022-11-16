@@ -353,62 +353,6 @@ class W3WAutoSuggestTextFieldState(
         return this
     }
 
-    /**
-     * @param apiKey your API key from what3words developer dashboard
-     * @param context the base context
-     * @param style the resource ID of the theme to be applied on top of
-     *                   the base context's theme
-     * **/
-    internal fun configureW3WAutoSuggestEditText(
-        apiKey: String,
-        context: Context,
-        style: Int
-    ): W3WAutoSuggestEditText {
-        internalW3WAutoSuggestEditText = W3WAutoSuggestEditText(
-            ContextThemeWrapper(
-                context,
-                style
-            )
-        )
-            .apiKey(apiKey)
-            .voiceEnabled(
-                enabled = voiceEnabledByDefault,
-                type = voiceScreenTypeByDefault,
-                micIcon = micIcon
-            ).apply {
-                if (!defaultText.isNullOrEmpty()) this.setText(defaultText!!)
-            }
-        return internalW3WAutoSuggestEditText!!
-    }
-
-    /**
-     * @param sdk logicManager manager created using SDK instead of API
-     * @param context the base context
-     * @param style the resource ID of the theme to be applied on top of
-     *                   the base context's theme
-     * **/
-    internal fun configureW3WAutoSuggestEditText(
-        sdk: AutosuggestLogicManager,
-        context: Context,
-        style: Int
-    ): W3WAutoSuggestEditText {
-        internalW3WAutoSuggestEditText = W3WAutoSuggestEditText(
-            ContextThemeWrapper(
-                context,
-                style
-            )
-        )
-            .sdk(logicManager = sdk)
-            .voiceEnabled(
-                enabled = voiceEnabledByDefault,
-                type = voiceScreenTypeByDefault,
-                micIcon = micIcon
-            ).apply {
-                if (!defaultText.isNullOrEmpty()) this.setText(defaultText!!)
-            }
-        return internalW3WAutoSuggestEditText!!
-    }
-
     internal companion object {
         val Saver: Saver<W3WAutoSuggestTextFieldState, Any> = mapSaver(
             save = {
