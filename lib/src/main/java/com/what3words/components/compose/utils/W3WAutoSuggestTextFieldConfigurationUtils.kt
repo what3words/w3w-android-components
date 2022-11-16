@@ -1,8 +1,11 @@
 package com.what3words.components.compose.utils
 
+import android.content.Context
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextFieldState
+import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.text.W3WAutoSuggestEditText
 
 /**
@@ -31,6 +34,16 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
         state.micIcon,
         state.hint,
         state.voiceLanguage,
+        state.language,
+        state.focus,
+        state.nFocusResults,
+        state.nResults,
+        state.clipToCircle,
+        state.clipToCountry,
+        state.clipToCircleRadius,
+        state.clipToBoundingBox,
+        state.clipToPolygon,
+        state.preferLand,
         block = {
             state.internalW3WAutoSuggestEditText?.apply {
                 allowFlexibleDelimiters(isAllowed = state.allowFlexibleDelimiters)
@@ -44,6 +57,13 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                     micIcon = state.micIcon
                 )
                 hideSelectedIcon(b = state.hideSelectedIcon)
+                clipToCircle(centre = state.clipToCircle, radius = state.clipToCircleRadius)
+                clipToCountry(countryCodes = state.clipToCountry ?: listOf())
+                clipToBoundingBox(boundingBox = state.clipToBoundingBox)
+                clipToPolygon(polygon = state.clipToPolygon ?: listOf())
+                returnCoordinates(enabled = state.returnCoordinates)
+                preferLand(isPreferred = state.preferLand)
+
                 state.invalidSelectionMessage?.let { invalidSelectionMessage(message = state.invalidSelectionMessage!!) }
                 state.correctionMessage?.let { correctionMessage(message = state.correctionMessage!!) }
                 state.displayUnit?.let { displayUnit(units = state.displayUnit!!) }
@@ -63,4 +83,58 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                 }
             }
         })
+}
+
+/**
+ * @param apiKey your API key from what3words developer dashboard
+ * @param context the base context
+ * @param style the resource ID of the theme to be applied on top of
+ *                   the base context's theme
+ * **/
+internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
+    apiKey: String,
+    context: Context,
+    style: Int
+): W3WAutoSuggestEditText {
+    return W3WAutoSuggestEditText(
+        ContextThemeWrapper(
+            context,
+            style
+        )
+    )
+        .apiKey(apiKey)
+        .voiceEnabled(
+            enabled = voiceEnabledByDefault,
+            type = voiceScreenTypeByDefault,
+            micIcon = micIcon
+        ).apply {
+            if (!defaultText.isNullOrEmpty()) this.setText(defaultText!!)
+        }
+}
+
+/**
+ * @param sdk logicManager manager created using SDK instead of API
+ * @param context the base context
+ * @param style the resource ID of the theme to be applied on top of
+ *                   the base context's theme
+ * **/
+internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
+    sdk: AutosuggestLogicManager,
+    context: Context,
+    style: Int
+): W3WAutoSuggestEditText {
+    return W3WAutoSuggestEditText(
+        ContextThemeWrapper(
+            context,
+            style
+        )
+    )
+        .sdk(logicManager = sdk)
+        .voiceEnabled(
+            enabled = voiceEnabledByDefault,
+            type = voiceScreenTypeByDefault,
+            micIcon = micIcon
+        ).apply {
+            if (!defaultText.isNullOrEmpty()) this.setText(defaultText!!)
+        }
 }
