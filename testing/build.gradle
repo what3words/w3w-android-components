@@ -68,10 +68,10 @@ dependencies {
 
     implementation testLibs.androidx.junit.ktx
 
-    implementation testLibs.espresso.contrib
+    implementation testLibs.androidx.espresso.contrib
     debugImplementation testLibs.androidx.test.rules
     debugImplementation testLibs.androidx.junit
-    androidTestImplementation testLibs.espresso.core
+    androidTestImplementation testLibs.androidx.espresso.core
     debugImplementation testLibs.androidx.test.runner
     androidTestUtil testLibs.androidx.test.orchestrator
 
