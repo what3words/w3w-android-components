@@ -56,7 +56,7 @@ dependencies {
     implementation libs.bundles.compose.application
 
     testImplementation testLibs.junit
-    androidTestImplementation testLibs.espresso.core
+    androidTestImplementation testLibs.androidx.espresso.core
 
     androidTestImplementation testLibs.androidx.junit
     androidTestImplementation testLibs.androidx.compose.ui.junit

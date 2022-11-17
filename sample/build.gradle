@@ -4,7 +4,7 @@ apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
     compileSdkVersion 32
-    buildToolsVersion "30.0.3"
+    buildToolsVersion libs.versions.buildToolsVersion.get()
 
     buildFeatures {
         viewBinding true
@@ -57,16 +57,15 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.material:material:1.6.1'
-    implementation 'androidx.test.ext:junit-ktx:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha07'
-    implementation 'androidx.test.espresso:espresso-contrib:3.5.0-alpha07'
-    androidTestImplementation 'androidx.test:rules:1.4.1-alpha07'
+    implementation libs.androidx.core
+    implementation libs.androidx.constraint.layout
+    implementation libs.google.android.material
+    implementation testLibs.androidx.junit.ktx
+    androidTestImplementation testLibs.androidx.espresso.core
+    implementation testLibs.androidx.espresso.contrib
+    androidTestImplementation testLibs.androidx.test.rules 
 
-    //w3w auto suggest
-    // implementation "com.what3words:w3w-android-components:3.0.2"
-    implementation "com.what3words:w3w-android-wrapper:3.1.20"
+
+    implementation libs.what3words.android.wrapper
     implementation project(":lib")
 }
