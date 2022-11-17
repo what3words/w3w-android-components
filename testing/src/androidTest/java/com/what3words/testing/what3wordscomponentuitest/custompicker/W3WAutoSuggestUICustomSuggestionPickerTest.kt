@@ -46,11 +46,11 @@ class W3WAutoSuggestUICustomSuggestionPickerTest {
                 closeSoftKeyboard()
             )
 
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultPicker))
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .check(matches(isDisplayed()))
 
-        Espresso.onView(withId(R.id.btnClear))
+        Espresso.onView(withId(com.what3words.components.R.id.btnClear))
             .perform(waitUntilVisible(), click())
 
         Espresso.onView(withId(R.id.checkboxCustomPicker))
@@ -65,7 +65,7 @@ class W3WAutoSuggestUICustomSuggestionPickerTest {
                 closeSoftKeyboard()
             )
 
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultPicker))
             .check(matches(not(isDisplayed())))
 
         Espresso.onView(withId(R.id.suggestionPicker))
