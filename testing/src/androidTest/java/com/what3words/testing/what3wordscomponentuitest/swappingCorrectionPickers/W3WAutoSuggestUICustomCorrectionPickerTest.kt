@@ -59,7 +59,7 @@ class W3WAutoSuggestUICustomCorrectionPickerTest {
             .perform( waitUntilVisible(),scrollTo(), click())
 
         // clear text from auto-suggest edit text
-        Espresso.onView(withId(R.id.btnClear))
+        Espresso.onView(withId(com.what3words.components.R.id.btnClear))
             .perform( waitUntilVisible(),scrollTo(), click())
 
         // type into the auto-suggest edit text
@@ -68,7 +68,7 @@ class W3WAutoSuggestUICustomCorrectionPickerTest {
             .perform(click(), typeTextIntoFocusedView(spaceSeparatedThreeWordsAddress))
 
         // wait and check that the default correction picker is visible
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultCorrectionPicker))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultCorrectionPicker))
             .perform(
                 waitUntilVisibleInParent<W3WAutoSuggestCorrectionPicker>()
             ).check(matches(isDisplayed()))

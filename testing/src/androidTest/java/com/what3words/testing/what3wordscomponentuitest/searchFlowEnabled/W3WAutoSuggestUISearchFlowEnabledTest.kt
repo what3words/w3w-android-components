@@ -47,20 +47,20 @@ class W3WAutoSuggestUISearchFlowEnabledTest {
                 closeSoftKeyboard()
             )
 
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultPicker))
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .check(matches(isDisplayed()))
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(pressImeActionButton())
 
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultPicker))
             .check(matches(not(isDisplayed())))
 
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultErrorMessage))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultErrorMessage))
             .perform(waitUntilVisible())
 
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultErrorMessage))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultErrorMessage))
             .perform(waitUntilVisible())
 
         Espresso.onView(withId(R.id.checkboxSearchFlowEnabled))
@@ -69,14 +69,14 @@ class W3WAutoSuggestUISearchFlowEnabledTest {
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(scrollTo(), click(), replaceText(threeWordAddress), closeSoftKeyboard())
 
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultPicker))
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .check(matches(isDisplayed()))
 
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(pressImeActionButton())
 
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultPicker))
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .check(matches(isDisplayed()))
 

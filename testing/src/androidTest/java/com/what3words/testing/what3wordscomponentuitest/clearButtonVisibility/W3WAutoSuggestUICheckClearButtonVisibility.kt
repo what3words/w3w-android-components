@@ -31,6 +31,6 @@ class W3WAutoSuggestUICheckClearButtonVisibility {
 
     @Test
     fun testTextSearch_isDisplayedCorrectlyWhenEditTextComponentHasFocus() {
-        Espresso.onView(withId(R.id.btnClear)).check(matches(isDisplayed()))
+        Espresso.onView(withId(com.what3words.components.R.id.btnClear)).check(matches(isDisplayed()))
     }
 }

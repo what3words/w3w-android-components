@@ -22,7 +22,6 @@ import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisibleIn
 import org.hamcrest.CoreMatchers.containsStringIgnoringCase
 import org.hamcrest.CoreMatchers.not
 
-
 @RunWith(AndroidJUnit4::class)
 class W3WAutoSuggestUIAllowFlexibleDelimiters {
 
@@ -49,7 +48,7 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
                 waitUntilVisibleInParent<W3WAutoSuggestCorrectionPicker>()
             )
 
-        Espresso.onView(withId(R.id.btnClear))
+        Espresso.onView(withId(com.what3words.components.R.id.btnClear))
             .perform(waitUntilVisible(), click())
 
         Espresso.onView(withId(R.id.checkboxAllowFlexibleDelimiters))
@@ -72,7 +71,7 @@ class W3WAutoSuggestUIAllowFlexibleDelimiters {
                 )
             )
 
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultPicker))
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
             .check(matches(isDisplayed()))
             .perform(
