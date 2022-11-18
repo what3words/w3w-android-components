@@ -115,7 +115,7 @@ fun W3WTextFieldInConstraintLayoutScreen(
                 }
             },
             styles = W3WAutoSuggestTextFieldDefaults.styles(
-                autoSuggestEditTextStyle = R.style.W3WAutoSuggestEditTextDayNightTheme,
+                autoSuggestEditTextStyle = R.style.Widget_AppCompat_W3WAutoSuggestEditTextDayNight,
                 autoSuggestPickerStyle = R.style.W3WAutoSuggestPickerDayNight
             )
         )

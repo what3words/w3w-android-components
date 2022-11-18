@@ -1,7 +1,6 @@
 package com.what3words.components.compose.utils
 
 import android.content.Context
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextFieldState
@@ -97,10 +96,8 @@ internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
     style: Int
 ): W3WAutoSuggestEditText {
     return W3WAutoSuggestEditText(
-        ContextThemeWrapper(
-            context,
-            style
-        )
+        context = context,
+        defStyleRes = style
     )
         .apiKey(apiKey)
         .voiceEnabled(
@@ -124,10 +121,8 @@ internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
     style: Int
 ): W3WAutoSuggestEditText {
     return W3WAutoSuggestEditText(
-        ContextThemeWrapper(
-            context,
-            style
-        )
+        context = context,
+        defStyleRes = style
     )
         .sdk(logicManager = sdk)
         .voiceEnabled(

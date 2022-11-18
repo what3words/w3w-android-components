@@ -1,8 +1,6 @@
 package com.what3words.components.compose.wrapper
 
-import android.content.Context
 import android.graphics.drawable.Drawable
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,7 +10,6 @@ import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.what3words.components.compose.utils.W3WTextFieldStateKeys
-import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.models.DisplayUnits
 import com.what3words.components.models.VoiceScreenType
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
