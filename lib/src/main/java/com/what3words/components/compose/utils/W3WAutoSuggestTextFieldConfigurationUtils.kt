@@ -14,7 +14,7 @@ import com.what3words.components.text.W3WAutoSuggestEditText
 @Composable
 internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
     LaunchedEffect(
-        state.internalW3WAutoSuggestEditText,
+        state.w3wAutoSuggestEditText,
         state.allowFlexibleDelimiters,
         state.searchFlowEnabled,
         state.allowInvalid3wa,
@@ -44,7 +44,7 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
         state.clipToPolygon,
         state.preferLand,
         block = {
-            state.internalW3WAutoSuggestEditText?.apply {
+            state.w3wAutoSuggestEditText?.apply {
                 allowFlexibleDelimiters(isAllowed = state.allowFlexibleDelimiters)
                 searchFlowEnabled(isEnabled = state.searchFlowEnabled)
                 allowInvalid3wa(isAllowed = state.allowInvalid3wa)
@@ -74,7 +74,7 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                 state.voicePlaceHolder?.let {
                     voicePlaceholder(placeholder = state.voicePlaceHolder!!)
                 }
-                state.hint?.let { state.internalW3WAutoSuggestEditText?.hint = state.hint }
+                state.hint?.let { state.w3wAutoSuggestEditText?.hint = state.hint }
                 state.voiceLanguage?.let { voiceLanguage(language = state.voiceLanguage!!) }
                 if (state.toggleVoice) {
                     toggleVoice()
