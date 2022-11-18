@@ -59,7 +59,7 @@ sealed class InternalAutoSuggestConfiguration {
  * @param onError will provide any errors [APIResponse.What3WordsError] that might happen during the API call
  * @param onHomeClick see [W3WAutoSuggestEditText.onHomeClick]
  * @param onDisplaySuggestions see [W3WAutoSuggestEditText.onDisplaySuggestions]
- * @param onW3WAutoSuggestEditTextReady callback that exposes [W3WAutoSuggestTextFieldState.internalW3WAutoSuggestEditText] for direct use
+ * @param onW3WAutoSuggestEditTextReady callback that exposes [W3WAutoSuggestTextFieldState.w3wAutoSuggestEditText] for direct use
  * **/
 @Composable
 fun ConstraintLayoutScope.W3WAutoSuggestTextField(
@@ -98,7 +98,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
             FrameLayout(it).apply {
                 state.micIcon = micIcon
                 // first instantiate the internal W3WAutoSuggestEditText before adding it to the frame layout
-                state.internalW3WAutoSuggestEditText = when (configuration) {
+                state.w3wAutoSuggestEditText = when (configuration) {
                     is InternalAutoSuggestConfiguration.Api -> {
                         state.createW3WAutoSuggestEditText(
                             apiKey = configuration.apiKey,
@@ -118,8 +118,8 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                     onDisplaySuggestions?.let { onDisplaySuggestions(onDisplaySuggestions) }
                 }
 
-                addView(state.internalW3WAutoSuggestEditText)
-                onW3WAutoSuggestEditTextReady?.invoke(state.internalW3WAutoSuggestEditText!!)
+                addView(state.w3wAutoSuggestEditText)
+                onW3WAutoSuggestEditTextReady?.invoke(state.w3wAutoSuggestEditText!!)
             }
         })
 

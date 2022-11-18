@@ -1,7 +1,6 @@
 package com.what3words.components.compose.utils
 
 import android.content.Context
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextFieldState
@@ -15,7 +14,7 @@ import com.what3words.components.text.W3WAutoSuggestEditText
 @Composable
 internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
     LaunchedEffect(
-        state.internalW3WAutoSuggestEditText,
+        state.w3wAutoSuggestEditText,
         state.allowFlexibleDelimiters,
         state.searchFlowEnabled,
         state.allowInvalid3wa,
@@ -45,7 +44,7 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
         state.clipToPolygon,
         state.preferLand,
         block = {
-            state.internalW3WAutoSuggestEditText?.apply {
+            state.w3wAutoSuggestEditText?.apply {
                 allowFlexibleDelimiters(isAllowed = state.allowFlexibleDelimiters)
                 searchFlowEnabled(isEnabled = state.searchFlowEnabled)
                 allowInvalid3wa(isAllowed = state.allowInvalid3wa)
@@ -75,7 +74,7 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                 state.voicePlaceHolder?.let {
                     voicePlaceholder(placeholder = state.voicePlaceHolder!!)
                 }
-                state.hint?.let { state.internalW3WAutoSuggestEditText?.hint = state.hint }
+                state.hint?.let { state.w3wAutoSuggestEditText?.hint = state.hint }
                 state.voiceLanguage?.let { voiceLanguage(language = state.voiceLanguage!!) }
                 if (state.toggleVoice) {
                     toggleVoice()
@@ -97,10 +96,8 @@ internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
     style: Int
 ): W3WAutoSuggestEditText {
     return W3WAutoSuggestEditText(
-        ContextThemeWrapper(
-            context,
-            style
-        )
+        context = context,
+        defStyleRes = style
     )
         .apiKey(apiKey)
         .voiceEnabled(
@@ -124,10 +121,8 @@ internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
     style: Int
 ): W3WAutoSuggestEditText {
     return W3WAutoSuggestEditText(
-        ContextThemeWrapper(
-            context,
-            style
-        )
+        context = context,
+        defStyleRes = style
     )
         .sdk(logicManager = sdk)
         .voiceEnabled(
