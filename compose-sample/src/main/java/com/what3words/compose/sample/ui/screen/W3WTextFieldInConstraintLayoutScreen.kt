@@ -84,7 +84,9 @@ fun W3WTextFieldInConstraintLayoutScreen(
 
         //  what3words autosuggest text component for compose
         val w3wTextFieldState =
-            rememberW3WAutoSuggestTextFieldState()
+            rememberW3WAutoSuggestTextFieldState().apply {
+                nResults(n = 4)
+            }
 
         W3WAutoSuggestTextField(
             modifier = Modifier.constrainAs(ref = w3wTextFieldRef) {

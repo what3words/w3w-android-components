@@ -57,12 +57,13 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                     type = state.voiceScreenType,
                     micIcon = state.micIcon
                 )
-                hideSelectedIcon(b = state.hideSelectedIcon)
+                state.language?.let { language(language = state.language!!) }
+                nFocusResults(n = state.nFocusResults)
+                nResults(n = state.nResults)
                 clipToCircle(centre = state.clipToCircle, radius = state.clipToCircleRadius)
                 clipToCountry(countryCodes = state.clipToCountry ?: listOf())
                 clipToBoundingBox(boundingBox = state.clipToBoundingBox)
                 clipToPolygon(polygon = state.clipToPolygon ?: listOf())
-                returnCoordinates(enabled = state.returnCoordinates)
                 preferLand(isPreferred = state.preferLand)
 
                 state.invalidSelectionMessage?.let { invalidSelectionMessage(message = state.invalidSelectionMessage!!) }
