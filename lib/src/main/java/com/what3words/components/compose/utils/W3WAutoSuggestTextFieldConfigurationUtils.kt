@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import com.what3words.components.compose.wrapper.AutoSuggestConfiguration
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextFieldState
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.text.W3WAutoSuggestEditText
@@ -87,43 +88,46 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
 
 /**
  * @param apiKey your API key from what3words developer dashboard
+ * @param endpoint your Enterprise API endpoint
+ * @param headers any custom headers needed for your Enterprise API
  * @param context the base context
  * @param themeResId the resource ID of the theme to be applied on top of
  *                   the base context's theme
  * **/
 internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
-    apiKey: String,
     context: Context,
-    themeResId: Int
+    themeResId: Int,
+    autoSuggestConfiguration: AutoSuggestConfiguration
 ): W3WAutoSuggestEditText {
     return W3WAutoSuggestEditText(
         ContextThemeWrapper(context, themeResId)
     )
-        .apiKey(apiKey)
-        .voiceEnabled(
-            enabled = voiceEnabledByDefault,
-            type = voiceScreenTypeByDefault,
-            micIcon = micIcon
-        ).apply {
-            if (!defaultText.isNullOrEmpty()) this.setText(defaultText!!)
-        }
-}
+        .apply {
+            when (autoSuggestConfiguration) {
+                is AutoSuggestConfiguration.Api -> {
+                    apiKey(key = autoSuggestConfiguration.apiKey)
+                }
+                is AutoSuggestConfiguration.ApiWithEnterpriseEndpoint -> {
+                    apiKey(
+                        key = autoSuggestConfiguration.apiKey,
+                        endpoint = autoSuggestConfiguration.endpoint,
+                        headers = autoSuggestConfiguration.headers
+                    )
+                }
+                is AutoSuggestConfiguration.ApiWithEnterpriseAndVoiceEndpoint -> {
+                    apiKey(
+                        key = autoSuggestConfiguration.apiKey,
+                        endpoint = autoSuggestConfiguration.endpoint,
+                        headers = autoSuggestConfiguration.headers,
+                        voiceEndpoint = autoSuggestConfiguration.voiceEndpoint
+                    )
+                }
+                is AutoSuggestConfiguration.Sdk -> {
+                    sdk(logicManager = autoSuggestConfiguration.logicManager)
 
-/**
- * @param sdk logicManager manager created using SDK instead of API
- * @param context the base context
- * @param themeResId the resource ID of the theme to be applied on top of
- *                   the base context's theme
- * **/
-internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
-    sdk: AutosuggestLogicManager,
-    context: Context,
-    themeResId: Int
-): W3WAutoSuggestEditText {
-    return W3WAutoSuggestEditText(
-        ContextThemeWrapper(context, themeResId)
-    )
-        .sdk(logicManager = sdk)
+                }
+            }
+        }
         .voiceEnabled(
             enabled = voiceEnabledByDefault,
             type = voiceScreenTypeByDefault,

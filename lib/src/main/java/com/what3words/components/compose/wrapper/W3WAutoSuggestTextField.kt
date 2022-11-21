@@ -33,18 +33,6 @@ import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
 
-sealed class AutoSuggestConfiguration {
-    /**
-     * @property apiKey your API key from what3words developer dashboard
-     * */
-    data class Api(val apiKey: String) : AutoSuggestConfiguration()
-
-    /**
-     * @property logicManager manager created using SDK instead of API
-     * **/
-    data class Sdk(val logicManager: AutosuggestLogicManager) : AutoSuggestConfiguration()
-}
-
 /**
  * @param modifier Modifier to be applied to the W3WAutoSuggestEditText.
  * @param ref Represents the [ConstrainedLayoutReference] that was used to constrain the [W3WAutoSuggestTextField] within a [ConstraintLayout].
@@ -98,22 +86,11 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
             FrameLayout(it).apply {
                 state.micIcon = micIcon
                 // first instantiate the internal W3WAutoSuggestEditText before adding it to the frame layout
-                state.internalW3WAutoSuggestEditText = when (configuration) {
-                    is AutoSuggestConfiguration.Api -> {
-                        state.createW3WAutoSuggestEditText(
-                            apiKey = configuration.apiKey,
-                            context = it,
-                            themeResId = themes.autoSuggestEditTextTheme()
-                        )
-                    }
-                    is AutoSuggestConfiguration.Sdk -> {
-                        state.createW3WAutoSuggestEditText(
-                            sdk = configuration.logicManager,
-                            context = it,
-                            themeResId = themes.autoSuggestEditTextTheme()
-                        )
-                    }
-                }.apply {
+                state.internalW3WAutoSuggestEditText = state.createW3WAutoSuggestEditText(
+                    context = it,
+                    themeResId = themes.autoSuggestEditTextTheme(),
+                    autoSuggestConfiguration = configuration
+                ).apply {
                     onHomeClick?.let { onHomeClick(onHomeClickCallback = onHomeClick) }
                     onDisplaySuggestions?.let { onDisplaySuggestions(onDisplaySuggestions) }
                 }
