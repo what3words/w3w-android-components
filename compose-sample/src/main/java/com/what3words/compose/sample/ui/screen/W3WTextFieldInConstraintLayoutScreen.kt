@@ -1,7 +1,6 @@
 package com.what3words.compose.sample.ui.screen
 
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -114,9 +113,11 @@ fun W3WTextFieldInConstraintLayoutScreen(
                     selectedInfo = ""
                 }
             },
-            styles = W3WAutoSuggestTextFieldDefaults.styles(
-                autoSuggestEditTextStyle = R.style.Widget_AppCompat_W3WAutoSuggestEditTextDayNight,
-                autoSuggestPickerStyle = R.style.W3WAutoSuggestPickerDayNight
+            themes = W3WAutoSuggestTextFieldDefaults.themes(
+                autoSuggestEditTextStyle = R.style.W3WAutoSuggestEditTextDayNightTheme,
+                autoSuggestPickerStyle = R.style.W3WAutoSuggestPickerDayNight,
+                autoSuggestErrorMessageStyle = R.style.W3WAutoSuggestErrorMessageDayNight,
+                autoSuggestInvalidAddressMessageStyle = R.style.W3WAutoSuggestErrorMessageDayNight
             )
         )
 

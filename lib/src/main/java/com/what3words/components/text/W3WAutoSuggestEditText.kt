@@ -69,10 +69,9 @@ class W3WAutoSuggestEditText
 @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.customW3WAutoSuggestEditTextStyle,
-    @StyleRes defStyleRes: Int = R.style.W3WAutoSuggestEditTextTheme,
+    defStyleAttr: Int = R.attr.customW3WAutoSuggestEditTextStyle
 ) : AppCompatEditText(
-    ContextThemeWrapper(context, defStyleRes),
+    context,
     attrs,
     defStyleAttr
 ),

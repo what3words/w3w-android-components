@@ -50,7 +50,7 @@ sealed class InternalAutoSuggestConfiguration {
  * @param ref Represents the [ConstrainedLayoutReference] that was used to constrain the [W3WAutoSuggestTextField] within a [ConstraintLayout].
  * @param onSuggestionWithCoordinates will return the [SuggestionWithCoordinates] picked by the end-user, coordinates will be null if returnCoordinates = false.
  * @param state the state object to be used to set-up the W3WAutoSuggestEditText.
- * @param styles [W3WAutoSuggestTextFieldStyles] that will be used to resolve the styling of this W3WAutoSuggestTextField default components. See [W3WAutoSuggestTextFieldDefaults.styles].
+ * @param themes [W3WAutoSuggestTextFieldThemes] that will be used to resolve the styling of this W3WAutoSuggestTextField default components. See [W3WAutoSuggestTextFieldDefaults.themes].
  * @param micIcon drawable to use as Mic Icon
  * @param suggestionPicker instance of [W3WAutoSuggestPicker] to replace the default picker
  * @param errorView custom error view can be any [AppCompatTextView] or [W3WAutoSuggestErrorMessage], default view will show below [W3WAutoSuggestEditText] (this will only show end-user error friendly message or message provided on [W3WAutoSuggestEditText.errorMessage])
@@ -68,7 +68,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     configuration: InternalAutoSuggestConfiguration,
     onSuggestionWithCoordinates: ((SuggestionWithCoordinates?) -> Unit),
     state: W3WAutoSuggestTextFieldState = rememberW3WAutoSuggestTextFieldState(),
-    styles: W3WAutoSuggestTextFieldStyles = W3WAutoSuggestTextFieldDefaults.styles(),
+    themes: W3WAutoSuggestTextFieldThemes = W3WAutoSuggestTextFieldDefaults.themes(),
     micIcon: Drawable? = null,
     suggestionPicker: com.what3words.components.picker.W3WAutoSuggestPicker? = null,
     errorView: AppCompatTextView? = null,
@@ -103,14 +103,14 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                         state.createW3WAutoSuggestEditText(
                             apiKey = configuration.apiKey,
                             context = it,
-                            style = styles.autoSuggestEditTextStyle()
+                            themeResId = themes.autoSuggestEditTextTheme()
                         )
                     }
                     is InternalAutoSuggestConfiguration.Sdk -> {
                         state.createW3WAutoSuggestEditText(
                             sdk = configuration.logicManager,
                             context = it,
-                            style = styles.autoSuggestEditTextStyle()
+                            themeResId = themes.autoSuggestEditTextTheme()
                         )
                     }
                 }.apply {
@@ -128,7 +128,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     if (suggestionPicker == null) {
         W3WAutoSuggestPicker(
             state = state,
-            style = styles.autoSuggestPickerStyle(),
+            style = themes.autoSuggestPickerTheme(),
             modifier = Modifier
                 .zIndex(zIndex = Float.MAX_VALUE)
                 .constrainAs(defaultPicker) {
@@ -145,7 +145,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     val defaultErrorView = createRef()
     if (errorView == null) {
         W3WErrorMessage(state = state,
-            style = styles.autoSuggestErrorMessageStyle(),
+            themeResId = themes.autoSuggestErrorMessageTheme(),
             modifier = Modifier
                 .zIndex(zIndex = Float.MAX_VALUE)
                 .constrainAs(defaultErrorView) {
@@ -161,7 +161,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     val defaultCorrectionPicker = createRef()
     if (correctionPicker == null) {
         W3WCorrectionPicker(state = state,
-            style = styles.autoSuggestCorrectionPickerStyle(),
+            style = themes.autoSuggestCorrectionPickerTheme(),
             modifier = Modifier
                 .zIndex(zIndex = Float.MAX_VALUE)
                 .constrainAs(defaultCorrectionPicker) {
@@ -177,7 +177,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
     val defaultInvalidAddressMessageView = createRef()
     if (invalidAddressMessageView == null) {
         W3WInvalidAddressMessage(state = state,
-            style = styles.autoSuggestInvalidAddressMessageStyle(),
+            themeResId = themes.autoSuggestInvalidAddressMessageTheme(),
             modifier = Modifier
                 .zIndex(Float.MAX_VALUE)
                 .constrainAs(defaultInvalidAddressMessageView) {
@@ -192,13 +192,13 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
 
 object W3WAutoSuggestTextFieldDefaults {
 
-    fun styles(
+    fun themes(
         @StyleRes autoSuggestEditTextStyle: Int = R.style.W3WAutoSuggestEditTextTheme,
         @StyleRes autoSuggestPickerStyle: Int = R.style.W3WAutoSuggestPickerTheme,
         @StyleRes autoSuggestCorrectionPickerStyle: Int = R.style.W3WAutoSuggestCorrectionPickerTheme,
         @StyleRes autoSuggestErrorMessageStyle: Int = R.style.W3WAutoSuggestErrorMessage,
         @StyleRes autoSuggestInvalidAddressMessageStyle: Int = R.style.W3WAutoSuggestErrorMessage
-    ): W3WAutoSuggestTextFieldStyles = DefaultW3WAutoSuggestTextFieldStyles(
+    ): W3WAutoSuggestTextFieldThemes = DefaultW3WAutoSuggestTextFieldThemes(
         autoSuggestEditTextStyle = autoSuggestEditTextStyle,
         autoSuggestPickerStyle = autoSuggestPickerStyle,
         autoSuggestCorrectionPickerStyle = autoSuggestCorrectionPickerStyle,
@@ -208,30 +208,30 @@ object W3WAutoSuggestTextFieldDefaults {
 }
 
 @Immutable
-private class DefaultW3WAutoSuggestTextFieldStyles(
+private class DefaultW3WAutoSuggestTextFieldThemes(
     @StyleRes private val autoSuggestEditTextStyle: Int,
     @StyleRes private val autoSuggestPickerStyle: Int,
     @StyleRes private val autoSuggestCorrectionPickerStyle: Int,
     @StyleRes private val autoSuggestErrorMessageStyle: Int,
     @StyleRes private val autoSuggestInvalidAddressMessageStyle: Int,
-) : W3WAutoSuggestTextFieldStyles {
-    override fun autoSuggestEditTextStyle(): Int {
+) : W3WAutoSuggestTextFieldThemes {
+    override fun autoSuggestEditTextTheme(): Int {
         return autoSuggestEditTextStyle
     }
 
-    override fun autoSuggestPickerStyle(): Int {
+    override fun autoSuggestPickerTheme(): Int {
         return autoSuggestPickerStyle
     }
 
-    override fun autoSuggestCorrectionPickerStyle(): Int {
+    override fun autoSuggestCorrectionPickerTheme(): Int {
         return autoSuggestCorrectionPickerStyle
     }
 
-    override fun autoSuggestErrorMessageStyle(): Int {
+    override fun autoSuggestErrorMessageTheme(): Int {
         return autoSuggestErrorMessageStyle
     }
 
-    override fun autoSuggestInvalidAddressMessageStyle(): Int {
+    override fun autoSuggestInvalidAddressMessageTheme(): Int {
         return autoSuggestInvalidAddressMessageStyle
     }
 
@@ -240,7 +240,7 @@ private class DefaultW3WAutoSuggestTextFieldStyles(
         if (this === other) return true
         if (other == null || this::class != other::class) return false
 
-        other as DefaultW3WAutoSuggestTextFieldStyles
+        other as DefaultW3WAutoSuggestTextFieldThemes
 
         if (autoSuggestEditTextStyle != other.autoSuggestEditTextStyle) return false
         if (autoSuggestPickerStyle != other.autoSuggestPickerStyle) return false
@@ -263,30 +263,30 @@ private class DefaultW3WAutoSuggestTextFieldStyles(
 
 
 @Stable
-interface W3WAutoSuggestTextFieldStyles {
+interface W3WAutoSuggestTextFieldThemes {
 
     /**
-     * returns the resource ID of the style to be applied on the [W3WAutoSuggestEditText] used in the [W3WAutoSuggestTextField]
+     * returns the resource ID of the theme to be applied on the [W3WAutoSuggestEditText] used in the [W3WAutoSuggestTextField]
      * **/
-    fun autoSuggestEditTextStyle(): Int
+    fun autoSuggestEditTextTheme(): Int
 
     /**
-     * returns the resource ID of the style to be applied on the default [W3WAutoSuggestPicker] used in the [W3WAutoSuggestTextField]
+     * returns the resource ID of the theme to be applied on the default [W3WAutoSuggestPicker] used in the [W3WAutoSuggestTextField]
      * **/
-    fun autoSuggestPickerStyle(): Int
+    fun autoSuggestPickerTheme(): Int
 
     /**
-     * returns the resource ID of the style to be applied on the default [W3WAutoSuggestCorrectionPicker] used in the [W3WAutoSuggestTextField]
+     * returns the resource ID of the theme to be applied on the default [W3WAutoSuggestCorrectionPicker] used in the [W3WAutoSuggestTextField]
      * **/
-    fun autoSuggestCorrectionPickerStyle(): Int
+    fun autoSuggestCorrectionPickerTheme(): Int
 
     /**
-     * returns the resource ID of the style to be applied on the default [W3WAutoSuggestErrorMessage] used in the [W3WAutoSuggestTextField]
+     * returns the resource ID of the theme to be applied on the default [W3WAutoSuggestErrorMessage] used in the [W3WAutoSuggestTextField]
      * **/
-    fun autoSuggestErrorMessageStyle(): Int
+    fun autoSuggestErrorMessageTheme(): Int
 
     /**
-     * returns the resource ID of the style to be applied on the default [W3WAutoSuggestErrorMessage] used as an InvalidAddress View in the [W3WAutoSuggestTextField]
+     * returns the resource ID of the theme to be applied on the default [W3WAutoSuggestErrorMessage] used as an InvalidAddress View in the [W3WAutoSuggestTextField]
      * **/
-    fun autoSuggestInvalidAddressMessageStyle(): Int
+    fun autoSuggestInvalidAddressMessageTheme(): Int
 }
