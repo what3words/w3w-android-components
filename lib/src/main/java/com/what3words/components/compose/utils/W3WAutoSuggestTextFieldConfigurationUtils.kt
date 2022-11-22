@@ -1,8 +1,10 @@
 package com.what3words.components.compose.utils
 
 import android.content.Context
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import com.what3words.components.compose.wrapper.AutoSuggestConfiguration
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextFieldState
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.text.W3WAutoSuggestEditText
@@ -14,7 +16,7 @@ import com.what3words.components.text.W3WAutoSuggestEditText
 @Composable
 internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
     LaunchedEffect(
-        state.w3wAutoSuggestEditText,
+        state.internalW3WAutoSuggestEditText,
         state.allowFlexibleDelimiters,
         state.searchFlowEnabled,
         state.allowInvalid3wa,
@@ -44,7 +46,7 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
         state.clipToPolygon,
         state.preferLand,
         block = {
-            state.w3wAutoSuggestEditText?.apply {
+            state.internalW3WAutoSuggestEditText?.apply {
                 allowFlexibleDelimiters(isAllowed = state.allowFlexibleDelimiters)
                 searchFlowEnabled(isEnabled = state.searchFlowEnabled)
                 allowInvalid3wa(isAllowed = state.allowInvalid3wa)
@@ -55,12 +57,13 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                     type = state.voiceScreenType,
                     micIcon = state.micIcon
                 )
-                hideSelectedIcon(b = state.hideSelectedIcon)
+                state.language?.let { language(language = state.language!!) }
+                nFocusResults(n = state.nFocusResults)
+                nResults(n = state.nResults)
                 clipToCircle(centre = state.clipToCircle, radius = state.clipToCircleRadius)
                 clipToCountry(countryCodes = state.clipToCountry ?: listOf())
                 clipToBoundingBox(boundingBox = state.clipToBoundingBox)
                 clipToPolygon(polygon = state.clipToPolygon ?: listOf())
-                returnCoordinates(enabled = state.returnCoordinates)
                 preferLand(isPreferred = state.preferLand)
 
                 state.invalidSelectionMessage?.let { invalidSelectionMessage(message = state.invalidSelectionMessage!!) }
@@ -74,7 +77,7 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                 state.voicePlaceHolder?.let {
                     voicePlaceholder(placeholder = state.voicePlaceHolder!!)
                 }
-                state.hint?.let { state.w3wAutoSuggestEditText?.hint = state.hint }
+                state.hint?.let { state.internalW3WAutoSuggestEditText?.hint = state.hint }
                 state.voiceLanguage?.let { voiceLanguage(language = state.voiceLanguage!!) }
                 if (state.toggleVoice) {
                     toggleVoice()
@@ -86,45 +89,46 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
 
 /**
  * @param apiKey your API key from what3words developer dashboard
+ * @param endpoint your Enterprise API endpoint
+ * @param headers any custom headers needed for your Enterprise API
  * @param context the base context
- * @param style the resource ID of the theme to be applied on top of
+ * @param themeResId the resource ID of the theme to be applied on top of
  *                   the base context's theme
  * **/
 internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
-    apiKey: String,
     context: Context,
-    style: Int
+    themeResId: Int,
+    autoSuggestConfiguration: AutoSuggestConfiguration
 ): W3WAutoSuggestEditText {
     return W3WAutoSuggestEditText(
-        context = context,
-        defStyleRes = style
+        ContextThemeWrapper(context, themeResId)
     )
-        .apiKey(apiKey)
-        .voiceEnabled(
-            enabled = voiceEnabledByDefault,
-            type = voiceScreenTypeByDefault,
-            micIcon = micIcon
-        ).apply {
-            if (!defaultText.isNullOrEmpty()) this.setText(defaultText!!)
-        }
-}
+        .apply {
+            when (autoSuggestConfiguration) {
+                is AutoSuggestConfiguration.Api -> {
+                    apiKey(key = autoSuggestConfiguration.apiKey)
+                }
+                is AutoSuggestConfiguration.ApiWithEnterpriseEndpoint -> {
+                    apiKey(
+                        key = autoSuggestConfiguration.apiKey,
+                        endpoint = autoSuggestConfiguration.endpoint,
+                        headers = autoSuggestConfiguration.headers
+                    )
+                }
+                is AutoSuggestConfiguration.ApiWithEnterpriseAndVoiceEndpoint -> {
+                    apiKey(
+                        key = autoSuggestConfiguration.apiKey,
+                        endpoint = autoSuggestConfiguration.endpoint,
+                        headers = autoSuggestConfiguration.headers,
+                        voiceEndpoint = autoSuggestConfiguration.voiceEndpoint
+                    )
+                }
+                is AutoSuggestConfiguration.Sdk -> {
+                    sdk(logicManager = autoSuggestConfiguration.logicManager)
 
-/**
- * @param sdk logicManager manager created using SDK instead of API
- * @param context the base context
- * @param style the resource ID of the theme to be applied on top of
- *                   the base context's theme
- * **/
-internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
-    sdk: AutosuggestLogicManager,
-    context: Context,
-    style: Int
-): W3WAutoSuggestEditText {
-    return W3WAutoSuggestEditText(
-        context = context,
-        defStyleRes = style
-    )
-        .sdk(logicManager = sdk)
+                }
+            }
+        }
         .voiceEnabled(
             enabled = voiceEnabledByDefault,
             type = voiceScreenTypeByDefault,

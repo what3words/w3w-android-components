@@ -10,10 +10,10 @@ import com.what3words.javawrapper.response.SuggestionWithCoordinates
 internal fun AttachCorrectionPicker(state: W3WAutoSuggestTextFieldState) {
     LaunchedEffect(
         state.defaultCorrectionPicker,
-        state.w3wAutoSuggestEditText,
+        state.internalW3WAutoSuggestEditText,
         block = {
             if (state.defaultCorrectionPicker != null) {
-                state.w3wAutoSuggestEditText?.customCorrectionPicker(
+                state.internalW3WAutoSuggestEditText?.customCorrectionPicker(
                     customCorrectionPicker = state.defaultCorrectionPicker
                 )
             }
@@ -28,10 +28,10 @@ internal fun AttachErrorView(
 ) {
     LaunchedEffect(
         state.defaultErrorView,
-        state.w3wAutoSuggestEditText,
+        state.internalW3WAutoSuggestEditText,
         block = {
             if (state.defaultErrorView != null) {
-                state.w3wAutoSuggestEditText?.onError(
+                state.internalW3WAutoSuggestEditText?.onError(
                     errorView = state.defaultErrorView,
                     errorCallback = {
                         onError?.invoke(it)
@@ -50,10 +50,10 @@ internal fun AttachSuggestionPickerAndInvalidMessageView(
     LaunchedEffect(
         state.defaultSuggestionPicker,
         state.defaultInvalidAddressMessageView,
-        state.w3wAutoSuggestEditText,
+        state.internalW3WAutoSuggestEditText,
         block = {
             if (state.defaultSuggestionPicker != null || state.defaultInvalidAddressMessageView != null) {
-                state.w3wAutoSuggestEditText?.onSuggestionSelected(
+                state.internalW3WAutoSuggestEditText?.onSuggestionSelected(
                     picker = state.defaultSuggestionPicker,
                     invalidAddressMessageView = state.defaultInvalidAddressMessageView
                 ) {

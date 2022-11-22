@@ -1,7 +1,6 @@
 package com.what3words.compose.sample.ui.screen
 
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,7 +25,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.what3words.components.compose.wrapper.InternalAutoSuggestConfiguration
+import com.what3words.components.compose.wrapper.AutoSuggestConfiguration
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextField
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextFieldDefaults
 import com.what3words.components.compose.wrapper.rememberW3WAutoSuggestTextFieldState
@@ -85,7 +84,9 @@ fun W3WTextFieldInConstraintLayoutScreen(
 
         //  what3words autosuggest text component for compose
         val w3wTextFieldState =
-            rememberW3WAutoSuggestTextFieldState()
+            rememberW3WAutoSuggestTextFieldState().apply {
+                nResults(n = 4)
+            }
 
         W3WAutoSuggestTextField(
             modifier = Modifier.constrainAs(ref = w3wTextFieldRef) {
@@ -94,7 +95,7 @@ fun W3WTextFieldInConstraintLayoutScreen(
             },
             state = w3wTextFieldState,
             ref = w3wTextFieldRef,
-            configuration = InternalAutoSuggestConfiguration.Api(apiKey = BuildConfig.W3W_API_KEY),
+            configuration = AutoSuggestConfiguration.Api(apiKey = BuildConfig.W3W_API_KEY),
             suggestionPicker = customPicker,
             correctionPicker = customCorrectionPicker,
             invalidAddressMessageView = customErrorView,
@@ -114,9 +115,11 @@ fun W3WTextFieldInConstraintLayoutScreen(
                     selectedInfo = ""
                 }
             },
-            styles = W3WAutoSuggestTextFieldDefaults.styles(
-                autoSuggestEditTextStyle = R.style.Widget_AppCompat_W3WAutoSuggestEditTextDayNight,
-                autoSuggestPickerStyle = R.style.W3WAutoSuggestPickerDayNight
+            themes = W3WAutoSuggestTextFieldDefaults.themes(
+                autoSuggestEditTextTheme = R.style.W3WAutoSuggestEditTextDayNightTheme,
+                autoSuggestPickerStyleTheme = R.style.W3WAutoSuggestPickerDayNight,
+                autoSuggestErrorMessageTheme = R.style.W3WAutoSuggestErrorMessageDayNight,
+                autoSuggestInvalidAddressMessageTheme = R.style.W3WAutoSuggestErrorMessageDayNight
             )
         )
 
