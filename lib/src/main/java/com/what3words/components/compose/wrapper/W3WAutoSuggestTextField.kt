@@ -27,13 +27,15 @@ import com.what3words.components.compose.utils.AttachSuggestionPickerAndInvalidM
 import com.what3words.components.compose.utils.ConfigureAutoSuggest
 import com.what3words.components.compose.utils.createW3WAutoSuggestEditText
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
-import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.picker.W3WAutoSuggestCorrectionPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
 
 /**
+ * The [W3WAutoSuggestTextField] is a port of the [W3WAutoSuggestEditText] component in Jetpack compose. This port extends all the core functionalities of the [W3WAutoSuggestEditText] to Jetpack compose, and it also provides access to
+ * the [W3WAutoSuggestEditText] that it uses internally via the [onW3WAutoSuggestEditTextReady] callback. The [W3WAutoSuggestTextFieldState] can be used to modifier the default behavior/settings of the [W3WAutoSuggestTextField].
+ *
  * @param modifier Modifier to be applied to the W3WAutoSuggestEditText.
  * @param ref Represents the [ConstrainedLayoutReference] that was used to constrain the [W3WAutoSuggestTextField] within a [ConstraintLayout].
  * @param onSuggestionWithCoordinates will return the [SuggestionWithCoordinates] picked by the end-user, coordinates will be null if returnCoordinates = false.
@@ -171,14 +173,14 @@ object W3WAutoSuggestTextFieldDefaults {
 
     fun themes(
         @StyleRes autoSuggestEditTextTheme: Int = R.style.W3WAutoSuggestEditTextTheme,
-        @StyleRes autoSuggestPickerStyleTheme: Int = R.style.W3WAutoSuggestPickerTheme,
-        @StyleRes autoSuggestCorrectionPickerStyle: Int = R.style.W3WAutoSuggestCorrectionPickerTheme,
+        @StyleRes autoSuggestPickerTheme: Int = R.style.W3WAutoSuggestPickerTheme,
+        @StyleRes autoSuggestCorrectionPickerTheme: Int = R.style.W3WAutoSuggestCorrectionPickerTheme,
         @StyleRes autoSuggestErrorMessageTheme: Int = R.style.W3WAutoSuggestErrorMessage,
         @StyleRes autoSuggestInvalidAddressMessageTheme: Int = R.style.W3WAutoSuggestErrorMessage
     ): W3WAutoSuggestTextFieldThemes = DefaultW3WAutoSuggestTextFieldThemes(
         autoSuggestEditTextTheme = autoSuggestEditTextTheme,
-        autoSuggestPickerTheme = autoSuggestPickerStyleTheme,
-        autoSuggestCorrectionPickerTheme = autoSuggestCorrectionPickerStyle,
+        autoSuggestPickerTheme = autoSuggestPickerTheme,
+        autoSuggestCorrectionPickerTheme = autoSuggestCorrectionPickerTheme,
         autoSuggestErrorMessageTheme = autoSuggestErrorMessageTheme,
         autoSuggestInvalidAddressMessageTheme = autoSuggestInvalidAddressMessageTheme
     )

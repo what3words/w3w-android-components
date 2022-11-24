@@ -117,7 +117,7 @@ fun W3WTextFieldInConstraintLayoutScreen(
             },
             themes = W3WAutoSuggestTextFieldDefaults.themes(
                 autoSuggestEditTextTheme = R.style.W3WAutoSuggestEditTextDayNightTheme,
-                autoSuggestPickerStyleTheme = R.style.W3WAutoSuggestPickerDayNight,
+                autoSuggestPickerTheme = R.style.W3WAutoSuggestPickerDayNight,
                 autoSuggestErrorMessageTheme = R.style.W3WAutoSuggestErrorMessageDayNight,
                 autoSuggestInvalidAddressMessageTheme = R.style.W3WAutoSuggestErrorMessageDayNight
             )
