@@ -4,11 +4,11 @@ An Android library to use
 the [what3words v3 API autosuggest](https://developer.what3words.com/public-api/docs#autosuggest) in
 Jetpack compose.
 
-The W3WAutoSuggestTextField is a port of
+We created a port that allows you use W3WAutoSuggestEditText directly in Jetpack compose. The W3WAutoSuggestTextField composable is a port of
 the [W3WAutoSuggestEditText](https://github.com/what3words/w3w-android-components) component in
-Jetpack compose. This port extends all the core functionalities of the W3WAutoSuggestEditText to
-Jetpack compose, and it also provides you access to an instance of W3WAutoSuggestEditText used
-internally.
+Jetpack compose. This composable extends all the core functionalities of the W3WAutoSuggestEditText to
+Jetpack compose, and it also provides you direct access to an instance of W3WAutoSuggestEditText used
+internally. At the moment, the W3WAutoSuggestTextField composable can only be used inside a ConstraintLayout in Jetpack compose.
 
 
 <img src="https://github.com/what3words/w3w-android-components/blob/dev/assets/components-1-new.gif" width=40% height=40%>
