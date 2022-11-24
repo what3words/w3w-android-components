@@ -7,10 +7,9 @@ Jetpack compose.
 The W3WAutoSuggestTextField is a port of
 the [W3WAutoSuggestEditText](https://github.com/what3words/w3w-android-components) component in
 Jetpack compose. This port extends all the core functionalities of the W3WAutoSuggestEditText to
-Jetpack compose, and it also provides clients access to
+Jetpack compose, and it also provides you access to an instance of W3WAutoSuggestEditText used
+internally.
 
-* the instance of W3WAutoSuggestEditText that is used internally.
-*
 
 <img src="https://github.com/what3words/w3w-android-components/blob/dev/assets/components-1-new.gif" width=40% height=40%>
 
@@ -105,13 +104,13 @@ class MainActivity : Component() {
 }
 ```
 
-Configuring W3WAutoSuggestTextFieldState The W3WAutoSuggestTextFieldState acts as a port that allows
-you to access and customize the properties of the internal W3WAutoSuggestEditText from Jetpack
-Compose. By using the W3WAutoSuggestTextFieldState, you can easily access clipping methods, focus
-and other public functions that the W3WAutoSuggestEditText provides
+Configuring W3WAutoSuggestTextFieldState The W3WAutoSuggestTextFieldState allows you to access and
+customize the properties and behaviour of the W3WAutoSuggestTextField. By using the
+W3WAutoSuggestTextFieldState, you can easily access clipping methods, focus and other public
+functions that was provided by the W3WAutoSuggestEditText in the view system.
 
 ```Kotlin
- 
+
 val autoSuggestTextFieldState = rememberW3WAutoSuggestTextFieldState().apply {
     returnCoordinates(enabled = true)
     preferLand(isPreferred = false)
@@ -146,24 +145,15 @@ W3WAutoSuggestTextField(
         apiKey = BuildConfig.W3W_API_KEY,
         endpoint = BuildConfig.YOUR_ENTERPRISE_ENDPOINT
     ),
-    state = autoSuggestTextFieldState,
-    onSuggestionWithCoordinates = {
-        Toast.makeText(
-            this@MainActivity,
-            it.words,
-            android.widget.Toast.LENGTH_SHORT
-        ).show()
-    }
+    onSuggestionWithCoordinates = {}
 )
 // ..... other sections of code
 ```
 
-## General functions:
+## General functions in W3WAutoSuggestTextFieldState:
 
 | Name | Summary | Example |
 |---|---|----|
-|apiKey|Set your What3Words API Key which will be used to get suggestions and coordinates. **
-mandatory** |```apiKey("YOUR_API_KEY_HERE")```|
 |returnCoordinates|Calls the what3words API to obtain the coordinates for the selected 3 word address (to then use on a map or pass through to a logistic company etc)|```returnCoordinates(true)```|
 |onSuggestionSelected|Will provide the user selected 3 word address, if user selects an invalid 3 word address SuggestionWithCoordinates will be null.|```onSuggestionSelected { suggestion -> }```<br>or for custom picker view<br>```onSuggestionSelected(W3WAutoSuggestPicker) { suggestion -> }```|
 |onDisplaySuggestions|Callback to update view when suggestion picker is being displayed or not, example, show tips when false hide tips when true|```onDisplaySuggestions { isShowing -> }```|
@@ -195,10 +185,10 @@ Before enabling Voice AutoSuggest you will need to add a Voice API plan
 in [your account](https://accounts.what3words.com/billing).
 
 By default the voice language is set to English but this can be changed using the voiceLanguage
-property (for list of available languages please check the properties table below). Voice input
-respects the clipping and focus options applied within the general properties. We recommend applying
-clipping and focus where possible to display as accurate suggestions as possible. To enable voice
-you can do with programmatically or directly in the XML.
+function in the W3WAutoSuggestTextFieldState (for list of available languages please check the
+properties table below). Voice input respects the clipping and focus options applied within the
+general properties. We recommend applying clipping and focus where possible to display as accurate
+suggestions as possible. To enable voice you can do with programmatically or directly in the XML.
 
 AndroidManifest.xml
 
@@ -232,6 +222,7 @@ val autoSuggestTextFieldState = rememberW3WAutoSuggestTextFieldState(
 
 // enable voice at a later time, maybe from a callback
 autoSuggestTextFieldState.voiceEnabled(enabled = true, type = VoiceScreenType.FullScreen)
+autoSuggestTextFieldState.voiceLanguage(language = "ar") // set voice language as Arabic
 
 ```
 
@@ -262,46 +253,51 @@ in this repo for examples of how to use and customize our **W3WAutoSuggestText c
 
 You can provide/reuse your custom xml styles for each component used in the W3WAutoSuggestTextField
 by passing the resource id to the style of the desired component via the themes parameter in the
-W3WAutoSuggestTextField. 
+W3WAutoSuggestTextField.
 
-Applying a custom style to the each components should be fairly
-straightforward. You can reference
-the [compose code sample](https://github.com/what3words/w3w-android-components/blob/dev/compose-sample/src/main/java/com/what3words/compose/sample/ui/screen/W3WTextFieldInConstraintLayoutScreen.kt#:~:text=themes%20%3D%20W3WAutoSuggestTextFieldDefaults,) and for an example of that.
+Applying a custom style to the each components should be fairly straightforward. You can reference
+the [compose code sample](https://github.com/what3words/w3w-android-components/blob/dev/compose-sample/src/main/java/com/what3words/compose/sample/ui/screen/W3WTextFieldInConstraintLayoutScreen.kt#:~:text=themes%20%3D%20W3WAutoSuggestTextFieldDefaults,)
+and for an example of that.
 
-However to apply a custom style to the internal W3WAutoSuggestEditText that's used in W3WAutoSuggestTextField, your custom style must provide a resource value for the
-W3WAutoSuggestEditText default style attribute which is called customW3WAutoSuggestEditTextStyle. If you  don’t do this then the internal W3WAutoSuggestEditText used by the W3WAutoSuggestTextField won’t be inflated correctly in Jetpack compose.
+However to apply a custom style to the internal W3WAutoSuggestEditText that's used in
+W3WAutoSuggestTextField, your custom style must provide a resource value for the
+W3WAutoSuggestEditText default style attribute which is called customW3WAutoSuggestEditTextStyle. If
+you don’t do this then the internal W3WAutoSuggestEditText used by the W3WAutoSuggestTextField won’t
+be inflated correctly in Jetpack compose.
 
 For instance the code sample below depicts how to go about specifying a dark theme for the
-W3WAutoSuggestEditText used internally in the W3WAutoSuggestTextField. You can also check the compose-sample in this project for more examples. 
+W3WAutoSuggestEditText used internally in the W3WAutoSuggestTextField. You can also check the
+compose-sample in this project for more examples.
 
 ```XML
-  <style name="W3WAutoSuggestEditTextDayNightTheme" parent="@android:style/Theme">
-        <item name="customW3WAutoSuggestEditTextStyle">
-            @style/Widget.AppCompat.W3WAutoSuggestEditTextDayNight
-        </item>
-    </style>
-    
-  
-     <style name="Widget.AppCompat.W3WAutoSuggestEditTextDayNight" parent="Widget.AppCompat.EditText">
-        <item name="isDayNightEnabled">true</item>
-        <item name="android:textColor">@color/textColor</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/bg_with_border</item>
-        <item name="android:textColorHint">@color/hintColor</item>
-        <item name="android:hint">@string/input_hint</item>
-        <item name="android:minHeight">@dimen/input_height</item>
-        <item name="android:paddingRight">@dimen/xlarge_margin</item>
-        <item name="android:paddingLeft">@dimen/xlarge_margin</item>
-        <item name="android:paddingTop">@dimen/large_margin</item>
-        <item name="android:paddingBottom">@dimen/large_margin</item>
-        <item name="android:inputType">textNoSuggestions</item>
-        <item name="android:includeFontPadding">false</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:imeOptions">flagNoExtractUi|flagNoFullscreen|actionDone</item>
-        <item name="android:textCursorDrawable">@drawable/cursor</item>
-        <item name="android:textAppearance">@style/W3WAutoSuggestEditTextTextAppearance</item>
-    </style>
+
+<style name="W3WAutoSuggestEditTextDayNightTheme" parent="@android:style/Theme">
+    <item name="customW3WAutoSuggestEditTextStyle">
+        @style/Widget.AppCompat.W3WAutoSuggestEditTextDayNight
+    </item>
+</style>
+
+
+<style name="Widget.AppCompat.W3WAutoSuggestEditTextDayNight" parent="Widget.AppCompat.EditText">
+<item name="isDayNightEnabled">true</item>
+<item name="android:textColor">@color/textColor</item>
+<item name="android:layout_width">match_parent</item>
+<item name="android:layout_height">wrap_content</item>
+<item name="android:background">@drawable/bg_with_border</item>
+<item name="android:textColorHint">@color/hintColor</item>
+<item name="android:hint">@string/input_hint</item>
+<item name="android:minHeight">@dimen/input_height</item>
+<item name="android:paddingRight">@dimen/xlarge_margin</item>
+<item name="android:paddingLeft">@dimen/xlarge_margin</item>
+<item name="android:paddingTop">@dimen/large_margin</item>
+<item name="android:paddingBottom">@dimen/large_margin</item>
+<item name="android:inputType">textNoSuggestions</item>
+<item name="android:includeFontPadding">false</item>
+<item name="android:maxLines">1</item>
+<item name="android:imeOptions">flagNoExtractUi|flagNoFullscreen|actionDone</item>
+<item name="android:textCursorDrawable">@drawable/cursor</item>
+<item name="android:textAppearance">@style/W3WAutoSuggestEditTextTextAppearance</item>
+</style>
 ```
 
 ```kotlin
@@ -318,6 +314,5 @@ W3WAutoSuggestTextField(
     )
 )
 ```
-
 
 ![alt text](https://github.com/what3words/w3w-android-components/blob/master/assets/screen_4.png?raw=true "Screenshot 4")![alt text](https://github.com/what3words/w3w-android-components/blob/master/assets/screen_5.png?raw=true "Screenshot 5")![alt text](https://github.com/what3words/w3w-android-components/blob/master/assets/screen_6.png?raw=true "Screenshot 6")
