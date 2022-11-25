@@ -1,4 +1,4 @@
-# <img src="https://what3words.com/assets/images/w3w_square_red.png" width="64" height="64" alt="what3words">&nbsp;w3w-android-components
+# <img src="https://what3words.com/assets/images/w3w_square_red.png" width="64" height="64" alt="what3words">&nbsp;w3w-android-components in Jetpack compose
 
 An Android library to use
 the [what3words v3 API autosuggest](https://developer.what3words.com/public-api/docs#autosuggest) in
@@ -89,7 +89,7 @@ class MainActivity : Component() {
                         top.linkTo(anchor = parent.top)
                     },
                     ref = w3wTextFieldRef,
-                    configuration = InternalAutoSuggestConfiguration.Api(apiKey = BuildConfig.W3W_API_KEY),
+                    configuration = AutoSuggestConfiguration.Api(apiKey = BuildConfig.W3W_API_KEY),
                     onSuggestionWithCoordinates = {
                         Toast.makeText(
                             this@MainActivity,
@@ -122,7 +122,7 @@ W3WAutoSuggestTextField(
         top.linkTo(anchor = parent.top)
     },
     ref = w3wTextFieldRef,
-    configuration = InternalAutoSuggestConfiguration.Api(apiKey = BuildConfig.W3W_API_KEY),
+    configuration = AutoSuggestConfiguration.Api(apiKey = BuildConfig.W3W_API_KEY),
     state = autoSuggestTextFieldState,
     onSuggestionWithCoordinates = {
         Log.i("SelectedWords", it.words)
@@ -141,7 +141,7 @@ W3WAutoSuggestTextField(
         top.linkTo(anchor = parent.top)
     },
     ref = w3wTextFieldRef,
-    configuration = InternalAutoSuggestConfiguration.ApiWithEnterpriseEndpoint(
+    configuration = AutoSuggestConfiguration.ApiWithEnterpriseEndpoint(
         apiKey = BuildConfig.W3W_API_KEY,
         endpoint = BuildConfig.YOUR_ENTERPRISE_ENDPOINT
     ),
@@ -226,7 +226,7 @@ autoSuggestTextFieldState.voiceLanguage(language = "ar") // set voice language a
 
 ```
 
-## Voice properties:
+## Voice properties in W3WAutoSuggestTextFieldState:
 
 | Name | Summary | Example |
 |---|---|----|
