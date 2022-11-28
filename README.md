@@ -23,7 +23,10 @@ implementation 'com.what3words:w3w-android-components:3.0.2'
 
 See the what3words public API [documentation](https://docs.what3words.com/api/v3/)
 
-## Usage
+## Usage with Jetpack Compose
+Checkout the W3WAutoSuggestEditText Compose port [readme](https://github.com/what3words/w3w-android-components/tree/MT-483-create-autosuggest-compose-wrapper-read-me/compose-sample#readme) if you intend to use the W3WAutoSuggestComponent in Jetpack Compose. 
+
+## Usage with XML
 
 AndroidManifest.xml
 ```xml
