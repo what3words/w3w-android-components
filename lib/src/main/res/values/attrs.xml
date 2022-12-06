@@ -13,6 +13,9 @@
         <attr name="preferLand" format="boolean" />
         <attr name="voiceLanguage" format="string" />
         <attr name="voicePlaceholder" format="string" />
+        <attr name="voiceTryAgainLabel" format="string" />
+        <attr name="voiceErrorLabel" format="string" />
+        <attr name="voiceLoadingLabel" format="string" />
         <attr name="voiceBackgroundColor" format="color" />
         <attr name="voiceBackgroundDrawable" format="reference" />
         <attr name="voiceIconsColor" format="color" />

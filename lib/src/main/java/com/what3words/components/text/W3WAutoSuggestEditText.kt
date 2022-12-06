@@ -118,6 +118,9 @@ class W3WAutoSuggestEditText
     private var allowFlexibleDelimiters: Boolean = false
     internal var hideSelectedIcon: Boolean = false
     internal var voicePlaceholder: String = ""
+    internal var voiceLoadingLabel: String = ""
+    internal var voiceErrorLabel: String = ""
+    internal var voiceTryAgainLabel: String = ""
     internal var voiceBackgroundColor: Int =
         ContextCompat.getColor(context, R.color.w3wVoiceBackground)
     internal var voiceBackgroundDrawable: Drawable? = null
@@ -269,6 +272,12 @@ class W3WAutoSuggestEditText
                 ) ?: resources.getString(R.string.correction_message)
                 voicePlaceholder = getString(R.styleable.W3WAutoSuggestEditText_voicePlaceholder)
                     ?: resources.getString(R.string.voice_placeholder)
+                voiceErrorLabel = getString(R.styleable.W3WAutoSuggestEditText_voiceErrorLabel)
+                    ?: resources.getString(R.string.voice_error_label)
+                voiceTryAgainLabel = getString(R.styleable.W3WAutoSuggestEditText_voiceTryAgainLabel)
+                    ?: resources.getString(R.string.voice_try_again)
+                voiceLoadingLabel = getString(R.styleable.W3WAutoSuggestEditText_voiceLoadingLabel)
+                    ?: resources.getString(R.string.loading)
                 voiceBackgroundColor = getColor(
                     R.styleable.W3WAutoSuggestEditText_voiceBackgroundColor,
                     ContextCompat.getColor(
