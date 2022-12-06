@@ -39,6 +39,9 @@ internal class VoicePulseLayoutFullScreen
 @JvmOverloads constructor(
     context: Context,
     private val placeholder: String,
+    private val errorLabel: String,
+    private val tryAgainLabel: String,
+    loadingLabel: String,
     placeholderTextColor: Int,
     backgroundColor: Int,
     backgroundDrawable: Drawable?,
@@ -66,11 +69,11 @@ internal class VoicePulseLayoutFullScreen
 
         binding.icClose.setOnClickListener {
             binding.autosuggestVoice.stop()
-            setIsVoiceRunning(false)
+            setIsVoiceRunning(false, true)
             errorCallback?.accept(null)
         }
 
-        binding.voicePlaceholder.text = context.getString(R.string.loading)
+        binding.voicePlaceholder.text = loadingLabel
         binding.voicePlaceholder.setTextColor(placeholderTextColor)
     }
 
@@ -82,12 +85,13 @@ internal class VoicePulseLayoutFullScreen
         this.errorCallback = callback
     }
 
-    fun setIsVoiceRunning(isVoiceRunning: Boolean) {
+    fun setIsVoiceRunning(isVoiceRunning: Boolean, shouldClose: Boolean) {
         this.isVoiceRunning = isVoiceRunning
-        visibility = if (isVoiceRunning) {
-            VISIBLE
+        if (isVoiceRunning) {
+            visibility = VISIBLE
         } else {
-            GONE
+            if (shouldClose)
+                visibility = GONE
         }
     }
 
@@ -101,22 +105,38 @@ internal class VoicePulseLayoutFullScreen
     fun setup(logicManager: AutosuggestLogicManager) {
         binding.autosuggestVoice.manager(logicManager)
             .onInternalResults {
-                resultsCallback?.accept(it)
+                if (it.isNotEmpty()) {
+                    resultsCallback?.accept(it)
+                    setIsVoiceRunning(
+                        isVoiceRunning = false,
+                        shouldClose = true
+                    )
+                } else showErrorInModal()
             }.onListeningStateChanged {
+                if (it == null) return@onListeningStateChanged
                 when (it) {
-                    W3WListeningState.Connecting ->
+                    W3WListeningState.Connecting -> {
                         binding.voicePlaceholder.text =
                             context.getString(R.string.loading)
-                    W3WListeningState.Started -> binding.voicePlaceholder.text = placeholder
-                    W3WListeningState.Stopped -> setIsVoiceRunning(
-                        isVoiceRunning = false
-                    )
-                    null -> {
+                        binding.voiceErrorMessage.visibility = GONE
+                    }
+                    W3WListeningState.Started -> {
+                        binding.voicePlaceholder.text = placeholder
+                        binding.autosuggestVoice.isEnabled = false
+                    }
+                    W3WListeningState.Stopped -> {
+                        binding.autosuggestVoice.isEnabled = true
                     }
                 }
             }.onError {
-                errorCallback?.accept(it)
+                showErrorInModal()
             }
+    }
+
+    private fun showErrorInModal() {
+        binding.voicePlaceholder.text = tryAgainLabel
+        binding.voiceErrorMessage.text = errorLabel
+        binding.voiceErrorMessage.visibility = VISIBLE
     }
 
     /**
@@ -126,14 +146,14 @@ internal class VoicePulseLayoutFullScreen
      */
     fun toggle(options: AutosuggestOptions, returnCoordinates: Boolean, voiceLanguage: String) {
         if (!isVoiceRunning) {
-            setIsVoiceRunning(true)
+            setIsVoiceRunning(true, false)
             binding.autosuggestVoice
                 .options(options)
                 .returnCoordinates(returnCoordinates)
                 .voiceLanguage(voiceLanguage)
                 .start()
         } else {
-            setIsVoiceRunning(false)
+            setIsVoiceRunning(false, false)
             binding.autosuggestVoice.stop()
         }
     }
