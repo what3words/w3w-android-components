@@ -19,7 +19,6 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
-import androidx.annotation.StyleRes
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
@@ -53,13 +52,12 @@ import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
+import java.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.*
 
 /**
  * A [AppCompatEditText] to simplify the integration of what3words text and voice auto-suggest API in your app.
@@ -274,8 +272,9 @@ class W3WAutoSuggestEditText
                     ?: resources.getString(R.string.voice_placeholder)
                 voiceErrorLabel = getString(R.styleable.W3WAutoSuggestEditText_voiceErrorLabel)
                     ?: resources.getString(R.string.voice_error_label)
-                voiceTryAgainLabel = getString(R.styleable.W3WAutoSuggestEditText_voiceTryAgainLabel)
-                    ?: resources.getString(R.string.voice_try_again)
+                voiceTryAgainLabel =
+                    getString(R.styleable.W3WAutoSuggestEditText_voiceTryAgainLabel)
+                        ?: resources.getString(R.string.voice_try_again)
                 voiceLoadingLabel = getString(R.styleable.W3WAutoSuggestEditText_voiceLoadingLabel)
                     ?: resources.getString(R.string.loading)
                 voiceBackgroundColor = getColor(
@@ -363,7 +362,6 @@ class W3WAutoSuggestEditText
                 }
             }
             if (!isFocused) {
-                iconHolderLayout.setClearVisibility(GONE)
                 setPaddingRelative(
                     paddingStart,
                     paddingTop,
@@ -381,7 +379,6 @@ class W3WAutoSuggestEditText
                     )
                 }
                 showKeyboard()
-                iconHolderLayout.setClearVisibility(VISIBLE)
                 showImages(false)
             }
             focusFromVoice = false
@@ -489,6 +486,12 @@ class W3WAutoSuggestEditText
 
         // remove this when AutosuggestHelper did you mean issue is fixed.
         getCorrectionPicker().forceClearAndHide()
+
+        if(searchText.isNotEmpty()) {
+            iconHolderLayout.setClearVisibility(VISIBLE)
+        } else {
+            iconHolderLayout.setClearVisibility(GONE)
+        }
 
         if (searchText.isPossible3wa() || searchText.didYouMean3wa()) {
             viewModel.autosuggest(searchText, allowFlexibleDelimiters)

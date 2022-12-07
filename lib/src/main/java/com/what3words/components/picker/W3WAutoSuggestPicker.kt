@@ -3,6 +3,7 @@ package com.what3words.components.picker
 import android.content.Context
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.graphics.fonts.FontFamily
 import android.util.AttributeSet
 import android.view.View
 import androidx.appcompat.view.ContextThemeWrapper
@@ -45,6 +46,7 @@ class W3WAutoSuggestPicker
     private var query: String = ""
     private var viewModel: AutosuggestTextViewModel? = null
     internal var itemBackgroundDrawable: Drawable? = null
+    internal var itemBackgroundHighlightedDrawable: Drawable? = null
     internal var itemBackgroundColor: Int
     private var suggestionsAdapter: SuggestionsAdapter
 
@@ -84,6 +86,16 @@ class W3WAutoSuggestPicker
                         ContextCompat.getDrawable(context, itemBackgroundDrawableId)
                 }
 
+                val itemBackgroundHighlightedDrawableId = getResourceId(
+                    R.styleable.W3WAutoSuggestPicker_pickerItemBackgroundHighlightedDrawable,
+                    -1
+                )
+
+                if (itemBackgroundHighlightedDrawableId != -1) {
+                    itemBackgroundHighlightedDrawable =
+                        ContextCompat.getDrawable(context, itemBackgroundHighlightedDrawableId)
+                }
+
                 val backgroundDrawableId = getResourceId(
                     R.styleable.W3WAutoSuggestPicker_pickerBackgroundDrawable,
                     -1
@@ -92,6 +104,7 @@ class W3WAutoSuggestPicker
                     background =
                         ContextCompat.getDrawable(context, backgroundDrawableId)
                 }
+
 
                 val dividerDrawableId = getResourceId(
                     R.styleable.W3WAutoSuggestPicker_pickerDivider,
@@ -204,6 +217,7 @@ class W3WAutoSuggestPicker
                     subtitleTextSize,
                     subtitleTextColor,
                     itemHighlightBackground,
+                    itemBackgroundHighlightedDrawable,
                     titleFontFamily,
                     subtitleFontFamily,
                     itemPadding

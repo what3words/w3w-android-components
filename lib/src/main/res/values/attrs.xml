@@ -38,6 +38,7 @@
         <attr name="pickerItemBackground" format="color" />
         <attr name="pickerItemHighlightBackground" format="color" />
         <attr name="pickerItemBackgroundDrawable" format="reference" />
+        <attr name="pickerItemBackgroundHighlightedDrawable" format="reference" />
         <attr name="pickerDivider" format="reference" />
         <attr name="pickerDividerVisible" format="boolean" />
         <attr name="pickerItemTitleTextSize" format="dimension" />

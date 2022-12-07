@@ -26,6 +26,7 @@ internal class SuggestionsAdapter(
     private val subtitleTextSize: Int,
     private val subtitleTextColor: Int,
     private val itemHighlightBackground: Int,
+    private val itemHighlightBackgroundDrawable: Drawable?,
     private val titleFontFamily: Typeface?,
     private val subtitleFontFamily: Typeface?,
     private val itemPadding: Int
@@ -62,6 +63,7 @@ internal class SuggestionsAdapter(
             subtitleTextSize,
             subtitleTextColor,
             itemHighlightBackground,
+            itemHighlightBackgroundDrawable,
             titleFontFamily,
             subtitleFontFamily,
             itemPadding
@@ -88,6 +90,7 @@ internal class SuggestionsAdapter(
         private val subtitleTextSize: Int,
         private val subtitleTextColor: Int,
         private val itemHighlightBackground: Int,
+        private val itemHighlightBackgroundDrawable: Drawable?,
         private val titleFontFamily: Typeface?,
         private val subtitleFontFamily: Typeface?,
         private val itemPadding: Int
@@ -98,14 +101,24 @@ internal class SuggestionsAdapter(
             query: String?,
             onSuggestionClicked: (Suggestion) -> Unit
         ) {
-            backgroundDrawable?.let {
-                binding.root.background = it
+            backgroundDrawable?.let { normalBackgroundDrawable ->
+                if (query?.replace(binding.root.context.getString(R.string.w3w_slash), "")
+                        .equals(suggestion.words, ignoreCase = true)
+                ) {
+                    itemHighlightBackgroundDrawable?.let { highlightedBackgroundDrawable ->
+                        binding.root.background = highlightedBackgroundDrawable
+                    } ?: run {
+                        binding.root.background = normalBackgroundDrawable
+                    }
+                } else {
+                    binding.root.background = normalBackgroundDrawable
+                }
             } ?: run {
                 backgroundColor?.let {
                     binding.root.setBackgroundColor(it)
                 }
                 if (query?.replace(binding.root.context.getString(R.string.w3w_slash), "")
-                    .equals(suggestion.words, ignoreCase = true)
+                        .equals(suggestion.words, ignoreCase = true)
                 ) {
                     binding.w3wSuggestionHolder.setBackgroundColor(
                         itemHighlightBackground
