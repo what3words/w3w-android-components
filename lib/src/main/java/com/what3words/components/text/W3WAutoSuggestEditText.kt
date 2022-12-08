@@ -362,6 +362,7 @@ class W3WAutoSuggestEditText
                 }
             }
             if (!isFocused) {
+                iconHolderLayout.setClearVisibility(GONE)
                 setPaddingRelative(
                     paddingStart,
                     paddingTop,
@@ -379,6 +380,7 @@ class W3WAutoSuggestEditText
                     )
                 }
                 showKeyboard()
+                if(text?.isNotEmpty() == true) iconHolderLayout.setClearVisibility(VISIBLE)
                 showImages(false)
             }
             focusFromVoice = false
