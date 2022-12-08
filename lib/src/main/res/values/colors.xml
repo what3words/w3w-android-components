@@ -8,9 +8,11 @@
     <color name="borderColor">#C2C2C2</color>
     <color name="textColorForceDay">#0A3049</color>
     <color name="textColor">#0A3049</color>
+    <color name="iconTintColor">#0A3049</color>
     <color name="slashesColor">#E11F26</color>
     <color name="voiceInactiveColor">#0A3049</color>
     <color name="subtextColorForceDay">#525252</color>
+    <color name="iconTintColorForceDay">#0A3049</color>
     <color name="subtextColor">#525252</color>
     <color name="hintColor">#A3A3A3</color>
     <color name="black">#000</color>

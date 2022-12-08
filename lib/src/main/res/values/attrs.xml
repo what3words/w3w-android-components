@@ -19,6 +19,7 @@
         <attr name="voiceBackgroundColor" format="color" />
         <attr name="voiceBackgroundDrawable" format="reference" />
         <attr name="voiceIconsColor" format="color" />
+        <attr name="iconTint" format="color" />
         <attr name="displayUnit" format="enum">
             <enum name="system" value="0" />
             <enum name="imperial" value="1" />

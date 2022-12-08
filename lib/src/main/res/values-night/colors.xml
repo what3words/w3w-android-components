@@ -4,6 +4,7 @@
     <color name="background">#1A1A1A</color>
     <color name="borderColor">#7A7A7A</color>
     <color name="textColor">#FFFFFF</color>
+    <color name="iconTintColor">#FFFFFF</color>
     <color name="subtextColor">#C2C2C2</color>
     <color name="hintColor">#C2C2C2</color>
     <color name="errorBorderColor">#F26C50</color>

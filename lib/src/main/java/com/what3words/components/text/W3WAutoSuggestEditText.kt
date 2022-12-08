@@ -124,6 +124,8 @@ class W3WAutoSuggestEditText
     internal var voiceBackgroundDrawable: Drawable? = null
     internal var voiceIconsColor: Int =
         ContextCompat.getColor(context, R.color.subtextColor)
+    internal var iconTint: Int =
+        ContextCompat.getColor(context, R.color.iconTintColor)
     internal var voiceLanguage: String
     private var customPicker: W3WAutoSuggestPicker? = null
     private var customErrorView: AppCompatTextView? = null
@@ -187,7 +189,7 @@ class W3WAutoSuggestEditText
     }
 
     internal val iconHolderLayout: IconHolderLayout by lazy {
-        IconHolderLayout(context, this.currentTextColor, this.currentHintTextColor).apply {
+        IconHolderLayout(context, this.iconTint, this.iconTint).apply {
             this.onResultsCallback {
                 handleVoiceSuggestions(it)
             }
@@ -298,6 +300,14 @@ class W3WAutoSuggestEditText
                     )
                 )
 
+                iconTint = getColor(
+                    R.styleable.W3WAutoSuggestEditText_iconTint,
+                    ContextCompat.getColor(
+                        context,
+                        if (isDayNightEnabled) R.color.iconTintColor else R.color.iconTintColorForceDay
+                    )
+                )
+
                 returnCoordinates =
                     getBoolean(R.styleable.W3WAutoSuggestEditText_returnCoordinates, false)
 
@@ -380,7 +390,7 @@ class W3WAutoSuggestEditText
                     )
                 }
                 showKeyboard()
-                if(text?.isNotEmpty() == true) iconHolderLayout.setClearVisibility(VISIBLE)
+                if(text?.toString()?.shouldShowClear() == true) iconHolderLayout.setClearVisibility(VISIBLE)
                 showImages(false)
             }
             focusFromVoice = false
@@ -489,7 +499,7 @@ class W3WAutoSuggestEditText
         // remove this when AutosuggestHelper did you mean issue is fixed.
         getCorrectionPicker().forceClearAndHide()
 
-        if(searchText.isNotEmpty()) {
+        if(searchText.shouldShowClear()) {
             iconHolderLayout.setClearVisibility(VISIBLE)
         } else {
             iconHolderLayout.setClearVisibility(GONE)
