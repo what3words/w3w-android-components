@@ -1,59 +1,84 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/voiceHolderFullscreen"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_voice"
     android:clickable="true"
     android:focusable="true"
     android:importantForAccessibility="noHideDescendants">
 
-    <ImageView
-        android:id="@+id/icClose"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="@dimen/medium_margin"
-        android:visibility="gone"
-        android:src="@drawable/ic_close"
-        app:layout_constraintBottom_toTopOf="@+id/voiceHolder"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/voiceHolder"
-        android:translationY="309dp"
         android:layout_width="0dp"
         android:layout_height="@dimen/voice_popup_height"
         android:background="@color/w3wVoiceBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:translationY="@dimen/voice_popup_height"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/icClose"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@null"
+            android:padding="@dimen/large_margin"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_close"
+            android:tint="@color/textColor"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/voicePlaceholder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:fontFamily="sans-serif-light"
+            android:layout_marginTop="42dp"
             android:textColor="@color/subtextColor"
-            android:textSize="24sp"
+            android:textSize="22sp"
+            app:fontWeight="600"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/voiceErrorMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/large_margin"
+            android:layout_marginTop="@dimen/medium_margin"
+            android:layout_marginEnd="@dimen/large_margin"
+            android:gravity="center"
+            android:textColor="@color/subtextColor"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/voicePlaceholder"
+            tools:text="@string/voice_error_label" />
+
         <com.what3words.components.voice.W3WAutoSuggestVoice
             android:id="@+id/autosuggestVoice"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="1:1"
+            android:layout_width="@dimen/voice_component_default_width"
+            android:layout_height="@dimen/voice_component_default_height"
+            android:layout_marginTop="@dimen/xxlarge_margin"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:layout_marginBottom="42dp"
             android:id="@+id/icLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:alpha="0.75"
             android:src="@drawable/ic_w3w_voice_logo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

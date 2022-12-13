@@ -77,6 +77,9 @@ internal fun W3WAutoSuggestEditText.buildVoiceAnimatedPopup() {
         voiceAnimatedPopup = VoicePulseLayout(
             context,
             voicePlaceholder,
+            voiceErrorLabel,
+            voiceTryAgainLabel,
+            voiceLoadingLabel,
             currentTextColor,
             voiceBackgroundColor,
             voiceBackgroundDrawable,
@@ -89,7 +92,7 @@ internal fun W3WAutoSuggestEditText.buildVoiceAnimatedPopup() {
         voiceAnimatedPopup!!.apply {
             visibility = GONE
             layoutParams = params
-            setIsVoiceRunning(false, shouldAnimate = false)
+            setIsVoiceRunning(false, shouldAnimate = false, shouldClose = true)
             translationZ = context.resources.getDimension(R.dimen.overlay_z)
             outlineProvider = null
         }
@@ -110,6 +113,9 @@ internal fun W3WAutoSuggestEditText.buildVoiceFullscreen() {
         voicePulseLayoutFullScreen = VoicePulseLayoutFullScreen(
             context,
             voicePlaceholder,
+            voiceErrorLabel,
+            voiceTryAgainLabel,
+            voiceLoadingLabel,
             currentTextColor,
             voiceBackgroundColor,
             voiceBackgroundDrawable,
@@ -132,7 +138,7 @@ internal fun W3WAutoSuggestEditText.buildVoiceFullscreen() {
                     context.resources.displayMetrics.heightPixels
                 )
             )
-            setIsVoiceRunning(false)
+            setIsVoiceRunning(false, true)
             translationZ = context.resources.getDimension(R.dimen.overlay_z)
             outlineProvider = null
         }

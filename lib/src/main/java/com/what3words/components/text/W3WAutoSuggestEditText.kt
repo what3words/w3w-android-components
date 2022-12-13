@@ -52,13 +52,12 @@ import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
+import java.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.*
 
 /**
  * A [AppCompatEditText] to simplify the integration of what3words text and voice auto-suggest API in your app.
@@ -70,7 +69,7 @@ class W3WAutoSuggestEditText
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.customW3WAutoSuggestEditTextStyle
 ) : AppCompatEditText(
-    ContextThemeWrapper(context, R.style.W3WAutoSuggestEditTextTheme),
+    context,
     attrs,
     defStyleAttr
 ),
@@ -117,11 +116,16 @@ class W3WAutoSuggestEditText
     private var allowFlexibleDelimiters: Boolean = false
     internal var hideSelectedIcon: Boolean = false
     internal var voicePlaceholder: String = ""
+    internal var voiceLoadingLabel: String = ""
+    internal var voiceErrorLabel: String = ""
+    internal var voiceTryAgainLabel: String = ""
     internal var voiceBackgroundColor: Int =
         ContextCompat.getColor(context, R.color.w3wVoiceBackground)
     internal var voiceBackgroundDrawable: Drawable? = null
     internal var voiceIconsColor: Int =
         ContextCompat.getColor(context, R.color.subtextColor)
+    internal var iconTint: Int =
+        ContextCompat.getColor(context, R.color.iconTintColor)
     internal var voiceLanguage: String
     private var customPicker: W3WAutoSuggestPicker? = null
     private var customErrorView: AppCompatTextView? = null
@@ -185,7 +189,7 @@ class W3WAutoSuggestEditText
     }
 
     internal val iconHolderLayout: IconHolderLayout by lazy {
-        IconHolderLayout(context, this.currentTextColor, this.currentHintTextColor).apply {
+        IconHolderLayout(context, this.iconTint, this.iconTint).apply {
             this.onResultsCallback {
                 handleVoiceSuggestions(it)
             }
@@ -268,6 +272,13 @@ class W3WAutoSuggestEditText
                 ) ?: resources.getString(R.string.correction_message)
                 voicePlaceholder = getString(R.styleable.W3WAutoSuggestEditText_voicePlaceholder)
                     ?: resources.getString(R.string.voice_placeholder)
+                voiceErrorLabel = getString(R.styleable.W3WAutoSuggestEditText_voiceErrorLabel)
+                    ?: resources.getString(R.string.voice_error_label)
+                voiceTryAgainLabel =
+                    getString(R.styleable.W3WAutoSuggestEditText_voiceTryAgainLabel)
+                        ?: resources.getString(R.string.voice_try_again)
+                voiceLoadingLabel = getString(R.styleable.W3WAutoSuggestEditText_voiceLoadingLabel)
+                    ?: resources.getString(R.string.loading)
                 voiceBackgroundColor = getColor(
                     R.styleable.W3WAutoSuggestEditText_voiceBackgroundColor,
                     ContextCompat.getColor(
@@ -286,6 +297,14 @@ class W3WAutoSuggestEditText
                     ContextCompat.getColor(
                         context,
                         if (isDayNightEnabled) R.color.subtextColor else R.color.subtextColorForceDay
+                    )
+                )
+
+                iconTint = getColor(
+                    R.styleable.W3WAutoSuggestEditText_iconTint,
+                    ContextCompat.getColor(
+                        context,
+                        if (isDayNightEnabled) R.color.iconTintColor else R.color.iconTintColorForceDay
                     )
                 )
 
@@ -371,7 +390,7 @@ class W3WAutoSuggestEditText
                     )
                 }
                 showKeyboard()
-                iconHolderLayout.setClearVisibility(VISIBLE)
+                if(text?.toString()?.shouldShowClear() == true) iconHolderLayout.setClearVisibility(VISIBLE)
                 showImages(false)
             }
             focusFromVoice = false
@@ -479,6 +498,12 @@ class W3WAutoSuggestEditText
 
         // remove this when AutosuggestHelper did you mean issue is fixed.
         getCorrectionPicker().forceClearAndHide()
+
+        if(searchText.shouldShowClear()) {
+            iconHolderLayout.setClearVisibility(VISIBLE)
+        } else {
+            iconHolderLayout.setClearVisibility(GONE)
+        }
 
         if (searchText.isPossible3wa() || searchText.didYouMean3wa()) {
             viewModel.autosuggest(searchText, allowFlexibleDelimiters)

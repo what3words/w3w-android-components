@@ -19,50 +19,64 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/icClose"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:layout_marginTop="@dimen/xlarge_margin"
-            android:layout_marginEnd="@dimen/xlarge_margin"
-            android:scaleType="centerCrop"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:visibility="visible"
+            android:background="@null"
+            android:padding="@dimen/large_margin"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_close"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:tint="@color/textColor"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
             android:id="@+id/voicePlaceholder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="106dp"
             tools:text="Say a 3 word address"
-            android:fontFamily="sans-serif-light"
             android:textColor="@color/subtextColor"
-            android:textSize="24sp"
+            android:textSize="22sp"
+            app:fontWeight="600"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/icClose" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/voiceErrorMessage"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/medium_margin"
+            android:textColor="@color/subtextColor"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/voicePlaceholder" />
 
         <com.what3words.components.voice.W3WAutoSuggestVoice
             android:id="@+id/autosuggestVoice"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="@dimen/voice_component_default_width"
+            android:layout_height="@dimen/voice_component_default_height"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:layout_marginBottom="42dp"
             android:id="@+id/icLogo"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:scaleType="fitCenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.75"
             android:src="@drawable/ic_w3w_voice_logo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.125"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintWidth_percent="0.25" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

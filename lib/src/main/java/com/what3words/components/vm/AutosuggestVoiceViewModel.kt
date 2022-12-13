@@ -110,7 +110,7 @@ internal class AutosuggestVoiceViewModel(
                     is Either.Right -> {
                         _suggestions.emit(res.b)
                         _currentState = W3WListeningState.Stopped
-                        _listeningState.emit(Pair(_currentState!!, false))
+                        _listeningState.emit(Pair(_currentState!!, res.b.isEmpty()))
                     }
                 }
             }

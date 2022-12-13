@@ -34,7 +34,7 @@ android {
     }
 
     jacoco {
-        version = '0.8.7'
+        version = libs.versions.jacoco.get()
     }
 
     buildTypes {
@@ -60,21 +60,22 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.material:material:1.6.1'
-    implementation 'androidx.test.ext:junit-ktx:1.1.3'
+    implementation libs.androidx.core
 
-    implementation 'androidx.test.espresso:espresso-contrib:3.4.0'
-    debugImplementation 'androidx.test:rules:1.4.0'
-    debugImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    debugImplementation 'androidx.test:runner:1.4.0'
-    androidTestUtil 'androidx.test:orchestrator:1.4.1'
+    implementation libs.androidx.constraint.layout
+    implementation libs.google.android.material
 
-    //w3w auto suggest
-    //implementation "com.what3words:w3w-android-components:3.0.2"
-    implementation "com.what3words:w3w-android-wrapper:3.1.19"
+
+    implementation testLibs.androidx.junit.ktx
+
+    implementation testLibs.androidx.espresso.contrib
+    debugImplementation testLibs.androidx.test.rules
+    debugImplementation testLibs.androidx.junit
+    androidTestImplementation testLibs.androidx.espresso.core
+    debugImplementation testLibs.androidx.test.runner
+    androidTestUtil testLibs.androidx.test.orchestrator
+
+    implementation libs.what3words.android.wrapper
     implementation project(":lib")
 
 }

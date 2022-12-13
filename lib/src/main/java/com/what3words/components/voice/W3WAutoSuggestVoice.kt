@@ -15,7 +15,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.ImageView
-import androidx.annotation.ColorRes
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -44,12 +43,11 @@ import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
+import java.util.Collections
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.Collections
 
 /**
  * A [View] to simplify the integration of what3words voice auto-suggest API in your app.
@@ -396,8 +394,13 @@ class W3WAutoSuggestVoice
             View.VISIBLE
         } else {
             resetLayout()
-            binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive)
-            binding.w3wLogo.setTint(voiceIconsColor)
+            if (withError) {
+                binding.w3wLogo.setTint(null)
+                binding.w3wLogo.setImageResource(R.drawable.ic_voice_error)
+            } else {
+                binding.w3wLogo.setImageResource(R.drawable.ic_voice_only_inactive)
+                binding.w3wLogo.setTint(voiceIconsColor)
+            }
             View.INVISIBLE
         }.let {
             binding.innerCircleView.visibility = it

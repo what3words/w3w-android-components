@@ -151,7 +151,7 @@ class W3WAutoSuggestUIClipToPolygonTests {
     private fun getSuggestionCount(): Int {
         var itemCount = 0
         activityScenarioRule.scenario.onActivity {
-            val suggestionPicker = it.findViewById<RecyclerView>(R.id.w3wAutoSuggestDefaultPicker)
+            val suggestionPicker = it.findViewById<RecyclerView>(com.what3words.components.R.id.w3wAutoSuggestDefaultPicker)
             itemCount = suggestionPicker.adapter?.itemCount ?: itemCount
         }
         return itemCount

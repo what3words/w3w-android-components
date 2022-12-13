@@ -2,6 +2,7 @@ package com.what3words.testing.what3wordscomponentuitest.clearButtonVisibility
 
 import android.content.Intent
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -9,6 +10,8 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
+import autosuggestsample.util.isGone
+import autosuggestsample.util.isVisible
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
@@ -31,6 +34,21 @@ class W3WAutoSuggestUICheckClearButtonVisibility {
 
     @Test
     fun testTextSearch_isDisplayedCorrectlyWhenEditTextComponentHasFocus() {
-        Espresso.onView(withId(R.id.btnClear)).check(matches(isDisplayed()))
+        val threeWordAddress = "crazy.palace.mora"
+
+        Espresso.onView(withId(com.what3words.components.R.id.btnClear)).isGone()
+
+        Espresso.onView(withId(R.id.main))
+            .perform(waitUntilVisible())
+
+        Espresso.onView(withId(R.id.suggestionEditText))
+            .perform(
+                waitUntilVisible(),
+                ViewActions.click(),
+                ViewActions.replaceText(threeWordAddress),
+                ViewActions.closeSoftKeyboard()
+            )
+
+        Espresso.onView(withId(com.what3words.components.R.id.btnClear)).isVisible()
     }
 }

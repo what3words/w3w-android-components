@@ -3,6 +3,10 @@ package autosuggestsample.util
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.test.espresso.ViewAssertion
+import androidx.test.espresso.ViewInteraction
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
 
 fun AppCompatEditText.addOnTextChangedListener(onTextChanged: (String) -> Unit) {
     addTextChangedListener(object : TextWatcher {
@@ -18,4 +22,12 @@ fun AppCompatEditText.addOnTextChangedListener(onTextChanged: (String) -> Unit) 
             onTextChanged(s.toString())
         }
     })
+}
+
+fun ViewInteraction.isGone() = getViewAssertion(ViewMatchers.Visibility.GONE)
+
+fun ViewInteraction.isVisible() = getViewAssertion(ViewMatchers.Visibility.VISIBLE)
+
+private fun getViewAssertion(visibility: ViewMatchers.Visibility): ViewAssertion? {
+    return ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(visibility))
 }

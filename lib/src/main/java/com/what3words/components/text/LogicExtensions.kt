@@ -17,3 +17,12 @@ internal fun W3WAutoSuggestEditText.getReal3wa(query: String): Suggestion? {
     )
     return lastSuggestions.firstOrNull { it.words == queryFormatted }
 }
+
+
+internal fun String?.shouldShowClear(): Boolean {
+    if (this.isNullOrEmpty()) return false
+    if (this == "/") return false
+    if (this == "//") return false
+    if (this == "///") return false
+    return true
+}

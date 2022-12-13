@@ -16,14 +16,17 @@ The artifact is available through [![Maven Central](https://img.shields.io/maven
 ### Gradle
 
 ```
-implementation 'com.what3words:w3w-android-components:3.1.0'
+implementation 'com.what3words:w3w-android-components:3.1.1'
 ```
 
 ## Documentation
 
 See the what3words public API [documentation](https://docs.what3words.com/api/v3/)
 
-## Usage
+## Usage with Jetpack Compose
+Checkout the W3WAutoSuggestEditText Compose port [readme](https://github.com/what3words/w3w-android-components/tree/master/compose-sample#readme) if you intend to use the W3WAutoSuggestComponent in Jetpack Compose. 
+
+## Usage with XML
 
 AndroidManifest.xml
 ```xml

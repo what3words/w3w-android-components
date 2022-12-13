@@ -42,7 +42,7 @@ class W3WCustomErrorMessageViewTest {
             )
 
 
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultPicker))
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
 
         // give focus to the clip to country edit text
@@ -56,7 +56,7 @@ class W3WCustomErrorMessageViewTest {
             .perform(waitUntilVisible(), scrollTo())
 
         // check that the default error message view is shown for just 5 seconds
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultErrorMessage))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultErrorMessage))
             .perform(waitUntilGone(delay = 5000))
 
         Espresso.onView(withId(R.id.checkboxCustomError))
@@ -73,7 +73,7 @@ class W3WCustomErrorMessageViewTest {
             )
 
 
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultPicker))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultPicker))
             .perform(waitUntilVisible(hasItemCountGreaterThanZero()))
 
         // give focus to the clip to country edit text
@@ -83,7 +83,7 @@ class W3WCustomErrorMessageViewTest {
         Espresso.onView(withId(R.id.suggestionEditText))
             .perform(waitUntilVisible(), scrollTo())
 
-        Espresso.onView(withId(R.id.w3wAutoSuggestDefaultErrorMessage))
+        Espresso.onView(withId(com.what3words.components.R.id.w3wAutoSuggestDefaultErrorMessage))
             .check(matches(not(isDisplayed())))
 
         // check that the custom error message view is shown for just 5 seconds
