@@ -2,7 +2,7 @@
 
 An Android library to use the [what3words v3 API autosuggest](https://developer.what3words.com/public-api/docs#autosuggest).
 
-<img src="https://github.com/what3words/w3w-android-components/blob/dev/assets/components-1-new.gif" width=40% height=40%>
+<img src="https://github.com/what3words/w3w-android-components/blob/master/assets/components-1-new.gif" width=40% height=40%>
 
 To obtain an API key, please visit [https://what3words.com/select-plan](https://what3words.com/select-plan) and sign up for an account.
 
@@ -147,7 +147,7 @@ If you run our Enterprise Suite API Server yourself, you may specify the URL to 
 
 ## Enable voice autosuggest:
 
-<img src="https://github.com/what3words/w3w-autosuggest-edittext-android/blob/dev/assets/components-2-new.gif" width=35% height=35%>
+<img src="https://github.com/what3words/w3w-autosuggest-edittext-android/blob/master/assets/components-2-new.gif" width=35% height=35%>
 
 The component also allows for voice input using the what3words Voice API. This feature allows the user to say 3 words and using speech recognition technology displays 3 word address suggestions to the user.
 
@@ -213,7 +213,7 @@ If you want to check different ways to use our component please look at our **ad
 
 ## Styles:
 
-<img src="https://github.com/what3words/w3w-android-components/blob/dev/assets/components-3-new.gif" width=35% height=35%>
+<img src="https://github.com/what3words/w3w-android-components/blob/master/assets/components-3-new.gif" width=35% height=35%>
 
 We added support for Night mode on version 3.+, if you want to enable Day/Night mode please add the following style to W3WAutoSuggestEditText.
 ```XML
