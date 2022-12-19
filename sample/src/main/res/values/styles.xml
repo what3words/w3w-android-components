@@ -28,7 +28,8 @@
         <item name="pickerItemSubtitleTextSize">18sp</item>
         <item name="pickerItemTitleFontFamily">sans-serif-condensed-medium</item>
         <item name="pickerItemSubtitleFontFamily">sans-serif-condensed</item>
-        <item name="pickerItemPadding">@dimen/main_m</item>
+        <item name="layoutManager">androidx.recyclerview.widget.GridLayoutManager</item>
+        <item name="spanCount">3</item>
     </style>
 
     <style name="YourCustomStyleTextAppearance" parent="TextAppearance.AppCompat">
