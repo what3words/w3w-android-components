@@ -7,12 +7,14 @@
     Uncomment for custom style
 
     <style name="YourCustomStyle" parent="Widget.AppCompat.W3WAutoSuggestEditText">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@android:color/white</item>
         <item name="android:inputType">text</item>
         <item name="android:maxLines">1</item>
+        <item name="android:hint">\u00A0</item>
         <item name="android:background">#005379</item>
         <item name="voiceBackgroundDrawable">@drawable/bg_gradient</item>
-        <item name="voiceIconsColor">@color/white</item>
+        <item name="voiceIconsColor">@android:color/white</item>
+        <item name="iconTint">@android:color/white</item>
         <item name="android:textAppearance">@style/TextLight.XL.Bold</item>
     </style>
 
@@ -22,12 +24,13 @@
         <item name="pickerBackgroundDrawable">@null</item>
         <item name="pickerDivider">@null</item>
         <item name="pickerDividerVisible">false</item>
-        <item name="pickerItemTitleTextColor">@color/white</item>
-        <item name="pickerItemSubtitleTextColor">@color/text_grey</item>
-        <item name="pickerItemTitleTextSize">28sp</item>
-        <item name="pickerItemSubtitleTextSize">18sp</item>
+        <item name="pickerItemTitleTextColor">@android:color/white</item>
         <item name="pickerItemTitleFontFamily">sans-serif-condensed-medium</item>
+        <item name="pickerItemSubtitleTextColor">@color/text_grey</item>
         <item name="pickerItemSubtitleFontFamily">sans-serif-condensed</item>
+        <item name="pickerItemTitleTextSize">@dimen/text_size_l</item>
+        <item name="pickerItemSubtitleTextSize">@dimen/text_size_m</item>
+        <item name="pickerItemPadding">@dimen/main_l</item>
         <item name="layoutManager">androidx.recyclerview.widget.GridLayoutManager</item>
         <item name="spanCount">3</item>
     </style>

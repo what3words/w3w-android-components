@@ -174,8 +174,13 @@ internal class IconHolderLayout
             // or the visibility of views within the view tree of IconHolderLayout changes
             setVoiceVisibility(binding.icMic.visibility)
 
+            binding.icMic.updateLayoutParams {
+                width = (this@IconHolderLayout.height * 0.8).toInt()
+                height = (this@IconHolderLayout.height * 0.8).toInt()
+            }
+
             binding.btnClear.updateLayoutParams {
-                width = (this@IconHolderLayout.height * 0.6).toInt()
+                width = (this@IconHolderLayout.height * 0.65).toInt()
             }
             viewTreeObserver.removeOnGlobalLayoutListener(this)
         }
