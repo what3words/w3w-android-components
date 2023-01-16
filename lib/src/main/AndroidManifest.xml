@@ -1,5 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.what3words.components">
 
-    /
+    <application>
+        <activity
+            android:name=".permissions.PermissionsActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:theme="@style/AppTheme.Transparent" />
+    </application>
 </manifest>
