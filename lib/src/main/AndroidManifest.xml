@@ -2,7 +2,7 @@
     package="com.what3words.components">
 
     <application
-        android:allowBackup="false"
+        android:allowBackup="true"
         android:usesCleartextTraffic="false">
         <activity
             android:name=".permissions.PermissionsActivity"
