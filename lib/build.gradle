@@ -80,9 +80,8 @@ dependencies {
 
     // what3words wrapper
     api libs.what3words.android.wrapper
-
+    implementation libs.androidx.appcompat
     implementation libs.google.guava
-    implementation libs.nishkarsh.android.permissions
     implementation libs.androidx.constraint.layout
     implementation libs.airbnb.lottie
 

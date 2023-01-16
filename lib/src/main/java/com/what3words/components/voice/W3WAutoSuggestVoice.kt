@@ -21,17 +21,17 @@ import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.ImageViewCompat
-import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
-import com.intentfilter.androidpermissions.PermissionManager
-import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.voice.Microphone
+import com.what3words.components.BuildConfig.VERSION_NAME
 import com.what3words.components.R
 import com.what3words.components.databinding.W3wVoiceOnlyBinding
 import com.what3words.components.models.AutosuggestApiManager
 import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.models.DisplayUnits
 import com.what3words.components.models.W3WListeningState
+import com.what3words.components.permissions.DeniedPermission
+import com.what3words.components.permissions.PermissionManager
 import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.utils.PulseAnimator
@@ -136,13 +136,13 @@ class W3WAutoSuggestVoice
             if (isEnabled) {
                 val permissionManager: PermissionManager = PermissionManager.getInstance(context)
                 permissionManager.checkPermissions(
-                    Collections.singleton(Manifest.permission.RECORD_AUDIO),
+                    arrayOf(Manifest.permission.RECORD_AUDIO),
                     object : PermissionManager.PermissionRequestListener {
                         override fun onPermissionGranted() {
                             viewModel.autosuggest(voiceLanguage)
                         }
 
-                        override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
+                        override fun onPermissionDenied(deniedPermissions: HashSet<DeniedPermission>) {
                             viewModel.setPermissionError()
                         }
                     }
@@ -765,13 +765,13 @@ class W3WAutoSuggestVoice
     fun start() {
         val permissionManager: PermissionManager = PermissionManager.getInstance(context)
         permissionManager.checkPermissions(
-            Collections.singleton(Manifest.permission.RECORD_AUDIO),
+            arrayOf(Manifest.permission.RECORD_AUDIO),
             object : PermissionManager.PermissionRequestListener {
                 override fun onPermissionGranted() {
                     viewModel.autosuggest(voiceLanguage)
                 }
 
-                override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
+                override fun onPermissionDenied(deniedPermissions: HashSet<DeniedPermission>) {
                     viewModel.setPermissionError()
                 }
             }
