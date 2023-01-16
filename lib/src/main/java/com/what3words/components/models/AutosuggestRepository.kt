@@ -1,6 +1,6 @@
 package com.what3words.components.models
 
-import com.what3words.androidwrapper.What3WordsWrapper
+import com.what3words.androidwrapper.What3WordsAndroidWrapper
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.APIResponse
@@ -9,7 +9,7 @@ import com.what3words.javawrapper.response.SuggestionWithCoordinates
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-internal class AutosuggestRepository(private val wrapper: What3WordsWrapper) {
+internal class AutosuggestRepository(private val wrapper: What3WordsAndroidWrapper) {
 
     suspend fun autosuggest(
         query: String,
