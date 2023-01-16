@@ -25,7 +25,7 @@ import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
-import com.what3words.androidwrapper.What3WordsWrapper
+import com.what3words.androidwrapper.What3WordsAndroidWrapper
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.R
 import com.what3words.components.databinding.W3wVoiceOnlyBinding
@@ -512,7 +512,7 @@ class W3WAutoSuggestVoice
      * @return same [W3WAutoSuggestVoice] instance
      */
     fun sdk(
-        wrapper: What3WordsWrapper
+        wrapper: What3WordsAndroidWrapper
     ): W3WAutoSuggestVoice {
         viewModel.initializeWithWrapper(wrapper)
         viewModel.setMicrophone(Microphone())

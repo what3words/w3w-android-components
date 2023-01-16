@@ -25,8 +25,8 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
+import com.what3words.androidwrapper.What3WordsAndroidWrapper
 import com.what3words.androidwrapper.What3WordsV3
-import com.what3words.androidwrapper.What3WordsWrapper
 import com.what3words.androidwrapper.helpers.AutosuggestHelper
 import com.what3words.androidwrapper.helpers.didYouMean3wa
 import com.what3words.androidwrapper.helpers.isPossible3wa
@@ -922,7 +922,7 @@ class W3WAutoSuggestEditText
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun sdk(
-        wrapper: What3WordsWrapper
+        wrapper: What3WordsAndroidWrapper
     ): W3WAutoSuggestEditText {
         viewModel.initializeWithWrapper(wrapper)
         return this

@@ -1,6 +1,6 @@
 package com.what3words.components.vm
 
-import com.what3words.androidwrapper.What3WordsWrapper
+import com.what3words.androidwrapper.What3WordsAndroidWrapper
 import com.what3words.androidwrapper.helpers.DefaultDispatcherProvider
 import com.what3words.androidwrapper.helpers.DispatcherProvider
 import com.what3words.components.models.AutosuggestRepository
@@ -70,7 +70,7 @@ internal open class AutosuggestViewModel(
         }
     }
 
-    fun initializeWithWrapper(wrapper: What3WordsWrapper) {
+    fun initializeWithWrapper(wrapper: What3WordsAndroidWrapper) {
         repository = AutosuggestRepository(wrapper)
     }
 }
