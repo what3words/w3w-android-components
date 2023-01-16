@@ -25,11 +25,11 @@ import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
 import com.intentfilter.androidpermissions.PermissionManager
 import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
+import com.what3words.androidwrapper.What3WordsWrapper
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.R
 import com.what3words.components.databinding.W3wVoiceOnlyBinding
-import com.what3words.components.models.AutosuggestApiManager
-import com.what3words.components.models.AutosuggestLogicManager
+import com.what3words.components.models.AutosuggestRepository
 import com.what3words.components.models.DisplayUnits
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.picker.W3WAutoSuggestPicker
@@ -152,7 +152,7 @@ class W3WAutoSuggestVoice
 
         // Add a viewTreeObserver to obtain the initial size of the circle overlays
         viewTreeObserver.addOnGlobalLayoutListener(this)
-        viewModel.manager = AutosuggestApiManager(What3WordsV3("", context))
+        viewModel.initializeWithWrapper(What3WordsV3("", context))
     }
 
     fun ImageView.setTint(color: Int?) {
@@ -434,7 +434,7 @@ class W3WAutoSuggestVoice
      * @return same [W3WAutoSuggestVoice] instance
      */
     fun apiKey(key: String): W3WAutoSuggestVoice {
-        viewModel.manager = AutosuggestApiManager(
+        viewModel.initializeWithWrapper(
             What3WordsV3(
                 key,
                 context,
@@ -467,7 +467,7 @@ class W3WAutoSuggestVoice
         endpoint: String,
         headers: Map<String, String> = mapOf()
     ): W3WAutoSuggestVoice {
-        viewModel.manager = AutosuggestApiManager(
+        viewModel.initializeWithWrapper(
             What3WordsV3(
                 key,
                 endpoint,
@@ -493,7 +493,7 @@ class W3WAutoSuggestVoice
         voiceEndpoint: String,
         headers: Map<String, String> = mapOf()
     ): W3WAutoSuggestVoice {
-        viewModel.manager = AutosuggestApiManager(
+        viewModel.initializeWithWrapper(
             What3WordsV3(
                 key,
                 endpoint,
@@ -512,9 +512,9 @@ class W3WAutoSuggestVoice
      * @return same [W3WAutoSuggestVoice] instance
      */
     fun sdk(
-        logicManager: AutosuggestLogicManager
+        wrapper: What3WordsWrapper
     ): W3WAutoSuggestVoice {
-        viewModel.manager = logicManager
+        viewModel.initializeWithWrapper(wrapper)
         viewModel.setMicrophone(Microphone())
         return this
     }
@@ -525,9 +525,9 @@ class W3WAutoSuggestVoice
      * @return same [W3WAutoSuggestVoice] instance
      */
     internal fun manager(
-        logicManager: AutosuggestLogicManager
+        logicManager: AutosuggestRepository
     ): W3WAutoSuggestVoice {
-        viewModel.manager = logicManager
+        viewModel.repository = logicManager
         viewModel.setMicrophone(Microphone())
         return this
     }

@@ -10,6 +10,12 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/comwhat3words-1211"
+        }
+        maven {
+            url "https://oss.sonatype.org/content/repositories/comwhat3words-1212"
+        }
         mavenCentral()
     }
 

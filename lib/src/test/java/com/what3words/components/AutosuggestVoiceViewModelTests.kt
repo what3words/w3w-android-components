@@ -16,7 +16,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.justRun
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert
@@ -52,7 +51,7 @@ internal class AutosuggestVoiceViewModelTests {
         microphone = mockk()
         voiceManager = mockk()
         viewModel = AutosuggestVoiceViewModel(coroutinesTestRule.testDispatcherProvider)
-        viewModel.manager = manager
+        viewModel.repository = manager
 
         justRun {
             voiceManager.updateOptions(any())

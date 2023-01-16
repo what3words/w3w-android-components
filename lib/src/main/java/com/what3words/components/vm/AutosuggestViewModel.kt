@@ -1,8 +1,9 @@
 package com.what3words.components.vm
 
+import com.what3words.androidwrapper.What3WordsWrapper
 import com.what3words.androidwrapper.helpers.DefaultDispatcherProvider
 import com.what3words.androidwrapper.helpers.DispatcherProvider
-import com.what3words.components.models.AutosuggestLogicManager
+import com.what3words.components.models.AutosuggestRepository
 import com.what3words.components.models.Either
 import com.what3words.components.utils.io
 import com.what3words.components.utils.main
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.SharedFlow
 internal open class AutosuggestViewModel(
     val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) {
-    lateinit var manager: AutosuggestLogicManager
+    lateinit var repository: AutosuggestRepository
 
     protected val _suggestions = MutableSharedFlow<List<Suggestion>>()
     val suggestions: SharedFlow<List<Suggestion>>
@@ -46,7 +47,7 @@ internal open class AutosuggestViewModel(
             } else if (!returnCoordinates) {
                 // valid suggestion picked with no coordinates
                 io(dispatchers) {
-                    when (val res = manager.selected(rawQuery, suggestion)) {
+                    when (val res = repository.selected(rawQuery, suggestion)) {
                         is Either.Left -> {
                             _error.emit(res.a)
                         }
@@ -57,7 +58,7 @@ internal open class AutosuggestViewModel(
                 }
             } else {
                 // valid suggestion picked with coordinates
-                when (val res = manager.selectedWithCoordinates(rawQuery, suggestion)) {
+                when (val res = repository.selectedWithCoordinates(rawQuery, suggestion)) {
                     is Either.Left -> {
                         _error.emit(res.a)
                     }
@@ -67,5 +68,9 @@ internal open class AutosuggestViewModel(
                 }
             }
         }
+    }
+
+    fun initializeWithWrapper(wrapper: What3WordsWrapper) {
+        repository = AutosuggestRepository(wrapper)
     }
 }
