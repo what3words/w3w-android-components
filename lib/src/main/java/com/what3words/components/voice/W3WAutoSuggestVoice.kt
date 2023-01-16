@@ -334,7 +334,7 @@ class W3WAutoSuggestVoice
         }
         voicePulseEndListener = object : Animator.AnimatorListener {
 
-            override fun onAnimationEnd(animation: Animator?, isReverse: Boolean) {
+            override fun onAnimationEnd(animation: Animator, isReverse: Boolean) {
                 Log.d("ANIM_END", "VOICE END REVERSE")
                 if (isReverse) {
                     // Animation will ensure the pulse is reset to initial state before animating logo
@@ -355,17 +355,17 @@ class W3WAutoSuggestVoice
                 }
             }
 
-            override fun onAnimationCancel(animator: Animator?) {
+            override fun onAnimationCancel(animator: Animator) {
             }
 
-            override fun onAnimationEnd(animator: Animator?) {
+            override fun onAnimationEnd(animator: Animator) {
                 Log.d("ANIM_END", "VOICE END")
             }
 
-            override fun onAnimationRepeat(animator: Animator?) {
+            override fun onAnimationRepeat(animator: Animator) {
             }
 
-            override fun onAnimationStart(animator: Animator?) {
+            override fun onAnimationStart(animator: Animator) {
             }
         }
     }
