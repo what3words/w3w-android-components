@@ -12,7 +12,7 @@ apply from: 'maven-push.gradle'
 apply from: '../jacoco.gradle'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     buildToolsVersion libs.versions.buildToolsVersion.get()
 
     kotlinOptions {
@@ -26,7 +26,7 @@ android {
 
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 32
+        targetSdkVersion 33
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
         buildConfigField("String", "VERSION_NAME", "\"${libVersion}\"")
@@ -80,9 +80,8 @@ dependencies {
 
     // what3words wrapper
     api libs.what3words.android.wrapper
-
+    implementation libs.androidx.appcompat
     implementation libs.google.guava
-    implementation libs.nishkarsh.android.permissions
     implementation libs.androidx.constraint.layout
     implementation libs.airbnb.lottie
 

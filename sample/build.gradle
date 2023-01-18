@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     buildToolsVersion libs.versions.buildToolsVersion.get()
 
     buildFeatures {
@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId "com.what3words.autosuggest"
         minSdkVersion 23
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 320
         versionName "3.2.0"
         multiDexEnabled true
