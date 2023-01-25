@@ -25,7 +25,9 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
+import com.what3words.androidwrapper.What3WordsAndroidWrapper
 import com.what3words.androidwrapper.What3WordsV3
+import com.what3words.androidwrapper.helpers.AutosuggestHelper
 import com.what3words.androidwrapper.helpers.didYouMean3wa
 import com.what3words.androidwrapper.helpers.isPossible3wa
 import com.what3words.components.BuildConfig
@@ -33,8 +35,7 @@ import com.what3words.components.R
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
 import com.what3words.components.error.forceClearAndHide
 import com.what3words.components.error.populateAndShow
-import com.what3words.components.models.AutosuggestApiManager
-import com.what3words.components.models.AutosuggestLogicManager
+import com.what3words.components.models.AutosuggestRepository
 import com.what3words.components.models.DisplayUnits
 import com.what3words.components.models.VoiceScreenType
 import com.what3words.components.models.W3WListeningState
@@ -390,7 +391,9 @@ class W3WAutoSuggestEditText
                     )
                 }
                 showKeyboard()
-                if(text?.toString()?.shouldShowClear() == true) iconHolderLayout.setClearVisibility(VISIBLE)
+                if (text?.toString()
+                        ?.shouldShowClear() == true
+                ) iconHolderLayout.setClearVisibility(VISIBLE)
                 showImages(false)
             }
             focusFromVoice = false
@@ -413,7 +416,8 @@ class W3WAutoSuggestEditText
         viewTreeObserver.addOnGlobalLayoutListener(this)
 
         // create empty APIManager, will fail in case dev doesn't call apiKey()
-        viewModel.manager = AutosuggestApiManager(What3WordsV3("", context))
+        val api = What3WordsV3("", context)
+        viewModel.initializeWithWrapper(api)
     }
 
 
@@ -447,7 +451,7 @@ class W3WAutoSuggestEditText
             when (voiceScreenType) {
                 VoiceScreenType.Inline -> {
                     iconHolderLayout.setVoiceVisibility(if (voiceEnabled && !isShowingTick) VISIBLE else INVISIBLE)
-                    iconHolderLayout.setup(viewModel.manager)
+                    iconHolderLayout.setup(viewModel.repository)
                 }
                 VoiceScreenType.AnimatedPopup -> {
                     setupAnimatedPopupVoice()
@@ -499,7 +503,7 @@ class W3WAutoSuggestEditText
         // remove this when AutosuggestHelper did you mean issue is fixed.
         getCorrectionPicker().forceClearAndHide()
 
-        if(searchText.shouldShowClear()) {
+        if (searchText.shouldShowClear()) {
             iconHolderLayout.setClearVisibility(VISIBLE)
         } else {
             iconHolderLayout.setClearVisibility(GONE)
@@ -782,7 +786,7 @@ class W3WAutoSuggestEditText
             {
                 buildVoiceFullscreen()
                 voicePulseLayoutFullScreen?.let { fullScreenVoice ->
-                    fullScreenVoice.setup(viewModel.manager)
+                    fullScreenVoice.setup(viewModel.repository)
                     fullScreenVoice.onResultsCallback {
                         handleVoiceSuggestions(it)
                     }
@@ -800,7 +804,7 @@ class W3WAutoSuggestEditText
             {
                 buildVoiceAnimatedPopup()
                 voiceAnimatedPopup?.let { voiceAnimatedPopup ->
-                    voiceAnimatedPopup.setup(viewModel.manager)
+                    voiceAnimatedPopup.setup(viewModel.repository)
                     voiceAnimatedPopup.onResultsCallback {
                         handleVoiceSuggestions(it)
                     }
@@ -848,17 +852,15 @@ class W3WAutoSuggestEditText
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun apiKey(key: String): W3WAutoSuggestEditText {
-        viewModel.manager =
-            AutosuggestApiManager(
-                What3WordsV3(
-                    key,
-                    context,
-                    mapOf(
-                        "X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})",
-                        "component_session_id" to SESSION_ID
-                    )
-                )
+        val api = What3WordsV3(
+            key,
+            context,
+            mapOf(
+                "X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})",
+                "component_session_id" to SESSION_ID
             )
+        )
+        viewModel.initializeWithWrapper(api)
         return this
     }
 
@@ -874,17 +876,15 @@ class W3WAutoSuggestEditText
         endpoint: String,
         headers: Map<String, String> = mapOf()
     ): W3WAutoSuggestEditText {
-        viewModel.manager =
-            AutosuggestApiManager(
-                What3WordsV3(
-                    key,
-                    endpoint,
-                    context,
-                    headers.toMutableMap().apply {
-                        put("component_session_id", SESSION_ID)
-                    }
-                )
-            )
+        val api = What3WordsV3(
+            key,
+            endpoint,
+            context,
+            headers.toMutableMap().apply {
+                put("component_session_id", SESSION_ID)
+            }
+        )
+        viewModel.initializeWithWrapper(api)
         return this
     }
 
@@ -902,18 +902,16 @@ class W3WAutoSuggestEditText
         voiceEndpoint: String,
         headers: Map<String, String> = mapOf()
     ): W3WAutoSuggestEditText {
-        viewModel.manager =
-            AutosuggestApiManager(
-                What3WordsV3(
-                    key,
-                    endpoint,
-                    voiceEndpoint,
-                    context,
-                    headers.toMutableMap().apply {
-                        put("component_session_id", SESSION_ID)
-                    }
-                )
-            )
+        val api = What3WordsV3(
+            key,
+            endpoint,
+            voiceEndpoint,
+            context,
+            headers.toMutableMap().apply {
+                put("component_session_id", SESSION_ID)
+            }
+        )
+        viewModel.initializeWithWrapper(api)
         return this
     }
 
@@ -924,9 +922,9 @@ class W3WAutoSuggestEditText
      * @return same [W3WAutoSuggestEditText] instance
      */
     fun sdk(
-        logicManager: AutosuggestLogicManager
+        wrapper: What3WordsAndroidWrapper
     ): W3WAutoSuggestEditText {
-        viewModel.manager = logicManager
+        viewModel.initializeWithWrapper(wrapper)
         return this
     }
 
@@ -1077,7 +1075,7 @@ class W3WAutoSuggestEditText
     ): W3WAutoSuggestEditText {
         this.voiceEnabled = enabled
         voiceScreenType = VoiceScreenType.Inline
-        iconHolderLayout.setup(viewModel.manager)
+        iconHolderLayout.setup(viewModel.repository)
         iconHolderLayout.setVoiceVisibility(if (voiceEnabled && !isShowingTick) VISIBLE else INVISIBLE)
         return this
     }
@@ -1101,7 +1099,7 @@ class W3WAutoSuggestEditText
         }
         when (type) {
             VoiceScreenType.Inline -> {
-                iconHolderLayout.setup(viewModel.manager)
+                iconHolderLayout.setup(viewModel.repository)
             }
             VoiceScreenType.AnimatedPopup -> {
                 if (enabled && voiceAnimatedPopup == null) {

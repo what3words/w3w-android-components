@@ -1,7 +1,6 @@
 package com.what3words.components.models
 
-import com.what3words.androidwrapper.What3WordsV3
-import com.what3words.androidwrapper.helpers.AutosuggestHelper
+import com.what3words.androidwrapper.What3WordsAndroidWrapper
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.response.APIResponse
@@ -10,21 +9,17 @@ import com.what3words.javawrapper.response.SuggestionWithCoordinates
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-internal class AutosuggestApiManager(private val wrapper: What3WordsV3) : AutosuggestLogicManager {
+internal class AutosuggestRepository(private val wrapper: What3WordsAndroidWrapper) {
 
-    private val autosuggestHelper by lazy {
-        AutosuggestHelper(wrapper)
-    }
-
-    override suspend fun autosuggest(
+    suspend fun autosuggest(
         query: String,
         options: AutosuggestOptions?,
         allowFlexibleDelimiters: Boolean
     ): Either<APIResponse.What3WordsError, Pair<List<Suggestion>?, Suggestion?>> =
         suspendCoroutine { cont ->
-            if (options != null) autosuggestHelper.options(options)
-            autosuggestHelper.allowFlexibleDelimiters(allowFlexibleDelimiters)
-            autosuggestHelper.update(
+            if (options != null) wrapper.helper.options(options)
+            wrapper.helper.allowFlexibleDelimiters(allowFlexibleDelimiters)
+            wrapper.helper.update(
                 query,
                 {
                     cont.resume(Either.Right(Pair(it, null)))
@@ -38,11 +33,11 @@ internal class AutosuggestApiManager(private val wrapper: What3WordsV3) : Autosu
             )
         }
 
-    override suspend fun autosuggest(
+    suspend fun autosuggest(
         microphone: Microphone,
         options: AutosuggestOptions,
         voiceLanguage: String
-    ): Either<APIResponse.What3WordsError, VoiceAutosuggestManager> = suspendCoroutine { cont ->
+    ): Either<APIResponse.What3WordsError, VoiceAutosuggestRepository> = suspendCoroutine { cont ->
         val builder = wrapper.autosuggest(microphone, voiceLanguage).apply {
             options.nResults?.let {
                 this.nResults(it)
@@ -66,15 +61,15 @@ internal class AutosuggestApiManager(private val wrapper: What3WordsV3) : Autosu
                 this.clipToPolygon(coordinates.toList())
             }
         }
-        val voiceManager = VoiceApiAutosuggestManager(builder)
+        val voiceManager = VoiceAutosuggestRepository(builder)
         cont.resume(Either.Right(voiceManager))
     }
 
-    override suspend fun selected(
+    suspend fun selected(
         rawQuery: String,
         suggestion: Suggestion
     ): Either<APIResponse.What3WordsError, SuggestionWithCoordinates> = suspendCoroutine { cont ->
-        autosuggestHelper.selected(
+        wrapper.helper.selected(
             rawQuery,
             suggestion
         ) {
@@ -82,11 +77,11 @@ internal class AutosuggestApiManager(private val wrapper: What3WordsV3) : Autosu
         }
     }
 
-    override suspend fun selectedWithCoordinates(
+    suspend fun selectedWithCoordinates(
         rawQuery: String,
         suggestion: Suggestion
     ): Either<APIResponse.What3WordsError, SuggestionWithCoordinates> = suspendCoroutine { cont ->
-        autosuggestHelper.selectedWithCoordinates(
+        wrapper.helper.selectedWithCoordinates(
             rawQuery,
             suggestion,
             {
@@ -98,7 +93,7 @@ internal class AutosuggestApiManager(private val wrapper: What3WordsV3) : Autosu
         )
     }
 
-    override suspend fun multipleWithCoordinates(
+    suspend fun multipleWithCoordinates(
         rawQuery: String,
         suggestions: List<Suggestion>
     ): Either<APIResponse.What3WordsError, List<SuggestionWithCoordinates>> =
@@ -119,7 +114,7 @@ internal class AutosuggestApiManager(private val wrapper: What3WordsV3) : Autosu
             else cont.resume(Either.Left(APIResponse.What3WordsError.UNKNOWN_ERROR))
         }
 
-    override fun isVoiceEnabled(): Boolean {
+    fun isVoiceEnabled(): Boolean {
         return true
     }
 }

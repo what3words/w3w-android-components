@@ -2,7 +2,7 @@ package com.what3words.components
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.gson.Gson
-import com.what3words.components.models.AutosuggestApiManager
+import com.what3words.components.models.AutosuggestRepository
 import com.what3words.components.models.Either
 import com.what3words.components.vm.AutosuggestTextViewModel
 import com.what3words.javawrapper.response.APIResponse
@@ -12,7 +12,6 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
@@ -26,7 +25,7 @@ import org.junit.rules.TestRule
 @ExperimentalCoroutinesApi
 internal class AutosuggestTextViewModelTests {
     @MockK
-    private lateinit var manager: AutosuggestApiManager
+    private lateinit var repository: AutosuggestRepository
 
     @MockK
     private lateinit var viewModel: AutosuggestTextViewModel
@@ -39,9 +38,9 @@ internal class AutosuggestTextViewModelTests {
 
     @Before
     fun setup() {
-        manager = mockk()
+        repository = mockk()
         viewModel = AutosuggestTextViewModel(coroutinesTestRule.testDispatcherProvider)
-        viewModel.manager = manager
+        viewModel.repository = repository
     }
 
     @Test
@@ -56,7 +55,7 @@ internal class AutosuggestTextViewModelTests {
             var errorResult: APIResponse.What3WordsError? = null
 
             coEvery {
-                manager.autosuggest("test", any())
+                repository.autosuggest("test", any(), any())
             } answers {
                 Either.Right(Pair(suggestions, null))
             }
@@ -98,7 +97,7 @@ internal class AutosuggestTextViewModelTests {
             var errorResult: APIResponse.What3WordsError? = null
 
             coEvery {
-                manager.autosuggest("test", any())
+                repository.autosuggest("test", any(), any())
             } answers {
                 Either.Right(
                     Pair(
@@ -145,7 +144,7 @@ internal class AutosuggestTextViewModelTests {
             var errorResult: APIResponse.What3WordsError? = null
 
             coEvery {
-                manager.autosuggest("test", any(), true)
+                repository.autosuggest("test", any(), true)
             } answers {
                 Either.Right(
                     Pair(
@@ -188,7 +187,7 @@ internal class AutosuggestTextViewModelTests {
             var errorResult: APIResponse.What3WordsError? = null
 
             coEvery {
-                manager.autosuggest("test", any())
+                repository.autosuggest("test", any(), any())
             } answers {
                 Either.Left(
                     APIResponse.What3WordsError.INVALID_KEY
@@ -242,7 +241,7 @@ internal class AutosuggestTextViewModelTests {
             var selectedSuggestionResult: SuggestionWithCoordinates? = null
 
             coEvery {
-                manager.autosuggest("test", any())
+                repository.autosuggest("test", any(), any())
             } answers {
                 Either.Right(
                     Pair(
@@ -253,7 +252,7 @@ internal class AutosuggestTextViewModelTests {
             }
 
             coEvery {
-                manager.selectedWithCoordinates("test", suggestions.first())
+                repository.selectedWithCoordinates("test", suggestions.first())
             } answers {
                 Either.Right(
                     suggestionsWithCoordinates.first()
@@ -313,7 +312,7 @@ internal class AutosuggestTextViewModelTests {
             var selectedSuggestionResult: SuggestionWithCoordinates? = null
 
             coEvery {
-                manager.autosuggest("test", any())
+                repository.autosuggest("test", any(), any())
             } answers {
                 Either.Right(
                     Pair(
@@ -324,7 +323,7 @@ internal class AutosuggestTextViewModelTests {
             }
 
             coEvery {
-                manager.selected("test", suggestions.first())
+                repository.selected("test", suggestions.first())
             } answers {
                 Either.Right(
                     suggestionsWithCoordinates

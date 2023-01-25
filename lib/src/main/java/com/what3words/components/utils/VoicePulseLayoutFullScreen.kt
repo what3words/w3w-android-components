@@ -10,7 +10,7 @@ import androidx.core.util.Consumer
 import androidx.core.view.updateLayoutParams
 import com.what3words.components.R
 import com.what3words.components.databinding.VoicePulseLayoutFullScreenBinding
-import com.what3words.components.models.AutosuggestLogicManager
+import com.what3words.components.models.AutosuggestRepository
 import com.what3words.components.models.VoiceScreenType
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.text.W3WAutoSuggestEditText
@@ -96,13 +96,13 @@ internal class VoicePulseLayoutFullScreen
     }
 
     /**
-     * [setup] should be called by [W3WAutoSuggestEditText] having the [AutosuggestLogicManager] which can be SDK or API as a parameter, using the internal [W3WAutoSuggestVoice.manager].
+     * [setup] should be called by [W3WAutoSuggestEditText] having the [AutosuggestRepository] which can be SDK or API as a parameter, using the internal [W3WAutoSuggestVoice.manager].
      * This flow should only happen when using [W3WAutoSuggestVoice] inside [W3WAutoSuggestEditText].
      * [W3WAutoSuggestVoice.onInternalResults] callback is needed to receive the suggestions from [W3WAutoSuggestVoice].
      * [W3WAutoSuggestVoice.onListeningStateChanged] callback is needed to hide this view when [W3WAutoSuggestVoice] [W3WListeningState].
      * [W3WAutoSuggestVoice.onError] callback is needed to get any [APIResponse.What3WordsError] returned by [W3WAutoSuggestVoice].
      */
-    fun setup(logicManager: AutosuggestLogicManager) {
+    fun setup(logicManager: AutosuggestRepository) {
         binding.autosuggestVoice.manager(logicManager)
             .onInternalResults {
                 if (it.isNotEmpty()) {

@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.what3words.components.compose.wrapper.AutoSuggestConfiguration
 import com.what3words.components.compose.wrapper.W3WAutoSuggestTextFieldState
-import com.what3words.components.models.AutosuggestLogicManager
 import com.what3words.components.text.W3WAutoSuggestEditText
 
 /**
@@ -124,7 +123,7 @@ internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
                     )
                 }
                 is AutoSuggestConfiguration.Sdk -> {
-                    sdk(logicManager = autoSuggestConfiguration.logicManager)
+                    sdk(wrapper = autoSuggestConfiguration.wrapper)
 
                 }
             }

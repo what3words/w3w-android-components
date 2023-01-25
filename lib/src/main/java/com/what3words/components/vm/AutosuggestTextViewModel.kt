@@ -18,7 +18,7 @@ internal class AutosuggestTextViewModel(
 
     fun autosuggest(searchText: String, allowFlexibleDelimiters: Boolean = false) {
         io(dispatchers) {
-            val res = manager.autosuggest(
+            val res = repository.autosuggest(
                 searchText.replace("/", ""), options, allowFlexibleDelimiters
             )
             when (res) {

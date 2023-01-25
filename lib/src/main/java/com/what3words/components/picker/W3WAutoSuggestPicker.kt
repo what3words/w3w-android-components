@@ -3,12 +3,12 @@ package com.what3words.components.picker
 import android.content.Context
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
-import android.graphics.fonts.FontFamily
 import android.util.AttributeSet
 import android.view.View
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat.getFont
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.what3words.components.R
@@ -68,12 +68,20 @@ class W3WAutoSuggestPicker
                 if (findViewById<W3WAutoSuggestPicker>(id) == null) id =
                     R.id.w3wAutoSuggestDefaultPicker
 
-                val linear = LinearLayoutManager(context, attrs, defStyleAttr, 0)
-                layoutManager = linear
-                setHasFixedSize(true)
-
                 resources.getDimensionPixelSize(R.dimen.tiny_margin).let {
                     setPadding(it, it, it, it)
+                }
+
+                var isReverse = false
+                var isLinear = true
+
+                (layoutManager as? GridLayoutManager)?.let {
+                    isReverse = it.reverseLayout
+                    isLinear = false
+                }
+
+                (layoutManager as? LinearLayoutManager)?.let {
+                    isReverse = it.reverseLayout
                 }
 
                 val itemBackgroundDrawableId = getResourceId(
@@ -178,13 +186,15 @@ class W3WAutoSuggestPicker
                     subtitleFontFamily = getFont(context, subtitleFontFamilyId)
                 }
 
+
                 if (dividerDrawableId != -1) {
                     ContextCompat.getDrawable(context, dividerDrawableId)?.let {
                         addItemDecoration(
                             MyDividerItemDecorator(
                                 if (dividerVisible) it else null,
                                 itemSpacing,
-                                (layoutManager as LinearLayoutManager).reverseLayout
+                                isLinear,
+                                isReverse
                             )
                         )
                     } ?: kotlin.run {
@@ -192,7 +202,8 @@ class W3WAutoSuggestPicker
                             MyDividerItemDecorator(
                                 null,
                                 itemSpacing,
-                                (layoutManager as LinearLayoutManager).reverseLayout
+                                isLinear,
+                                isReverse
                             )
                         )
                     }
@@ -201,7 +212,8 @@ class W3WAutoSuggestPicker
                         MyDividerItemDecorator(
                             null,
                             itemSpacing,
-                            (layoutManager as LinearLayoutManager).reverseLayout
+                            isLinear,
+                            isReverse
                         )
                     )
                 }

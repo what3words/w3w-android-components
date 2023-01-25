@@ -53,6 +53,7 @@
         <item name="pickerItemSubtitleTextSize">@dimen/secondary_text</item>
         <item name="pickerItemTitleTextColor">#0A3049</item>
         <item name="pickerItemSubtitleTextColor">#525252</item>
+        <item name="layoutManager">androidx.recyclerview.widget.LinearLayoutManager</item>
     </style>
 
     <style name="W3WAutoSuggestPickerDayNight">

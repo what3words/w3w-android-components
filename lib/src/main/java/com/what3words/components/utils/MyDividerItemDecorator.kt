@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 internal class MyDividerItemDecorator(
     private val mDivider: Drawable?,
     private val verticalSpacing: Float,
+    private val isLinear: Boolean = true,
     private val isReverse: Boolean = false
 ) : RecyclerView.ItemDecoration() {
 
@@ -19,10 +20,10 @@ internal class MyDividerItemDecorator(
         state: RecyclerView.State
     ) {
         super.getItemOffsets(outRect, view, parent, state)
-        outRect.bottom = verticalSpacing.toInt()
+        if (isLinear) outRect.bottom = verticalSpacing.toInt()
         outRect.left = verticalSpacing.toInt()
         outRect.right = verticalSpacing.toInt()
-        if (parent.getChildLayoutPosition(view) == 0) {
+        if (parent.getChildLayoutPosition(view) == 0 && isLinear) {
             outRect.top = verticalSpacing.toInt()
         }
     }
