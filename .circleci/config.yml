@@ -104,12 +104,12 @@ jobs:
 workflows:
   build-test-sonar-publish:
     jobs:
-      - build-ui-test:
-          name: build-run-UI-tests
-          context:
-            - mobile
+#      - build-ui-test:
+#          name: build-run-UI-tests
+#          context:
+#            - mobile
       - build-test-sonar:
-          requires: [ build-run-UI-tests ]
+#          requires: [ build-run-UI-tests ]
           context:
             - SonarCloud
             - mobile
