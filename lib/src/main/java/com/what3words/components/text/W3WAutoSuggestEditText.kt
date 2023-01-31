@@ -70,7 +70,7 @@ class W3WAutoSuggestEditText
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.customW3WAutoSuggestEditTextStyle
 ) : AppCompatEditText(
-    context,
+    ContextThemeWrapper(context, R.style.W3WAutoSuggestEditTextTheme),
     attrs,
     defStyleAttr
 ),
@@ -332,7 +332,7 @@ class W3WAutoSuggestEditText
                 if (compoundDrawablesRelative.isNotEmpty()) {
                     drawableStart = compoundDrawablesRelative[0]
                 }
-                oldHint = hint.toString()
+                oldHint = hint?.toString()
                 originalPaddingEnd = paddingEnd
             } finally {
                 this@W3WAutoSuggestEditText.textDirection = TEXT_DIRECTION_LOCALE
