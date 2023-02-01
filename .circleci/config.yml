@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
   gradle: circleci/gradle@2.2.0
-  android: circleci/android@1.0
+  android: circleci/android@2.0
 
 jobs:
   build-ui-test:
@@ -14,7 +14,7 @@ jobs:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "lib/build.gradle" }}
       - android/create-avd:
           avd-name: testDevice
-          system-image: system-images;android-30;google_apis;x86
+          system-image: system-images;android-29;google_apis;x86
           install: true
       - android/start-emulator:
           avd-name: testDevice
