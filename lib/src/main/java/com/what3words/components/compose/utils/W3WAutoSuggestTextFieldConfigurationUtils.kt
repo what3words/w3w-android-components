@@ -100,7 +100,8 @@ internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
     autoSuggestConfiguration: AutoSuggestConfiguration
 ): W3WAutoSuggestEditText {
     return W3WAutoSuggestEditText(
-        ContextThemeWrapper(context, themeResId)
+        context = ContextThemeWrapper(context, themeResId),
+        defaultTheme = themeResId
     )
         .apply {
             when (autoSuggestConfiguration) {
