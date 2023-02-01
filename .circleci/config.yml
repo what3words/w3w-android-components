@@ -7,10 +7,12 @@ jobs:
   build-ui-test:
     executor:
       name: android/android-machine
+      tag: 2022.12.1
       resource-class: large
-      tag: 2022.12
     steps:
       - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "lib/build.gradle" }}
       - android/create-avd:
           avd-name: testDevice
           system-image: system-images;android-29;google_apis;x86
@@ -29,6 +31,7 @@ jobs:
   build-test-sonar:
     executor:
       name: android/android-machine
+      tag: 2022.12.1
       resource-class: large
     steps:
       - checkout
@@ -73,6 +76,7 @@ jobs:
   deploy-to-sonatype:
     executor:
       name: android/android-machine
+      tag: 2022.12.1
       resource-class: large
     steps:
       - checkout
