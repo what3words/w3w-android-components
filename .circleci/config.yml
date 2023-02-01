@@ -1,13 +1,14 @@
 version: 2.1
 orbs:
   gradle: circleci/gradle@2.2.0
-  android: circleci/android@2.0
+  android: circleci/android@2.1.2
 
 jobs:
   build-ui-test:
     executor:
       name: android/android-machine
       resource-class: large
+      tag: 2022.12
     steps:
       - checkout
       - android/create-avd:
