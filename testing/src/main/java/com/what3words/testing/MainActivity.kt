@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityMainBinding
-    private var apiKey = "MOC1ZITA"//BuildConfig.W3W_API_KEY
+    private var apiKey = BuildConfig.W3W_API_KEY
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -191,7 +191,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpW3W() {
         binding.suggestionEditText.apiKey(
-            key = apiKey
+            key = apiKey,
+            endpoint = BuildConfig.W3W_PRE_PROD_URL
         )
             .onDisplaySuggestions {
             }
