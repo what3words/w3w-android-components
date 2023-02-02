@@ -1,12 +1,13 @@
 version: 2.1
 orbs:
   gradle: circleci/gradle@2.2.0
-  android: circleci/android@1.0
+  android: circleci/android@2.1.2
 
 jobs:
   build-ui-test:
     executor:
       name: android/android-machine
+      tag: 2022.12.1
       resource-class: large
     steps:
       - checkout
@@ -14,7 +15,7 @@ jobs:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "lib/build.gradle" }}
       - android/create-avd:
           avd-name: testDevice
-          system-image: system-images;android-30;google_apis;x86
+          system-image: system-images;android-29;google_apis;x86
           install: true
       - android/start-emulator:
           avd-name: testDevice
@@ -30,6 +31,7 @@ jobs:
   build-test-sonar:
     executor:
       name: android/android-machine
+      tag: 2022.12.1
       resource-class: large
     steps:
       - checkout
@@ -74,6 +76,7 @@ jobs:
   deploy-to-sonatype:
     executor:
       name: android/android-machine
+      tag: 2022.12.1
       resource-class: large
     steps:
       - checkout
