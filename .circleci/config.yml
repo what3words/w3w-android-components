@@ -28,6 +28,8 @@ jobs:
           path: testing/build/outputs/androidTest-results
       - android/save-gradle-cache:
           cache-prefix: v1a
+    environment:
+      ORG_GRADLE_PROJECT_PRE_PROD_API_KEY: MOC1ZITA
   build-test-sonar:
     executor:
       name: android/android-machine
