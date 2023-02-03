@@ -19,6 +19,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
+import androidx.annotation.StyleRes
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
@@ -68,9 +69,10 @@ class W3WAutoSuggestEditText
 @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.customW3WAutoSuggestEditTextStyle
+    defStyleAttr: Int = R.attr.customW3WAutoSuggestEditTextStyle,
+    @StyleRes defaultTheme: Int = R.style.W3WAutoSuggestEditTextTheme,
 ) : AppCompatEditText(
-    ContextThemeWrapper(context, R.style.W3WAutoSuggestEditTextTheme),
+    ContextThemeWrapper(context, defaultTheme),
     attrs,
     defStyleAttr
 ),
