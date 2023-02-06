@@ -35,6 +35,7 @@
 
         <com.what3words.components.picker.W3WAutoSuggestPicker
             android:id="@+id/suggestionPicker"
+            style="@style/YourPickerCustomStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"

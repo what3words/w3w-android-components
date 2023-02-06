@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
 import autosuggestsample.BuildConfig
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = inflate(layoutInflater)
+
         binding.suggestionEditText.apiKey(BuildConfig.W3W_API_KEY)
             .onDisplaySuggestions {
             }

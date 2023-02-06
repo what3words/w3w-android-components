@@ -36,7 +36,7 @@
             android:id="@+id/voicePlaceholder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="106dp"
+            android:layout_marginTop="@dimen/voice_placeholder_margin"
             tools:text="Say a 3 word address"
             android:textColor="@color/subtextColor"
             android:textSize="22sp"

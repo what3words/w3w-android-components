@@ -1,6 +1,6 @@
 package com.what3words.components.compose.wrapper
 
-import com.what3words.components.models.AutosuggestLogicManager
+import com.what3words.androidwrapper.What3WordsAndroidWrapper
 
 sealed class AutoSuggestConfiguration {
     /**
@@ -35,7 +35,7 @@ sealed class AutoSuggestConfiguration {
     ) : AutoSuggestConfiguration()
 
     /**
-     * @property logicManager manager created using SDK instead of API
+     * @property wrapper manager created using SDK instead of API
      * **/
-    data class Sdk(val logicManager: AutosuggestLogicManager) : AutoSuggestConfiguration()
+    data class Sdk(val wrapper: What3WordsAndroidWrapper) : AutoSuggestConfiguration()
 }

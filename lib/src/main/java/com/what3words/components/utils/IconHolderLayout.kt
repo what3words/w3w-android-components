@@ -13,7 +13,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.updateLayoutParams
 import com.what3words.components.R
 import com.what3words.components.databinding.IconHolderLayoutBinding
-import com.what3words.components.models.AutosuggestLogicManager
+import com.what3words.components.models.AutosuggestRepository
 import com.what3words.components.models.VoiceScreenType
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.text.W3WAutoSuggestEditText
@@ -98,12 +98,12 @@ internal class IconHolderLayout
     }
 
     /**
-     * [setup] should be called by [W3WAutoSuggestEditText] having the [AutosuggestLogicManager] which can be SDK or API as a parameter, using the internal [W3WAutoSuggestVoice.manager].
+     * [setup] should be called by [W3WAutoSuggestEditText] having the [AutosuggestRepository] which can be SDK or API as a parameter, using the internal [W3WAutoSuggestVoice.manager].
      * This flow should only happen when using [W3WAutoSuggestVoice] inside [W3WAutoSuggestEditText].
      * [W3WAutoSuggestVoice.onInternalResults] callback is needed to receive the suggestions from [W3WAutoSuggestVoice].
      * [W3WAutoSuggestVoice.onError] callback is needed to get any [APIResponse.What3WordsError] returned by [W3WAutoSuggestVoice].
      */
-    fun setup(logicManager: AutosuggestLogicManager) {
+    fun setup(logicManager: AutosuggestRepository) {
         autosuggestVoice.manager(logicManager)
             .onInternalResults {
                 resultsCallback?.accept(it)
@@ -174,8 +174,13 @@ internal class IconHolderLayout
             // or the visibility of views within the view tree of IconHolderLayout changes
             setVoiceVisibility(binding.icMic.visibility)
 
+            binding.icMic.updateLayoutParams {
+                width = (this@IconHolderLayout.height * 0.8).toInt()
+                height = (this@IconHolderLayout.height * 0.8).toInt()
+            }
+
             binding.btnClear.updateLayoutParams {
-                width = (this@IconHolderLayout.height * 0.6).toInt()
+                width = (this@IconHolderLayout.height * 0.65).toInt()
             }
             viewTreeObserver.removeOnGlobalLayoutListener(this)
         }

@@ -1,15 +1,18 @@
 version: 2.1
 orbs:
   gradle: circleci/gradle@2.2.0
-  android: circleci/android@1.0
+  android: circleci/android@2.1.2
 
 jobs:
   build-ui-test:
     executor:
       name: android/android-machine
+      tag: 2022.12.1
       resource-class: large
     steps:
       - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "lib/build.gradle" }}
       - android/create-avd:
           avd-name: testDevice
           system-image: system-images;android-30;google_apis;x86
@@ -28,6 +31,7 @@ jobs:
   build-test-sonar:
     executor:
       name: android/android-machine
+      tag: 2022.12.1
       resource-class: large
     steps:
       - checkout
@@ -72,6 +76,7 @@ jobs:
   deploy-to-sonatype:
     executor:
       name: android/android-machine
+      tag: 2022.12.1
       resource-class: large
     steps:
       - checkout
@@ -104,11 +109,18 @@ workflows:
     jobs:
       - build-ui-test:
           name: build-run-UI-tests
+          context:
+            - mobile
       - build-test-sonar:
           requires: [ build-run-UI-tests ]
-          context: SonarCloud
+          context:
+            - SonarCloud
+            - mobile
       - deploy-to-sonatype:
           name: Build, run tests, sonar and push to maven staging
+          context:
+            - maven-sign
+            - mobile
           requires:
             - build-test-sonar
           filters:

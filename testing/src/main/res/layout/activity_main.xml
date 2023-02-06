@@ -24,7 +24,6 @@
 
         <com.what3words.components.text.W3WAutoSuggestEditText
             android:id="@+id/suggestionEditText"
-            style="@style/Widget.AppCompat.W3WAutoSuggestEditTextDayNight"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/main_s"

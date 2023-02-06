@@ -4,7 +4,7 @@ import com.what3words.androidwrapper.helpers.DefaultDispatcherProvider
 import com.what3words.androidwrapper.helpers.DispatcherProvider
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.models.Either
-import com.what3words.components.models.VoiceAutosuggestManager
+import com.what3words.components.models.VoiceAutosuggestRepository
 import com.what3words.components.models.W3WListeningState
 import com.what3words.components.utils.io
 import com.what3words.components.utils.main
@@ -21,7 +21,7 @@ internal class AutosuggestVoiceViewModel(
     private var listeningJob: Job? = null
     private lateinit var microphone: Microphone
 
-    internal var voiceManager: VoiceAutosuggestManager? = null
+    internal var voiceManager: VoiceAutosuggestRepository? = null
 
     private var _currentState: W3WListeningState? = null
 
@@ -48,7 +48,7 @@ internal class AutosuggestVoiceViewModel(
             }
         } else {
             io(dispatchers) {
-                val builder = manager.autosuggest(
+                val builder = repository.autosuggest(
                     microphone, options, language
                 )
 
@@ -72,7 +72,7 @@ internal class AutosuggestVoiceViewModel(
     ) {
         io(dispatchers) {
             if (returnCoordinates) {
-                val res = manager.multipleWithCoordinates(rawQuery, suggestions)
+                val res = repository.multipleWithCoordinates(rawQuery, suggestions)
                 main(dispatchers) {
                     when (res) {
                         is Either.Left -> {

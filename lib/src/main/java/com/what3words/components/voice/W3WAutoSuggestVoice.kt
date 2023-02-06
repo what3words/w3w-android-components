@@ -21,17 +21,17 @@ import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.ImageViewCompat
-import com.intentfilter.androidpermissions.BuildConfig.VERSION_NAME
-import com.intentfilter.androidpermissions.PermissionManager
-import com.intentfilter.androidpermissions.models.DeniedPermissions
 import com.what3words.androidwrapper.What3WordsV3
+import com.what3words.androidwrapper.What3WordsAndroidWrapper
 import com.what3words.androidwrapper.voice.Microphone
+import com.what3words.components.BuildConfig.VERSION_NAME
 import com.what3words.components.R
 import com.what3words.components.databinding.W3wVoiceOnlyBinding
-import com.what3words.components.models.AutosuggestApiManager
-import com.what3words.components.models.AutosuggestLogicManager
+import com.what3words.components.models.AutosuggestRepository
 import com.what3words.components.models.DisplayUnits
 import com.what3words.components.models.W3WListeningState
+import com.what3words.components.permissions.DeniedPermission
+import com.what3words.components.permissions.PermissionManager
 import com.what3words.components.picker.W3WAutoSuggestPicker
 import com.what3words.components.text.W3WAutoSuggestEditText
 import com.what3words.components.utils.PulseAnimator
@@ -43,7 +43,6 @@ import com.what3words.javawrapper.request.Coordinates
 import com.what3words.javawrapper.response.APIResponse
 import com.what3words.javawrapper.response.Suggestion
 import com.what3words.javawrapper.response.SuggestionWithCoordinates
-import java.util.Collections
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -136,13 +135,13 @@ class W3WAutoSuggestVoice
             if (isEnabled) {
                 val permissionManager: PermissionManager = PermissionManager.getInstance(context)
                 permissionManager.checkPermissions(
-                    Collections.singleton(Manifest.permission.RECORD_AUDIO),
+                    arrayOf(Manifest.permission.RECORD_AUDIO),
                     object : PermissionManager.PermissionRequestListener {
                         override fun onPermissionGranted() {
                             viewModel.autosuggest(voiceLanguage)
                         }
 
-                        override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
+                        override fun onPermissionDenied(deniedPermissions: HashSet<DeniedPermission>) {
                             viewModel.setPermissionError()
                         }
                     }
@@ -152,7 +151,7 @@ class W3WAutoSuggestVoice
 
         // Add a viewTreeObserver to obtain the initial size of the circle overlays
         viewTreeObserver.addOnGlobalLayoutListener(this)
-        viewModel.manager = AutosuggestApiManager(What3WordsV3("", context))
+        viewModel.initializeWithWrapper(What3WordsV3("", context))
     }
 
     fun ImageView.setTint(color: Int?) {
@@ -334,7 +333,7 @@ class W3WAutoSuggestVoice
         }
         voicePulseEndListener = object : Animator.AnimatorListener {
 
-            override fun onAnimationEnd(animation: Animator?, isReverse: Boolean) {
+            override fun onAnimationEnd(animation: Animator, isReverse: Boolean) {
                 Log.d("ANIM_END", "VOICE END REVERSE")
                 if (isReverse) {
                     // Animation will ensure the pulse is reset to initial state before animating logo
@@ -355,17 +354,17 @@ class W3WAutoSuggestVoice
                 }
             }
 
-            override fun onAnimationCancel(animator: Animator?) {
+            override fun onAnimationCancel(animator: Animator) {
             }
 
-            override fun onAnimationEnd(animator: Animator?) {
+            override fun onAnimationEnd(animator: Animator) {
                 Log.d("ANIM_END", "VOICE END")
             }
 
-            override fun onAnimationRepeat(animator: Animator?) {
+            override fun onAnimationRepeat(animator: Animator) {
             }
 
-            override fun onAnimationStart(animator: Animator?) {
+            override fun onAnimationStart(animator: Animator) {
             }
         }
     }
@@ -434,7 +433,7 @@ class W3WAutoSuggestVoice
      * @return same [W3WAutoSuggestVoice] instance
      */
     fun apiKey(key: String): W3WAutoSuggestVoice {
-        viewModel.manager = AutosuggestApiManager(
+        viewModel.initializeWithWrapper(
             What3WordsV3(
                 key,
                 context,
@@ -467,7 +466,7 @@ class W3WAutoSuggestVoice
         endpoint: String,
         headers: Map<String, String> = mapOf()
     ): W3WAutoSuggestVoice {
-        viewModel.manager = AutosuggestApiManager(
+        viewModel.initializeWithWrapper(
             What3WordsV3(
                 key,
                 endpoint,
@@ -493,7 +492,7 @@ class W3WAutoSuggestVoice
         voiceEndpoint: String,
         headers: Map<String, String> = mapOf()
     ): W3WAutoSuggestVoice {
-        viewModel.manager = AutosuggestApiManager(
+        viewModel.initializeWithWrapper(
             What3WordsV3(
                 key,
                 endpoint,
@@ -512,9 +511,9 @@ class W3WAutoSuggestVoice
      * @return same [W3WAutoSuggestVoice] instance
      */
     fun sdk(
-        logicManager: AutosuggestLogicManager
+        wrapper: What3WordsAndroidWrapper
     ): W3WAutoSuggestVoice {
-        viewModel.manager = logicManager
+        viewModel.initializeWithWrapper(wrapper)
         viewModel.setMicrophone(Microphone())
         return this
     }
@@ -525,9 +524,9 @@ class W3WAutoSuggestVoice
      * @return same [W3WAutoSuggestVoice] instance
      */
     internal fun manager(
-        logicManager: AutosuggestLogicManager
+        logicManager: AutosuggestRepository
     ): W3WAutoSuggestVoice {
-        viewModel.manager = logicManager
+        viewModel.repository = logicManager
         viewModel.setMicrophone(Microphone())
         return this
     }
@@ -765,13 +764,13 @@ class W3WAutoSuggestVoice
     fun start() {
         val permissionManager: PermissionManager = PermissionManager.getInstance(context)
         permissionManager.checkPermissions(
-            Collections.singleton(Manifest.permission.RECORD_AUDIO),
+            arrayOf(Manifest.permission.RECORD_AUDIO),
             object : PermissionManager.PermissionRequestListener {
                 override fun onPermissionGranted() {
                     viewModel.autosuggest(voiceLanguage)
                 }
 
-                override fun onPermissionDenied(deniedPermissions: DeniedPermissions) {
+                override fun onPermissionDenied(deniedPermissions: HashSet<DeniedPermission>) {
                     viewModel.setPermissionError()
                 }
             }

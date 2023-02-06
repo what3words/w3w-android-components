@@ -8,6 +8,7 @@
     <dimen name="voice_component_default_width">248dp</dimen>
     <dimen name="voice_component_default_height">248dp</dimen>
     <dimen name="voice_button_min_width">120dp</dimen>
+    <dimen name="voice_placeholder_margin">106dp</dimen>
 
     <dimen name="voice_popup_height">382dp</dimen>
 
