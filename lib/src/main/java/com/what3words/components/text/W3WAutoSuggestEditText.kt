@@ -31,6 +31,8 @@ import com.what3words.androidwrapper.What3WordsV3
 import com.what3words.androidwrapper.helpers.AutosuggestHelper
 import com.what3words.androidwrapper.helpers.didYouMean3wa
 import com.what3words.androidwrapper.helpers.isPossible3wa
+import com.what3words.androidwrapper.voice.VoiceApi
+import com.what3words.androidwrapper.voice.VoiceProvider
 import com.what3words.components.BuildConfig
 import com.what3words.components.R
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
@@ -885,6 +887,33 @@ class W3WAutoSuggestEditText
             headers.toMutableMap().apply {
                 put("component_session_id", SESSION_ID)
             }
+        )
+        viewModel.initializeWithWrapper(api)
+        return this
+    }
+
+    /** Set your What3Words API Key and the Enterprise Suite API Server endpoint which will be used to get suggestions and coordinates (if enabled)
+     *
+     * @param key your API key from what3words developer dashboard
+     * @param endpoint your Enterprise API endpoint
+     * @param voiceProvider an implementation of the [VoiceProvider] interface that will be used to process voice data.
+     * @param headers any custom headers needed for your Enterprise API
+     * @return same [W3WAutoSuggestEditText] instance
+     */
+    fun apiKey(
+        key: String,
+        endpoint: String,
+        voiceProvider: VoiceProvider = VoiceApi(apiKey = key),
+        headers: Map<String, String> = mapOf(),
+    ): W3WAutoSuggestEditText {
+        val api = What3WordsV3(
+            apiKey = key,
+            endpoint = endpoint,
+            context = context,
+            headers = headers.toMutableMap().apply {
+                put("component_session_id", SESSION_ID)
+            },
+            voiceProvider = voiceProvider
         )
         viewModel.initializeWithWrapper(api)
         return this
