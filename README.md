@@ -16,7 +16,7 @@ The artifact is available through [![Maven Central](https://img.shields.io/maven
 ### Gradle
 
 ```
-implementation 'com.what3words:w3w-android-components:3.1.2'
+implementation 'com.what3words:w3w-android-components:3.1.3'
 ```
 
 ## Documentation
@@ -45,11 +45,6 @@ compileOptions {
 }
 ```
 
-add this the following proguard rules
-```
--keep class com.what3words.javawrapper.request.* { *; }
--keep class com.what3words.javawrapper.response.* { *; }
-```
 
 activity_main.xml
 ```xml
