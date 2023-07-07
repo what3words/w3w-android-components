@@ -3,6 +3,8 @@ package com.what3words.components.text
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.media.AudioFormat
+import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
@@ -28,9 +30,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import com.what3words.androidwrapper.What3WordsAndroidWrapper
 import com.what3words.androidwrapper.What3WordsV3
-import com.what3words.androidwrapper.helpers.AutosuggestHelper
 import com.what3words.androidwrapper.helpers.didYouMean3wa
 import com.what3words.androidwrapper.helpers.isPossible3wa
+import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.androidwrapper.voice.VoiceApi
 import com.what3words.androidwrapper.voice.VoiceProvider
 import com.what3words.components.BuildConfig
@@ -38,7 +40,6 @@ import com.what3words.components.R
 import com.what3words.components.error.W3WAutoSuggestErrorMessage
 import com.what3words.components.error.forceClearAndHide
 import com.what3words.components.error.populateAndShow
-import com.what3words.components.models.AutosuggestRepository
 import com.what3words.components.models.DisplayUnits
 import com.what3words.components.models.VoiceScreenType
 import com.what3words.components.models.W3WListeningState
@@ -50,6 +51,7 @@ import com.what3words.components.utils.VoicePulseLayoutFullScreen
 import com.what3words.components.utils.W3WSuggestion
 import com.what3words.components.utils.backwardCompatible
 import com.what3words.components.vm.AutosuggestTextViewModel
+import com.what3words.components.voice.W3WAutoSuggestVoice
 import com.what3words.javawrapper.request.AutosuggestOptions
 import com.what3words.javawrapper.request.BoundingBox
 import com.what3words.javawrapper.request.Coordinates
@@ -455,7 +457,7 @@ class W3WAutoSuggestEditText
             when (voiceScreenType) {
                 VoiceScreenType.Inline -> {
                     iconHolderLayout.setVoiceVisibility(if (voiceEnabled && !isShowingTick) VISIBLE else INVISIBLE)
-                    iconHolderLayout.setup(viewModel.repository)
+                    iconHolderLayout.setup(viewModel.repository, viewModel.getOrInitMicrophone())
                 }
                 VoiceScreenType.AnimatedPopup -> {
                     setupAnimatedPopupVoice()
@@ -790,7 +792,7 @@ class W3WAutoSuggestEditText
             {
                 buildVoiceFullscreen()
                 voicePulseLayoutFullScreen?.let { fullScreenVoice ->
-                    fullScreenVoice.setup(viewModel.repository)
+                    fullScreenVoice.setup(viewModel.repository, viewModel.getOrInitMicrophone())
                     fullScreenVoice.onResultsCallback {
                         handleVoiceSuggestions(it)
                     }
@@ -808,7 +810,7 @@ class W3WAutoSuggestEditText
             {
                 buildVoiceAnimatedPopup()
                 voiceAnimatedPopup?.let { voiceAnimatedPopup ->
-                    voiceAnimatedPopup.setup(viewModel.repository)
+                    voiceAnimatedPopup.setup(viewModel.repository, viewModel.getOrInitMicrophone())
                     voiceAnimatedPopup.onResultsCallback {
                         handleVoiceSuggestions(it)
                     }
@@ -1106,7 +1108,7 @@ class W3WAutoSuggestEditText
     ): W3WAutoSuggestEditText {
         this.voiceEnabled = enabled
         voiceScreenType = VoiceScreenType.Inline
-        iconHolderLayout.setup(viewModel.repository)
+        iconHolderLayout.setup(viewModel.repository, viewModel.getOrInitMicrophone())
         iconHolderLayout.setVoiceVisibility(if (voiceEnabled && !isShowingTick) VISIBLE else INVISIBLE)
         return this
     }
@@ -1130,7 +1132,7 @@ class W3WAutoSuggestEditText
         }
         when (type) {
             VoiceScreenType.Inline -> {
-                iconHolderLayout.setup(viewModel.repository)
+                iconHolderLayout.setup(viewModel.repository, viewModel.getOrInitMicrophone())
             }
             VoiceScreenType.AnimatedPopup -> {
                 if (enabled && voiceAnimatedPopup == null) {
@@ -1425,6 +1427,27 @@ class W3WAutoSuggestEditText
 
     fun options(options: AutosuggestOptions): W3WAutoSuggestEditText {
         viewModel.options = options
+        return this
+    }
+
+    /** Set a custom Microphone setup i.e: recording rate, encoding, channel in, etc.
+     *
+     * @param recordingRate your custom recording rate
+     * @param encoding your custom encoding i.e [AudioFormat.ENCODING_PCM_16BIT]
+     * @param channel your custom channel_in i.e [AudioFormat.CHANNEL_IN_MONO]
+     * @param audioSource your audioSource i.e [MediaRecorder.AudioSource.MIC]
+     * @return same [W3WAutoSuggestVoice] instance
+     */
+    fun microphone(
+        recordingRate: Int,
+        encoding: Int,
+        channel: Int,
+        audioSource: Int
+    ): W3WAutoSuggestEditText {
+        viewModel.microphone = Microphone(recordingRate, encoding, channel, audioSource)
+        iconHolderLayout.microphone(recordingRate, encoding, channel, audioSource)
+        voiceAnimatedPopup?.microphone(recordingRate, encoding, channel, audioSource)
+        voicePulseLayoutFullScreen?.microphone(recordingRate, encoding, channel, audioSource)
         return this
     }
 

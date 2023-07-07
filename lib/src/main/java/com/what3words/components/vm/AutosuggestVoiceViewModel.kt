@@ -19,7 +19,6 @@ internal class AutosuggestVoiceViewModel(
     dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) : AutosuggestViewModel(dispatchers) {
     private var listeningJob: Job? = null
-    private lateinit var microphone: Microphone
 
     internal var voiceManager: VoiceAutosuggestRepository? = null
 
@@ -49,7 +48,7 @@ internal class AutosuggestVoiceViewModel(
         } else {
             io(dispatchers) {
                 val builder = repository.autosuggest(
-                    microphone, options, language
+                   getOrInitMicrophone(), options, language
                 )
 
                 when (builder) {
@@ -147,7 +146,7 @@ internal class AutosuggestVoiceViewModel(
     fun setMicrophone(customMicrophone: Microphone) {
         this.microphone = customMicrophone
         var oldTimestamp = System.currentTimeMillis()
-        microphone.onListening {
+        microphone?.onListening {
             io(dispatchers) {
                 if (_currentState != W3WListeningState.Started) {
                     _currentState = W3WListeningState.Started
@@ -164,7 +163,7 @@ internal class AutosuggestVoiceViewModel(
                 }
             }
         }
-        microphone.onError { microphoneError ->
+        microphone?.onError { microphoneError ->
             io(dispatchers) {
                 _error.emit(
                     APIResponse.What3WordsError.UNKNOWN_ERROR.also {

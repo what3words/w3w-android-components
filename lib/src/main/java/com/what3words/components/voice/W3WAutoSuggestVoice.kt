@@ -524,10 +524,11 @@ class W3WAutoSuggestVoice
      * @return same [W3WAutoSuggestVoice] instance
      */
     internal fun manager(
-        logicManager: AutosuggestRepository
+        logicManager: AutosuggestRepository,
+        microphone: Microphone = Microphone()
     ): W3WAutoSuggestVoice {
         viewModel.repository = logicManager
-        viewModel.setMicrophone(Microphone())
+        viewModel.setMicrophone(microphone)
         return this
     }
 
@@ -545,7 +546,12 @@ class W3WAutoSuggestVoice
         channel: Int,
         audioSource: Int
     ): W3WAutoSuggestVoice {
-        viewModel.setMicrophone(Microphone(recordingRate, encoding, channel, audioSource))
+        val supportedRecordingRate = if (Microphone.isSampleRateValid(recordingRate)) {
+            recordingRate
+        } else {
+            Microphone.getSupportedSampleRates().maxOrNull() ?: -1
+        }
+        viewModel.setMicrophone(Microphone(supportedRecordingRate, encoding, channel, audioSource))
         return this
     }
 

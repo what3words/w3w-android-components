@@ -3,11 +3,14 @@ package com.what3words.components.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.media.AudioFormat
+import android.media.MediaRecorder
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
 import androidx.core.view.updateLayoutParams
+import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.R
 import com.what3words.components.databinding.VoicePulseLayoutFullScreenBinding
 import com.what3words.components.models.AutosuggestRepository
@@ -102,8 +105,8 @@ internal class VoicePulseLayoutFullScreen
      * [W3WAutoSuggestVoice.onListeningStateChanged] callback is needed to hide this view when [W3WAutoSuggestVoice] [W3WListeningState].
      * [W3WAutoSuggestVoice.onError] callback is needed to get any [APIResponse.What3WordsError] returned by [W3WAutoSuggestVoice].
      */
-    fun setup(logicManager: AutosuggestRepository) {
-        binding.autosuggestVoice.manager(logicManager)
+    fun setup(logicManager: AutosuggestRepository, microphone: Microphone) {
+        binding.autosuggestVoice.manager(logicManager, microphone)
             .onInternalResults {
                 if (it.isNotEmpty()) {
                     resultsCallback?.accept(it)
@@ -163,5 +166,22 @@ internal class VoicePulseLayoutFullScreen
             this.width = (width / 1.6).toInt()
             this.height = (width / 1.6).toInt()
         }
+    }
+
+    /** Set a custom Microphone setup i.e: recording rate, encoding, channel in, etc.
+     *
+     * @param recordingRate your custom recording rate
+     * @param encoding your custom encoding i.e [AudioFormat.ENCODING_PCM_16BIT]
+     * @param channel your custom channel_in i.e [AudioFormat.CHANNEL_IN_MONO]
+     * @param audioSource your audioSource i.e [MediaRecorder.AudioSource.MIC]
+     * @return same [W3WAutoSuggestVoice] instance
+     */
+    fun microphone(
+        recordingRate: Int,
+        encoding: Int,
+        channel: Int,
+        audioSource: Int
+    ) {
+        binding.autosuggestVoice.microphone(recordingRate, encoding, channel, audioSource)
     }
 }
