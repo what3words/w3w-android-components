@@ -127,4 +127,3 @@ workflows:
             branches:
               only:
                 - dev
-                - upload-microphone-updates
