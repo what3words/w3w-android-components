@@ -521,6 +521,7 @@ class W3WAutoSuggestVoice
     /** Set your What3Words Manager with your internal instance of the manager (i.e when using [W3WAutoSuggestVoice] inside [W3WAutoSuggestEditText]).
      *
      * @param logicManager manager created using SDK instead of API
+     * @param microphone microphone for streaming audio data
      * @return same [W3WAutoSuggestVoice] instance
      */
     internal fun manager(

@@ -34,13 +34,6 @@ internal open class AutosuggestViewModel(
         get() = _error
 
     var options: AutosuggestOptions = AutosuggestOptions()
-
-    internal fun getOrInitMicrophone(): Microphone{
-        if(microphone == null){
-            microphone = Microphone()
-        }
-        return microphone!!
-    }
     fun display(suggestionWithCoordinates: SuggestionWithCoordinates) {
         main(dispatchers) { _selectedSuggestion.emit(suggestionWithCoordinates) }
     }
@@ -80,5 +73,12 @@ internal open class AutosuggestViewModel(
 
     fun initializeWithWrapper(wrapper: What3WordsAndroidWrapper) {
         repository = AutosuggestRepository(wrapper)
+    }
+
+    internal fun getOrInitMicrophone(): Microphone{
+        if(microphone == null){
+            microphone = Microphone()
+        }
+        return microphone!!
     }
 }
