@@ -1444,10 +1444,11 @@ class W3WAutoSuggestEditText
         channel: Int,
         audioSource: Int
     ): W3WAutoSuggestEditText {
-        viewModel.microphone = Microphone(recordingRate, encoding, channel, audioSource)
-        iconHolderLayout.microphone(recordingRate, encoding, channel, audioSource)
-        voiceAnimatedPopup?.microphone(recordingRate, encoding, channel, audioSource)
-        voicePulseLayoutFullScreen?.microphone(recordingRate, encoding, channel, audioSource)
+        val optimalRecordingRate = Microphone.getOptimalSampleRate(preferredSampleRate = recordingRate)
+        viewModel.microphone = Microphone(optimalRecordingRate, encoding, channel, audioSource)
+        iconHolderLayout.microphone(optimalRecordingRate, encoding, channel, audioSource)
+        voiceAnimatedPopup?.microphone(optimalRecordingRate, encoding, channel, audioSource)
+        voicePulseLayoutFullScreen?.microphone(optimalRecordingRate, encoding, channel, audioSource)
         return this
     }
 

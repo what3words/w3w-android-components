@@ -547,12 +547,7 @@ class W3WAutoSuggestVoice
         channel: Int,
         audioSource: Int
     ): W3WAutoSuggestVoice {
-        val supportedRecordingRate = if (Microphone.isSampleRateValid(recordingRate)) {
-            recordingRate
-        } else {
-            Microphone.getSupportedSampleRates().maxOrNull() ?: -1
-        }
-        viewModel.setMicrophone(Microphone(supportedRecordingRate, encoding, channel, audioSource))
+        viewModel.setMicrophone(Microphone(Microphone.getOptimalSampleRate(recordingRate), encoding, channel, audioSource))
         return this
     }
 
