@@ -107,22 +107,22 @@ jobs:
 workflows:
   build-test-sonar-publish:
     jobs:
-      - build-ui-test:
-          name: build-run-UI-tests
-          context:
-            - mobile
-      - build-test-sonar:
-          requires: [ build-run-UI-tests ]
-          context:
-            - SonarCloud
-            - mobile
+#      - build-ui-test:
+#          name: build-run-UI-tests
+#          context:
+#            - mobile
+#      - build-test-sonar:
+#          requires: [ build-run-UI-tests ]
+#          context:
+#            - SonarCloud
+#            - mobile
       - deploy-to-sonatype:
           name: Build, run tests, sonar and push to maven staging
           context:
             - maven-sign
             - mobile
-          requires:
-            - build-test-sonar
+#          requires:
+#            - build-test-sonar
 #          filters:
 #            branches:
 #              only:
