@@ -22,7 +22,7 @@ import com.what3words.javawrapper.response.Suggestion
  * A [RecyclerView] to show [Suggestion] returned by w3w auto suggest component
  * modularized to allow developers to choose picker location on the screen.
  */
-class W3WAutoSuggestPicker
+open class W3WAutoSuggestPicker
 @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
