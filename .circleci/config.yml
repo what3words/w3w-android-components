@@ -103,7 +103,7 @@ jobs:
             >> gradle.properties
       - run:
           name: Publish to Maven
-          command: ./gradlew assemble publish
+          command: ./gradlew lib:assemble publish
 workflows:
   build-test-sonar-publish:
     jobs:

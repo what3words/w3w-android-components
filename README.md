@@ -8,7 +8,7 @@ To obtain an API key, please visit [https://what3words.com/select-plan](https://
 
 ## Installation
 
-The artifact is available through [![Maven Central](https://img.shields.io/maven-central/v/com.what3words/w3w-android-components.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.what3words%22%20AND%20a:%22w3w-android-components%22)
+The artifact is available through [![Maven Central](https://img.shields.io/maven-central/v/com.what3words/w3w-android-components)](https://central.sonatype.com/artifact/com.what3words/w3w-android-components)
 
 ### Android minumum SDK support
 [![Generic badge](https://img.shields.io/badge/minSdk-23-green.svg)](https://developer.android.com/about/versions/marshmallow/android-6.0/)
@@ -16,7 +16,7 @@ The artifact is available through [![Maven Central](https://img.shields.io/maven
 ### Gradle
 
 ```
-implementation 'com.what3words:w3w-android-components:3.1.3'
+implementation 'com.what3words:w3w-android-components:3.1.4'
 ```
 
 ## Documentation
