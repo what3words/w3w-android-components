@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.RadioButton
-import autosuggestsample.util.addOnTextChangedListener
+import com.what3words.testing.util.addOnTextChangedListener
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.what3words.components.models.VoiceScreenType
