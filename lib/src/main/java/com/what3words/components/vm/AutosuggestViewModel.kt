@@ -3,6 +3,7 @@ package com.what3words.components.vm
 import com.what3words.androidwrapper.What3WordsAndroidWrapper
 import com.what3words.androidwrapper.helpers.DefaultDispatcherProvider
 import com.what3words.androidwrapper.helpers.DispatcherProvider
+import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.models.AutosuggestRepository
 import com.what3words.components.models.Either
 import com.what3words.components.utils.io
@@ -18,6 +19,7 @@ internal open class AutosuggestViewModel(
     val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) {
     lateinit var repository: AutosuggestRepository
+    internal var microphone: Microphone? = null
 
     protected val _suggestions = MutableSharedFlow<List<Suggestion>>()
     val suggestions: SharedFlow<List<Suggestion>>
@@ -32,7 +34,6 @@ internal open class AutosuggestViewModel(
         get() = _error
 
     var options: AutosuggestOptions = AutosuggestOptions()
-
     fun display(suggestionWithCoordinates: SuggestionWithCoordinates) {
         main(dispatchers) { _selectedSuggestion.emit(suggestionWithCoordinates) }
     }
@@ -72,5 +73,12 @@ internal open class AutosuggestViewModel(
 
     fun initializeWithWrapper(wrapper: What3WordsAndroidWrapper) {
         repository = AutosuggestRepository(wrapper)
+    }
+
+    internal fun getOrInitMicrophone(): Microphone{
+        if(microphone == null){
+            microphone = Microphone()
+        }
+        return microphone!!
     }
 }

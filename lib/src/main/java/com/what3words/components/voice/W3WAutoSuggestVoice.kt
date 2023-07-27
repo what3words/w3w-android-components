@@ -521,13 +521,15 @@ class W3WAutoSuggestVoice
     /** Set your What3Words Manager with your internal instance of the manager (i.e when using [W3WAutoSuggestVoice] inside [W3WAutoSuggestEditText]).
      *
      * @param logicManager manager created using SDK instead of API
+     * @param microphone microphone for streaming audio data
      * @return same [W3WAutoSuggestVoice] instance
      */
     internal fun manager(
-        logicManager: AutosuggestRepository
+        logicManager: AutosuggestRepository,
+        microphone: Microphone = Microphone()
     ): W3WAutoSuggestVoice {
         viewModel.repository = logicManager
-        viewModel.setMicrophone(Microphone())
+        viewModel.setMicrophone(microphone)
         return this
     }
 
@@ -545,7 +547,7 @@ class W3WAutoSuggestVoice
         channel: Int,
         audioSource: Int
     ): W3WAutoSuggestVoice {
-        viewModel.setMicrophone(Microphone(recordingRate, encoding, channel, audioSource))
+        viewModel.setMicrophone(Microphone(Microphone.getOptimalSampleRate(recordingRate), encoding, channel, audioSource))
         return this
     }
 

@@ -2,12 +2,11 @@
     package="com.what3words.components">
 
     <application
-        android:allowBackup="true"
         android:usesCleartextTraffic="false">
         <activity
             android:name=".permissions.PermissionsActivity"
             android:excludeFromRecents="true"
             android:exported="false"
-            android:theme="@style/AppTheme.Transparent" />
+            android:theme="@style/TransparentTheme" />
     </application>
 </manifest>
