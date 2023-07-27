@@ -10,10 +10,10 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
-import autosuggestsample.util.isGone
-import autosuggestsample.util.isVisible
 import com.what3words.testing.MainActivity
 import com.what3words.testing.R
+import com.what3words.testing.util.isGone
+import com.what3words.testing.util.isVisible
 import com.what3words.testing.what3wordscomponentuitest.utils.waitUntilVisible
 import org.junit.Rule
 import org.junit.Test
