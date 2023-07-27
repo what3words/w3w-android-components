@@ -3,7 +3,6 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 33
-    buildToolsVersion libs.versions.buildToolsVersion.get()
 
     buildFeatures {
         viewBinding true
