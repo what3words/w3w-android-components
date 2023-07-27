@@ -162,11 +162,6 @@ AndroidManifest.xml
     ...
 ```
 
-add following proguard rules
-```
--keep class com.what3words.androidwrapper.voice.* { *; } //only needed if using voice functionality.
-```
-
 activity_main.xml
 ```XML
  <com.what3words.components.text.W3WAutoSuggestEditText
