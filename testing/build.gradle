@@ -34,7 +34,7 @@ android {
     }
 
     jacoco {
-        version = libs.versions.jacoco.get()
+        version = "$jacoco_version"
     }
 
     buildTypes {
