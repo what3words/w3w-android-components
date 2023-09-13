@@ -80,9 +80,7 @@ internal class VoicePulseLayoutFullScreen
         }
 
         binding.icClose.setOnClickListener {
-            binding.autosuggestVoice.stop()
-            setIsVoiceRunning(false, true)
-            errorCallback?.accept(null)
+            stopVoiceListener()
         }
 
         binding.voicePlaceholder.text = loadingLabel
@@ -97,6 +95,12 @@ internal class VoicePulseLayoutFullScreen
 
     fun onErrorCallback(callback: Consumer<APIResponse.What3WordsError?>) {
         this.errorCallback = callback
+    }
+
+    fun stopVoiceListener(){
+        binding.autosuggestVoice.stop()
+        setIsVoiceRunning(false, true)
+        errorCallback?.accept(null)
     }
 
     fun setIsVoiceRunning(isVoiceRunning: Boolean, shouldClose: Boolean) {

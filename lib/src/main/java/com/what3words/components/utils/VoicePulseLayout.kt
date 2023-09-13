@@ -179,7 +179,7 @@ internal class VoicePulseLayout
         binding.voiceErrorMessage.visibility = VISIBLE
     }
 
-    private fun stopVoiceListener(){
+    fun stopVoiceListener(){
         binding.autosuggestVoice.stop()
         setIsVoiceRunning(isVoiceRunning = false, shouldAnimate = true, shouldClose = true)
         errorCallback?.accept(null)

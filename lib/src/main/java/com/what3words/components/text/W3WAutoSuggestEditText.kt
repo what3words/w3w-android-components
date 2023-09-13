@@ -819,6 +819,11 @@ class W3WAutoSuggestEditText
             100
         )
     }
+    private fun stopVoiceListener(){
+        voiceAnimatedPopup?.stopVoiceListener()
+        voicePulseLayoutFullScreen?.stopVoiceListener()
+        iconHolderLayout.stopVoiceListener()
+    }
 
     private fun changeKeyboardImeToSearch() {
         this.imeOptions = (EditorInfo.IME_ACTION_SEARCH)
@@ -1103,6 +1108,7 @@ class W3WAutoSuggestEditText
     fun voiceEnabled(
         enabled: Boolean
     ): W3WAutoSuggestEditText {
+        stopVoiceListener()
         this.voiceEnabled = enabled
         voiceScreenType = VoiceScreenType.Inline
         iconHolderLayout.setup(viewModel.repository, viewModel.getOrInitMicrophone())
@@ -1121,6 +1127,7 @@ class W3WAutoSuggestEditText
         type: VoiceScreenType,
         micIcon: Drawable? = null
     ): W3WAutoSuggestEditText {
+        stopVoiceListener()
         this.voiceEnabled = enabled
         this.voiceScreenType = type
         iconHolderLayout.setVoiceVisibility(if (voiceEnabled && !isShowingTick) VISIBLE else INVISIBLE)
