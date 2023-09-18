@@ -2,7 +2,6 @@ package com.what3words.components.text
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Rect
 import android.icu.text.MeasureFormat
 import android.icu.text.MeasureFormat.FormatWidth
 import android.icu.util.Measure
@@ -16,11 +15,11 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.inputmethod.InputMethodManager
 import com.what3words.components.R
 import com.what3words.components.models.DisplayUnits
+import com.what3words.components.text.ViewAnchorUtils.anchor
 import com.what3words.components.utils.VoicePulseLayout
 import com.what3words.components.utils.VoicePulseLayoutFullScreen
 import java.text.NumberFormat
 import java.util.Locale
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 internal fun W3WAutoSuggestEditText.buildErrorMessage() {
@@ -29,16 +28,19 @@ internal fun W3WAutoSuggestEditText.buildErrorMessage() {
         WRAP_CONTENT
     )
     defaultInvalidAddressMessageView.apply {
-        this.x = this@buildErrorMessage.x
-        this.y =
-            this@buildErrorMessage.y + this@buildErrorMessage.height - resources.getDimensionPixelSize(
-            R.dimen.tiny_margin
-        )
         layoutParams = params
         translationZ = context.resources.getDimension(R.dimen.overlay_z)
         outlineProvider = null
     }
     (parent as? ViewGroup)?.addView(defaultInvalidAddressMessageView)
+
+    defaultInvalidAddressMessageView.anchor(
+        target = this@buildErrorMessage,
+        position = ViewAnchorUtils.Position.BELOW,
+        spacing = -resources.getDimensionPixelSize(
+            R.dimen.tiny_margin
+        )
+    )
 }
 
 internal fun W3WAutoSuggestEditText.buildCorrection() {
@@ -47,16 +49,19 @@ internal fun W3WAutoSuggestEditText.buildCorrection() {
         WRAP_CONTENT
     )
     defaultCorrectionPicker.apply {
-        this.x = this@buildCorrection.x
-        this.y =
-            this@buildCorrection.y + this@buildCorrection.height - resources.getDimensionPixelSize(
-            R.dimen.tiny_margin
-        )
         layoutParams = params
         translationZ = context.resources.getDimension(R.dimen.overlay_z)
         outlineProvider = null
     }
     (parent as? ViewGroup)?.addView(defaultCorrectionPicker)
+
+    defaultCorrectionPicker.anchor(
+        target = this@buildCorrection,
+        position = ViewAnchorUtils.Position.BELOW,
+        spacing = -resources.getDimensionPixelSize(
+            R.dimen.tiny_margin
+        )
+    )
 }
 
 internal fun W3WAutoSuggestEditText.buildIconHolderLayout() {
@@ -64,12 +69,13 @@ internal fun W3WAutoSuggestEditText.buildIconHolderLayout() {
         this.width - (resources.getDimensionPixelSize(R.dimen.input_border_height) * 2),
         this.height - (resources.getDimensionPixelSize(R.dimen.input_border_height) * 2)
     )
-    iconHolderLayout.apply {
-        this.x = this@buildIconHolderLayout.x
-        this.y =
-            this@buildIconHolderLayout.y + resources.getDimensionPixelSize(R.dimen.input_border_height)
-    }
     (parent as? ViewGroup)?.addView(iconHolderLayout)
+
+    iconHolderLayout.anchor(
+        target = this@buildIconHolderLayout,
+        position = ViewAnchorUtils.Position.ALIGN,
+        spacing =  resources.getDimensionPixelSize(R.dimen.input_border_height)
+    )
 }
 
 internal fun W3WAutoSuggestEditText.buildVoiceAnimatedPopup() {
@@ -96,8 +102,6 @@ internal fun W3WAutoSuggestEditText.buildVoiceAnimatedPopup() {
             translationZ = context.resources.getDimension(R.dimen.overlay_z)
             outlineProvider = null
         }
-        val parent = ((this.parent as? ViewGroup)?.rootView as? ViewGroup)
-        parent?.addView(voiceAnimatedPopup)
     } catch (e: Exception) {
         Log.e(
             "W3WAutoSuggestEditText",
@@ -121,29 +125,12 @@ internal fun W3WAutoSuggestEditText.buildVoiceFullscreen() {
             voiceBackgroundDrawable,
             voiceIconsColor
         )
-        val displayFrame = Rect()
-        (parent as? ViewGroup)?.rootView?.getWindowVisibleDisplayFrame(displayFrame)
-        val params = ViewGroup.MarginLayoutParams(
-            displayFrame.width(),
-            displayFrame.height()
-        )
-        params.topMargin = displayFrame.top
-        params.bottomMargin = displayFrame.bottom
         voicePulseLayoutFullScreen!!.apply {
             visibility = GONE
-            layoutParams = params
-            this.applySize(
-                min(
-                    context.resources.displayMetrics.widthPixels,
-                    context.resources.displayMetrics.heightPixels
-                )
-            )
             setIsVoiceRunning(false, true)
             translationZ = context.resources.getDimension(R.dimen.overlay_z)
             outlineProvider = null
         }
-        val parent = ((parent as? ViewGroup)?.rootView as? ViewGroup)
-        parent?.addView(voicePulseLayoutFullScreen)
     } catch (e: Exception) {
         Log.e(
             "W3WAutoSuggestEditText",
@@ -154,7 +141,7 @@ internal fun W3WAutoSuggestEditText.buildVoiceFullscreen() {
     }
 }
 
-internal fun W3WAutoSuggestEditText.buildSuggestionList(isRelative: Boolean = true) {
+internal fun W3WAutoSuggestEditText.buildSuggestionList() {
     val params = ViewGroup.MarginLayoutParams(
         width,
         WRAP_CONTENT
@@ -162,13 +149,6 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList(isRelative: Boolean = tr
     defaultPicker.apply {
         isFocusable = false
         isFocusableInTouchMode = false
-        if (isRelative) {
-            this.x = this@buildSuggestionList.x
-            this.y =
-                this@buildSuggestionList.y + this@buildSuggestionList.height - resources.getDimensionPixelSize(
-                R.dimen.tiny_margin
-            )
-        }
         layoutParams = params
         resources.getDimensionPixelSize(R.dimen.tiny_margin).let {
             setPadding(it, it, it, it)
@@ -180,6 +160,14 @@ internal fun W3WAutoSuggestEditText.buildSuggestionList(isRelative: Boolean = tr
     (parent as? ViewGroup)?.apply {
         addView(defaultPicker)
     }
+
+    defaultPicker.anchor(
+        target = this@buildSuggestionList,
+        position = ViewAnchorUtils.Position.BELOW,
+        spacing = -resources.getDimensionPixelSize(
+            R.dimen.tiny_margin
+        )
+    )
 }
 
 internal fun W3WAutoSuggestEditText.showImages(showTick: Boolean = false) {

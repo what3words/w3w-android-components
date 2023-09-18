@@ -100,6 +100,10 @@ internal class IconHolderLayout
         this.isVoiceRunning = isVoiceRunning
     }
 
+    fun stopVoiceListener(){
+        autosuggestVoice.stop()
+    }
+
     /**
      * [setup] should be called by [W3WAutoSuggestEditText] having the [AutosuggestRepository] which can be SDK or API as a parameter, using the internal [W3WAutoSuggestVoice.manager].
      * This flow should only happen when using [W3WAutoSuggestVoice] inside [W3WAutoSuggestEditText].

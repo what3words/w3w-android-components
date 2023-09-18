@@ -7,9 +7,13 @@ import android.media.AudioFormat
 import android.media.MediaRecorder
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.WindowManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
 import androidx.core.view.updateLayoutParams
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.R
 import com.what3words.components.databinding.VoicePulseLayoutFullScreenBinding
@@ -54,8 +58,13 @@ internal class VoicePulseLayoutFullScreen
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
     private var binding: VoicePulseLayoutFullScreenBinding =
         VoicePulseLayoutFullScreenBinding.inflate(
-            LayoutInflater.from(context), this, true
+            LayoutInflater.from(context), null, false
         )
+
+    /**
+     * Instance of [BottomSheetDialog] used to show the VoicePulseLayout in an independent native window
+     * **/
+    private val bottomSheetDialog: BottomSheetDialog = BottomSheetDialog(context)
 
     private var isVoiceRunning: Boolean = false
     private var resultsCallback: Consumer<List<Suggestion>>? = null
@@ -71,13 +80,13 @@ internal class VoicePulseLayoutFullScreen
         }
 
         binding.icClose.setOnClickListener {
-            binding.autosuggestVoice.stop()
-            setIsVoiceRunning(false, true)
-            errorCallback?.accept(null)
+            stopVoiceListener()
         }
 
         binding.voicePlaceholder.text = loadingLabel
         binding.voicePlaceholder.setTextColor(placeholderTextColor)
+
+        configureBottomSheetDialog()
     }
 
     fun onResultsCallback(callback: Consumer<List<Suggestion>>) {
@@ -88,13 +97,22 @@ internal class VoicePulseLayoutFullScreen
         this.errorCallback = callback
     }
 
+    fun stopVoiceListener(){
+        binding.autosuggestVoice.stop()
+        setIsVoiceRunning(false, true)
+        errorCallback?.accept(null)
+    }
+
     fun setIsVoiceRunning(isVoiceRunning: Boolean, shouldClose: Boolean) {
         this.isVoiceRunning = isVoiceRunning
         if (isVoiceRunning) {
+            bottomSheetDialog.show()
             visibility = VISIBLE
         } else {
-            if (shouldClose)
+            if (shouldClose) {
+                bottomSheetDialog.hide()
                 visibility = GONE
+            }
         }
     }
 
@@ -140,6 +158,20 @@ internal class VoicePulseLayoutFullScreen
         binding.voicePlaceholder.text = tryAgainLabel
         binding.voiceErrorMessage.text = errorLabel
         binding.voiceErrorMessage.visibility = VISIBLE
+    }
+
+    private fun configureBottomSheetDialog(){
+        bottomSheetDialog.setContentView(
+            binding.root, LayoutParams(
+                MATCH_PARENT,
+                resources.displayMetrics.heightPixels
+            )
+        )
+        bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetDialog.dismissWithAnimation = false
+        bottomSheetDialog.behavior.isDraggable = false
+        bottomSheetDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        bottomSheetDialog.setCanceledOnTouchOutside(false)
     }
 
     /**
