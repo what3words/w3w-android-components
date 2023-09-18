@@ -62,6 +62,7 @@ android {
 dependencies {
     api "androidx.recyclerview:recyclerview:$recyclerview_version"
     implementation "androidx.core:core-ktx:$androidx_core_ktx_version"
+    implementation "com.google.android.material:material:$google_material_version"
 
     // kotlin
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinx_coroutines_version"

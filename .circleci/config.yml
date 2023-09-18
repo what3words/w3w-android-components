@@ -21,6 +21,7 @@ jobs:
           avd-name: testDevice
           no-window: true
           restore-gradle-cache-prefix: v1a
+          post-emulator-launch-assemble-command: echo "Emulator Started"
       - android/run-tests:
           test-command: ./gradlew testing:jacocoTestReport
           max-tries: 5
@@ -38,41 +39,30 @@ jobs:
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "lib/build.gradle" }}
       - run:
-          name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
-          command: sudo chmod +x ./gradlew
-      - run:
-          name: Wrapper
-          command: ./gradlew wrapper
-      - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
+          name: Set Up
+          command: | 
+            ./gradlew wrapper 
+            ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "lib/build.gradle" }}
       - run:
           name: Run Tests
-          command: ./gradlew lib:testDebugUnitTest lib:jacocoTestReport
+          command: |
+            ./gradlew lib:testDebugUnitTest 
+            ./gradlew lib:jacocoTestReport
       - run:
           name: Upload Coverage Report to SonarCloud
           command: ./gradlew sonarqube
       - run:
-          name: Assemble sample release build
-          command: ./gradlew sample:assembleRelease
-      - run:
-          name: Assemble sample-voice release build
-          command: ./gradlew sample-voice:assembleRelease
-      - run:
-          name: Assemble advanced-sample release build
-          command: ./gradlew advanced-sample:assembleRelease
+          name: Assemble builds
+          command: |
+            ./gradlew sample:assembleRelease
       - store_test_results:
           path: lib/build/test-results/testDebugUnitTest
       - store_artifacts:
           path: sample/build/outputs/apk/release
-      - store_artifacts:
-          path: sample-voice/build/outputs/apk/release
-      - store_artifacts:
-          path: advanced-sample/build/outputs/apk/release
   deploy-to-sonatype:
     executor:
       name: android/android-machine
@@ -83,14 +73,10 @@ jobs:
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "lib/build.gradle" }}
       - run:
-          name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
-          command: sudo chmod +x ./gradlew
-      - run:
-          name: Wrapper
-          command: ./gradlew wrapper
-      - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
+          name: Set Up
+          command: |
+            ./gradlew wrapper
+            ./gradlew lib:androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
@@ -108,11 +94,9 @@ workflows:
   build-test-sonar-publish:
     jobs:
       - build-ui-test:
-          name: build-run-UI-tests
           context:
             - mobile
       - build-test-sonar:
-          requires: [ build-run-UI-tests ]
           context:
             - SonarCloud
             - mobile
@@ -123,6 +107,7 @@ workflows:
             - mobile
           requires:
             - build-test-sonar
+            - build-ui-test
           filters:
             branches:
               only:

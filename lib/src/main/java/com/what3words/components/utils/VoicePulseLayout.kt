@@ -7,8 +7,10 @@ import android.media.AudioFormat
 import android.media.MediaRecorder
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.WindowManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.util.Consumer
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.what3words.androidwrapper.voice.Microphone
 import com.what3words.components.R
 import com.what3words.components.databinding.VoicePulseLayoutBinding
@@ -60,8 +62,12 @@ internal class VoicePulseLayout
     private var resultsCallback: Consumer<List<Suggestion>>? = null
     private var errorCallback: Consumer<APIResponse.What3WordsError?>? = null
     private var binding: VoicePulseLayoutBinding = VoicePulseLayoutBinding.inflate(
-        LayoutInflater.from(context), this, true
+        LayoutInflater.from(context), null, false
     )
+    /**
+     * Instance of [BottomSheetDialog] used to show the VoicePulseLayout in an independent native window
+     * **/
+    private val bottomSheetDialog: BottomSheetDialog = BottomSheetDialog(context)
 
     init {
         binding.icLogo.setColorFilter(iconTintColor)
@@ -71,18 +77,16 @@ internal class VoicePulseLayout
             binding.voiceHolder.setBackgroundColor(backgroundColor)
         }
         binding.icClose.setOnClickListener {
-            binding.autosuggestVoice.stop()
-            setIsVoiceRunning(isVoiceRunning = false, shouldAnimate = true, shouldClose = true)
-            errorCallback?.accept(null)
+            stopVoiceListener()
         }
 
         binding.voiceHolderFullscreen.setOnClickListener {
-            binding.autosuggestVoice.stop()
-            setIsVoiceRunning(isVoiceRunning = false, shouldAnimate = true, shouldClose = true)
-            errorCallback?.accept(null)
+            stopVoiceListener()
         }
         binding.voicePlaceholder.text = loadingLabel
         binding.voicePlaceholder.setTextColor(placeholderTextColor)
+
+        configureBottomSheetDialog()
     }
 
     fun onResultsCallback(callback: Consumer<List<Suggestion>>) {
@@ -96,6 +100,7 @@ internal class VoicePulseLayout
     fun setIsVoiceRunning(isVoiceRunning: Boolean, shouldAnimate: Boolean, shouldClose: Boolean) {
         this.isVoiceRunning = isVoiceRunning
         if (isVoiceRunning) {
+            bottomSheetDialog.show()
             if (shouldAnimate) {
                 visibility = VISIBLE
                 binding.voicePlaceholder.visibility = VISIBLE
@@ -111,6 +116,7 @@ internal class VoicePulseLayout
             }
         } else {
             if (shouldClose) {
+                bottomSheetDialog.hide()
                 if (shouldAnimate) {
                     binding.icClose.visibility = GONE
                     binding.voicePlaceholder.visibility = GONE
@@ -146,7 +152,6 @@ internal class VoicePulseLayout
                         shouldClose = true
                     )
                 }
-                else showErrorInModal()
             }.onListeningStateChanged {
                 if (it == null) return@onListeningStateChanged
                 when (it) {
@@ -172,6 +177,23 @@ internal class VoicePulseLayout
         binding.voicePlaceholder.text = tryAgainLabel
         binding.voiceErrorMessage.text = errorLabel
         binding.voiceErrorMessage.visibility = VISIBLE
+    }
+
+    fun stopVoiceListener(){
+        binding.autosuggestVoice.stop()
+        setIsVoiceRunning(isVoiceRunning = false, shouldAnimate = true, shouldClose = true)
+        errorCallback?.accept(null)
+    }
+
+    private fun configureBottomSheetDialog(){
+        // configure bottom sheet dialog
+        bottomSheetDialog.setContentView(binding.root)
+        bottomSheetDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        bottomSheetDialog.window?.setBackgroundDrawableResource(R.drawable.bg_voice)
+        bottomSheetDialog.setOnCancelListener {
+            stopVoiceListener()
+        }
+        bottomSheetDialog.behavior.isDraggable = false
     }
 
     /**
