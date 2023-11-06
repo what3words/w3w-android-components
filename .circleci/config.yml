@@ -55,14 +55,8 @@ jobs:
       - run:
           name: Upload Coverage Report to SonarCloud
           command: ./gradlew sonarqube
-      - run:
-          name: Assemble builds
-          command: |
-            ./gradlew sample:assembleRelease
       - store_test_results:
           path: lib/build/test-results/testDebugUnitTest
-      - store_artifacts:
-          path: sample/build/outputs/apk/release
   deploy-to-sonatype:
     executor:
       name: android/android-machine
@@ -111,4 +105,4 @@ workflows:
           filters:
             branches:
               only:
-                - dev
+                - staging
