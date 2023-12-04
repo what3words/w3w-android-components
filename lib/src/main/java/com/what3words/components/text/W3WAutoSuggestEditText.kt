@@ -859,9 +859,10 @@ class W3WAutoSuggestEditText
      * @param key your API key from what3words developer dashboard
      * @return same [W3WAutoSuggestEditText] instance
      */
-    fun apiKey(key: String): W3WAutoSuggestEditText {
+    fun apiKey(key: String, voiceProvider: VoiceProvider = VoiceApi(apiKey = key)): W3WAutoSuggestEditText {
         val api = What3WordsV3(
             key,
+            voiceProvider = voiceProvider,
             context,
             mapOf(
                 "X-W3W-AS-Component" to "what3words-Android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})",

@@ -7,7 +7,7 @@ jobs:
   build-ui-test:
     executor:
       name: android/android-machine
-      tag: 2022.12.1
+      tag: 2023.05.1
       resource-class: large
     steps:
       - checkout
@@ -32,7 +32,7 @@ jobs:
   build-test-sonar:
     executor:
       name: android/android-machine
-      tag: 2022.12.1
+      tag: 2023.05.1
       resource-class: large
     steps:
       - checkout
@@ -55,19 +55,13 @@ jobs:
       - run:
           name: Upload Coverage Report to SonarCloud
           command: ./gradlew sonarqube
-      - run:
-          name: Assemble builds
-          command: |
-            ./gradlew sample:assembleRelease
       - store_test_results:
           path: lib/build/test-results/testDebugUnitTest
-      - store_artifacts:
-          path: sample/build/outputs/apk/release
   deploy-to-sonatype:
-    executor:
-      name: android/android-machine
-      tag: 2022.12.1
-      resource-class: large
+    docker:
+      - image: cimg/android:2023.05-browsers
+    environment:
+      JVM_OPTS: -Xmx3200m
     steps:
       - checkout
       - restore_cache:
@@ -84,9 +78,8 @@ jobs:
       - run:
           name: Inject Maven signing key
           command: |
-            echo $GPG_SIGNING_KEY \
-            | awk 'NR == 1 { print "SIGNING_KEY=" } 1' ORS='\\n' \
-            >> gradle.properties
+            chmod +x signing.sh
+            ./signing.sh
       - run:
           name: Publish to Maven
           command: ./gradlew lib:assemble publish
@@ -111,4 +104,4 @@ workflows:
           filters:
             branches:
               only:
-                - dev
+                - staging
