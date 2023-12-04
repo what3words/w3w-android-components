@@ -11,10 +11,6 @@ sonarqube {
         property "sonar.modules", ":lib,:testing"
         property "sonar.sourceEncoding", "UTF-8"
 
-        property "sonar.exclusions", "**/sample/src/**, " +
-                "**/sample-voice/src/**, " +
-                "**/advanced-sample/src/**"
-
 
         property "sonar.junit.reportPaths", "**/test-results/**/*.xml"
         property ":lib.sonar.coverage.jacoco.xmlReportPaths", "**/jacocoTestReport/jacocoTestReport.xml"
