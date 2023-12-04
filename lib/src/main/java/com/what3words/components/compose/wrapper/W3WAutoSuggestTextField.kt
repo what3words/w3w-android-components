@@ -95,6 +95,7 @@ fun ConstraintLayoutScope.W3WAutoSuggestTextField(
                 ).apply {
                     onHomeClick?.let { onHomeClick(onHomeClickCallback = onHomeClick) }
                     onDisplaySuggestions?.let { onDisplaySuggestions(onDisplaySuggestions) }
+                    id = R.id.w3wAutoSuggestionTextField
                 }
 
                 addView(state.internalW3WAutoSuggestEditText)

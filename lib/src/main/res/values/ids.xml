@@ -3,4 +3,5 @@
     <item type="id" name="w3wAutoSuggestDefaultPicker" />
     <item type="id" name="w3wAutoSuggestDefaultCorrectionPicker"/>
     <item type="id" name="w3wAutoSuggestDefaultErrorMessage"/>
+    <item type="id" name="w3wAutoSuggestionTextField"/>
 </resources>
