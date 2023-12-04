@@ -1,6 +1,8 @@
 package com.what3words.components.compose.wrapper
 
 import com.what3words.androidwrapper.What3WordsAndroidWrapper
+import com.what3words.androidwrapper.voice.VoiceApi
+import com.what3words.androidwrapper.voice.VoiceProvider
 
 sealed class AutoSuggestConfiguration {
     /**
@@ -8,6 +10,7 @@ sealed class AutoSuggestConfiguration {
      * */
     data class Api(
         val apiKey: String,
+        val voiceProvider: VoiceProvider = VoiceApi(apiKey = apiKey)
     ) : AutoSuggestConfiguration()
 
     /**
