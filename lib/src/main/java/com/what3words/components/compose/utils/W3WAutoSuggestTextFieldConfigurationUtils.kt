@@ -106,7 +106,7 @@ internal fun W3WAutoSuggestTextFieldState.createW3WAutoSuggestEditText(
         .apply {
             when (autoSuggestConfiguration) {
                 is AutoSuggestConfiguration.Api -> {
-                    apiKey(key = autoSuggestConfiguration.apiKey)
+                    apiKey(key = autoSuggestConfiguration.apiKey, voiceProvider = autoSuggestConfiguration.voiceProvider)
                 }
                 is AutoSuggestConfiguration.ApiWithEnterpriseEndpoint -> {
                     apiKey(
