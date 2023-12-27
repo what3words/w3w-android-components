@@ -51,11 +51,7 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                 allowInvalid3wa(isAllowed = state.allowInvalid3wa)
                 hideSelectedIcon(b = state.hideSelectedIcon)
                 returnCoordinates(enabled = state.returnCoordinates)
-                voiceEnabled(
-                    enabled = state.voiceEnabled,
-                    type = state.voiceScreenType,
-                    micIcon = state.micIcon
-                )
+
                 state.language?.let { language(language = state.language!!) }
                 nFocusResults(n = state.nFocusResults)
                 nResults(n = state.nResults)
@@ -83,6 +79,11 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                     toggleVoice()
                     state.toggleVoice = false
                 }
+                voiceEnabled(
+                    enabled = state.voiceEnabled,
+                    type = state.voiceScreenType,
+                    micIcon = state.micIcon
+                )
             }
         })
 }
