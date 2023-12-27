@@ -77,6 +77,7 @@ internal fun ConfigureAutoSuggest(state: W3WAutoSuggestTextFieldState) {
                     voicePlaceholder(placeholder = state.voicePlaceHolder!!)
                 }
                 state.hint?.let { state.internalW3WAutoSuggestEditText?.hint = state.hint }
+                state.focus?.let {state.internalW3WAutoSuggestEditText?.focus(it) }
                 state.voiceLanguage?.let { voiceLanguage(language = state.voiceLanguage!!) }
                 if (state.toggleVoice) {
                     toggleVoice()
