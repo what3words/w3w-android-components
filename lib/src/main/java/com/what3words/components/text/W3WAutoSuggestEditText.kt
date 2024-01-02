@@ -692,7 +692,9 @@ class W3WAutoSuggestEditText
                 Log.e("W3WAutoSuggestEditText", error.message)
             }
         }
-        showKeyboard()
+        if (!isDisplayOnly) {
+            showKeyboard()
+        }
     }
 
     /**
@@ -781,7 +783,9 @@ class W3WAutoSuggestEditText
                 returnCoordinates
             )
         }
-        showKeyboard()
+        if (!isDisplayOnly) {
+            showKeyboard()
+        }
     }
 
     private fun setupFullScreenVoice() {

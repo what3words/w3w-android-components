@@ -168,8 +168,9 @@ internal class SuggestionsAdapter(
             if (!suggestion.nearestPlace.isNullOrEmpty()) {
                 binding.w3wNearestPlaceLabel.visibility = VISIBLE
                 binding.w3wNearestPlaceLabel.text =
-                    if (suggestion.language != "en") suggestion.nearestPlace else binding.w3wNearestPlaceLabel.context.getString(
-                        R.string.near,
+                    if (suggestion.language != "en") suggestion.nearestPlace else
+                        binding.w3wNearestPlaceLabel.context.getString(
+                        R.string.android_components_near,
                         suggestion.nearestPlace
                     )
             } else {

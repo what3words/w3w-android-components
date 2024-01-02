@@ -8,7 +8,7 @@
     <string name="voice_placeholder">Say a what3words address</string>
     <string name="voice_try_again">Please try again</string>
     <string name="voice_error_label">Don’t say street addresses, we only accept what3words addresses.</string>
-    <string name="near">near %s</string>
+    <string name="android_components_near">near %s</string>
     <string name="distance_metric">%s km</string>
     <string name="distance_imperial">%s mi</string>
     <string name="distance_metric_low">&lt;%s</string>
