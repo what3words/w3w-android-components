@@ -110,7 +110,7 @@ internal class VoicePulseLayoutFullScreen
             visibility = VISIBLE
         } else {
             if (shouldClose) {
-                bottomSheetDialog.hide()
+                bottomSheetDialog.dismiss()
                 visibility = GONE
             }
         }
