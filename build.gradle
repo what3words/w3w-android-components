@@ -22,7 +22,7 @@ buildscript {
         espresso_version = "3.4.0"
         mockk_version = "1.12.1"
         json_version = "20230618"
-        what3words_android_wrapper_version = "3.2.0"
+        what3words_android_wrapper_version = "3.2.1"
         guava_version = "27.0.1-android"
         constraint_layout_version = "2.1.4"
         lottie_version = "5.2.0"
