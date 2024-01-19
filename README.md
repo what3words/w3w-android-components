@@ -1,50 +1,38 @@
 # <img src="https://what3words.com/assets/images/w3w_square_red.png" width="64" height="64" alt="what3words">&nbsp;w3w-android-components
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.what3words/w3w-android-components)](https://central.sonatype.com/artifact/com.what3words/w3w-android-components)
+
+### Android minumum SDK support
+[![Generic badge](https://img.shields.io/badge/minSdk-23-green.svg)](https://developer.android.com/about/versions/marshmallow/android-6.0/)
+
+
 An Android library to use the [what3words v3 API autosuggest](https://developer.what3words.com/public-api/docs#autosuggest).
 
 <img src="https://github.com/what3words/w3w-android-components/blob/master/assets/components-1-new.gif" width=40% height=40%>
 
 To obtain an API key, please visit [https://what3words.com/select-plan](https://what3words.com/select-plan) and sign up for an account.
 
-## Installation
 
-The artifact is available through [![Maven Central](https://img.shields.io/maven-central/v/com.what3words/w3w-android-components)](https://central.sonatype.com/artifact/com.what3words/w3w-android-components)
-
-### Android minumum SDK support
-[![Generic badge](https://img.shields.io/badge/minSdk-23-green.svg)](https://developer.android.com/about/versions/marshmallow/android-6.0/)
 
 ### Gradle
 
 ```
-implementation 'com.what3words:w3w-android-components:3.2.2'
+implementation 'com.what3words:w3w-android-components:3.2.3'
 ```
 
 ## Documentation
 
 See the what3words public API [documentation](https://docs.what3words.com/api/v3/)
 
-## Usage with Jetpack Compose
-Checkout the W3WAutoSuggestEditText Compose port [readme](https://github.com/what3words/w3w-android-components/tree/master/compose-sample#readme) if you intend to use the W3WAutoSuggestComponent in Jetpack Compose. 
+## Sample using W3WAutoSuggestComponent in Compose and XML of the w3w-android-components library
 
-## Usage with XML
+[autosuggest-sample](https://github.com/what3words/w3w-android-samples/tree/main/autosuggest-sample)
 
-AndroidManifest.xml
-```xml
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.yourpackage.yourapp">
+## Sample voice only using W3WAutoSuggestVoice of the w3w-android-components library
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    ...
-```
+[autosuggest-sample-voice](https://github.com/what3words/w3w-android-samples/tree/main/autosuggest-sample-voice)
 
-add this to build.gradle (app level)
-```
-compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-}
-```
-
+## Usage
 
 activity_main.xml
 ```xml
@@ -190,17 +178,6 @@ or
 | voicePlaceholder | Voice placeholder for fullscreen popup for autosuggest component, default: "Say a 3 word address…"                                                                                              | ```voicePlaceholder("new placeholder")```                                                                                                                                                                                            |
 | toggleVoice      | Will trigger the voice programmatically, in cases where the developer wants to start listening without user touching the screen.                                                                | ```toggleVoice()```                                                                                                                                                                                                                  |
 | microphone       | Provides a custom Microphone setup for use by the autosuggest component if `voiceEnabled` is set to true.                                                                                       | ```microphone(recordingRate = 16000,encoding = AudioFormat.ENCODING_PCM_16BIT,channel = AudioFormat.CHANNEL_IN_MONO,audioSource = MediaRecorder.AudioSource.MIC)```                                                                  |
-
-## Voice only:
-
-If you want to use voice-only (no text input) please look at our **voice-sample** app in this repo for examples of how to use our **W3WAutoSuggestVoice component**.
-
-
-## Advanced usage:
-
-If you want to check different ways to use our component please look at our **advanced-sample** app in this repo for examples of how to use and customize our **W3WAutoSuggestText component**.
-
-![alt text](https://github.com/what3words/w3w-android-components/blob/master/assets/screen_10.png?raw=true "Screenshot 10")
 
 ## Styles:
 
