@@ -23,7 +23,7 @@ jobs:
           restore-gradle-cache-prefix: v1a
           post-emulator-launch-assemble-command: echo "Emulator Started"
       - android/run-tests:
-          test-command: ./gradlew testing:jacocoTestReport
+          test-command: ./gradlew testing:connectedDebugAndroidTest
           max-tries: 5
       - store_test_results:
           path: testing/build/outputs/androidTest-results
