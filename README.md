@@ -17,7 +17,7 @@ To obtain an API key, please visit [https://what3words.com/select-plan](https://
 ### Gradle
 
 ```
-implementation 'com.what3words:w3w-android-components:3.2.3'
+implementation 'com.what3words:w3w-android-components:$latest'
 ```
 
 ## Documentation
