@@ -116,7 +116,7 @@ internal class VoicePulseLayout
             }
         } else {
             if (shouldClose) {
-                bottomSheetDialog.hide()
+                bottomSheetDialog.dismiss()
                 if (shouldAnimate) {
                     binding.icClose.visibility = GONE
                     binding.voicePlaceholder.visibility = GONE
