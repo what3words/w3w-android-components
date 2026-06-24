@@ -39,7 +39,7 @@ fun rememberW3WAutoSuggestTextFieldState(
 ): W3WAutoSuggestTextFieldState {
     return rememberSaveable(
         saver = W3WAutoSuggestTextFieldState.Saver,
-        inputs = arrayOf(voiceEnabledByDefault, voiceScreenType)
+        inputs = arrayOf<Any?>(voiceEnabledByDefault, voiceScreenType)
     ) {
         W3WAutoSuggestTextFieldState(
             voiceEnabledByDefault = voiceEnabledByDefault,

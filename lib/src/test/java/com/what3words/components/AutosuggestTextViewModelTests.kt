@@ -13,7 +13,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -45,7 +45,7 @@ internal class AutosuggestTextViewModelTests {
 
     @Test
     fun `autosuggest returns suggestions and sharedflow is populated correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        runTest(coroutinesTestRule.testDispatcher) {
             val suggestionsJson =
                 ClassLoader.getSystemResource("suggestions.json").readText()
             val suggestions =
@@ -87,7 +87,7 @@ internal class AutosuggestTextViewModelTests {
 
     @Test
     fun `autosuggest returns did you mean and sharedflow is populated correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        runTest(coroutinesTestRule.testDispatcher) {
             val suggestionsJson =
                 ClassLoader.getSystemResource("suggestions.json").readText()
             val suggestions =
@@ -134,7 +134,7 @@ internal class AutosuggestTextViewModelTests {
 
     @Test
     fun `autosuggest returns suggestions with allowFlexibleDelimiter and sharedflow is populated correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        runTest(coroutinesTestRule.testDispatcher) {
             val suggestionsJson =
                 ClassLoader.getSystemResource("suggestions.json").readText()
             val suggestions =
@@ -181,7 +181,7 @@ internal class AutosuggestTextViewModelTests {
 
     @Test
     fun `autosuggest returns an error and sharedflow is populated correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        runTest(coroutinesTestRule.testDispatcher) {
             var didYouMeanResult: Suggestion? = null
             val suggestionsResult: MutableList<Suggestion> = mutableListOf()
             var errorResult: APIResponse.What3WordsError? = null
@@ -221,7 +221,7 @@ internal class AutosuggestTextViewModelTests {
 
     @Test
     fun `autosuggest selection with coordinates flow`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        runTest(coroutinesTestRule.testDispatcher) {
             val suggestionsJson =
                 ClassLoader.getSystemResource("suggestions.json").readText()
             val suggestions =
@@ -298,7 +298,7 @@ internal class AutosuggestTextViewModelTests {
 
     @Test
     fun `autosuggest selection without coordinates flow`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        runTest(coroutinesTestRule.testDispatcher) {
             val suggestionsJson =
                 ClassLoader.getSystemResource("suggestions.json").readText()
             val suggestions =

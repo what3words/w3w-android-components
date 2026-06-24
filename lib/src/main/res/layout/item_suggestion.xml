@@ -71,7 +71,7 @@
             android:id="@+id/w3wDistanceToFocus"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical|start"
+            android:gravity="center_vertical|end"
             android:maxLines="1"
             android:textAlignment="viewEnd"
             android:textSize="@dimen/secondary_text"

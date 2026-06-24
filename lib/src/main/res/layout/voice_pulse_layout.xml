@@ -29,8 +29,8 @@
             android:padding="@dimen/large_margin"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_close"
-            android:tint="@color/textColor"
             android:visibility="gone"
+            app:tint="@color/textColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

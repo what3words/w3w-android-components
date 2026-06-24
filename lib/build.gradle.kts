@@ -1,11 +1,12 @@
 import java.net.URI
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.dokka)
     id("maven-publish")
     id("signing")
-    id("org.jetbrains.dokka") version "1.5.0"
 }
 
 /**
@@ -18,11 +19,7 @@ version =
 
 
 android {
-    compileSdk = 34
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     buildFeatures {
         viewBinding = true
@@ -31,16 +28,15 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion(23)
-        targetSdkVersion(34)
+        minSdk = libs.versions.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
         buildConfigField("String", "VERSION_NAME", "\"${version}\"")
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmToolchain.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.jvmToolchain.get())
     }
 
     testOptions.unitTests.apply {
@@ -58,55 +54,52 @@ android {
     }
 
     publishing {
-        multipleVariants {
+        singleVariant("release") {
             withSourcesJar()
-            withJavadocJar()
-            allVariants()
         }
     }
 
-    tasks.dokkaGfm.configure {
-        suppressObviousFunctions.set(true)
-        suppressInheritedMembers.set(true)
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.6"
-    }
     namespace = "com.what3words.components"
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.fromTarget(libs.versions.jvmToolchain.get())
+    }
+}
+
 dependencies {
-    api("androidx.recyclerview:recyclerview:1.3.2")
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("com.google.android.material:material:1.12.0")
+    api(libs.androidx.recyclerview)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.android.material)
 
     // kotlin
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
 
     // what3words wrapper
-    api("com.what3words:w3w-android-wrapper:4.0.2")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("com.airbnb.android:lottie:6.1.0")
+    api(libs.w3w.android.wrapper)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.lottie)
 
     // compose
-    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.constraintlayout.compose)
 
     // testing
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("androidx.test:core:1.6.1")
-    testImplementation("com.google.truth:truth:1.4.2")
-    testImplementation("io.mockk:mockk:1.13.5")
-    testImplementation("org.json:json:20230618")
-    testImplementation("androidx.arch.core:core-testing:2.2.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.truth)
+    testImplementation(libs.mockk)
+    testImplementation(libs.org.json)
+    testImplementation(libs.androidx.arch.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
 }
 
 //region publishing
@@ -149,7 +142,7 @@ publishing {
                         group = JavaBasePlugin.DOCUMENTATION_GROUP
                         description = "Assembles Kotlin docs with Dokka into a Javadoc jar"
                         archiveClassifier.set("javadoc")
-                        from(tasks.named("dokkaHtml"))
+                        from(tasks.named("dokkaGeneratePublicationHtml"))
 
                         // Each archive name should be distinct, to avoid implicit dependency issues.
                         // We use the same format as the sources Jar tasks.

@@ -1,17 +1,21 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("kotlin-android")
+    alias(libs.plugins.android.application)
     id("jacoco")
 }
 
+jacoco {
+    toolVersion = libs.versions.jacoco.core.get()
+}
+
 android {
-    compileSdk = 34
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.what3words.testing"
-        minSdk = 23
-        targetSdk = 34
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.1"
 
@@ -19,9 +23,6 @@ android {
         buildConfigField("String", "W3W_API_KEY", "\"${findProperty("PRE_PROD_API_KEY")}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-       // testInstrumentationRunnerArguments = "true"
-       // testInstrumentationRunnerArguments = "true"
     }
 
     testOptions {
@@ -39,11 +40,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmToolchain.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.jvmToolchain.get())
     }
     buildFeatures {
         viewBinding = true
@@ -52,20 +50,26 @@ android {
     namespace = "com.what3words.testing"
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.fromTarget(libs.versions.jvmToolchain.get())
+    }
+}
+
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("com.what3words:w3w-android-wrapper:4.0.2")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.android.material)
+    implementation(libs.w3w.android.wrapper)
     implementation(project(":lib"))
 
     // testing
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    implementation("androidx.test.espresso:espresso-contrib:3.6.1")
-    debugImplementation("androidx.test:rules:1.6.1")
-    debugImplementation("androidx.test.ext:junit:1.2.1")
-    implementation("androidx.test.espresso:espresso-core:3.6.1")
-    debugImplementation("androidx.test:runner:1.6.1")
-    androidTestUtil("androidx.test:orchestrator:1.5.0")
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    implementation(libs.androidx.test.espresso.contrib)
+    debugImplementation(libs.androidx.test.rules)
+    debugImplementation(libs.androidx.test.ext.junit)
+    implementation(libs.androidx.test.espresso.core)
+    debugImplementation(libs.androidx.test.runner)
+    androidTestUtil(libs.androidx.test.orchestrator)
 }
